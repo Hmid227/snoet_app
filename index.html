@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#7c3aed" />
+  <title>Snoet • SuperApp</title>
+  <link rel="manifest" href="./manifest.json">
+
+  <style>
+    :root{
+      --max: 520px;
+      --glass: rgba(255,255,255,.14);
+      --glass2: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.22);
+      --text: #0b1220;
+      --muted: rgba(11,18,32,.70);
+      --shadow: 0 18px 45px rgba(0,0,0,.25);
+      --radius: 22px;
+      --btn: rgba(255,255,255,.65);
+      --btn2: rgba(255,255,255,.42);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      display:flex; justify-content:center;
+      overflow-x:hidden;
+      background: radial-gradient(1200px 600px at 20% 10%, #fff 0%, transparent 60%),
+                  radial-gradient(800px 500px at 80% 20%, #fff 0%, transparent 60%),
+                  linear-gradient(130deg,
+                    #ff0080 0%,
+                    #ff8c00 12%,
+                    #ffd000 24%,
+                    #00d084 38%,
+                    #00c2ff 52%,
+                    #7c3aed 70%,
+                    #ff3d3d 100%);
+      background-attachment: fixed;
+    }
+
+    /* Floating stars layer */
+    .stars, .stars2{
+      position: fixed; inset: -20px;
+      pointer-events:none;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.85) 1px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,.55) 1px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,.65) 1px, transparent 2px);
+      background-size: 120px 120px, 180px 180px, 240px 240px;
+      background-position: 0 0, 60px 40px, 120px 80px;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,.25));
+      opacity:.55;
+      animation: drift 18s linear infinite;
+    }
+    .stars2{
+      opacity:.35;
+      transform: scale(1.15);
+      animation-duration: 28s;
+      mix-blend-mode: overlay;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(0,0,0); }
+      to{ transform: translate3d(-140px, 90px, 0); }
+    }
+
+    /* App shell */
+    .app{
+      width:100%;
+      max-width: var(--max);
+      min-height: 100vh;
+      padding: 18px 16px 92px;
+      position: relative;
+    }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom: 14px;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo{
+      width:44px; height:44px; border-radius: 16px;
+      background: conic-gradient(from 180deg,
+        #ff0080, #ff8c00, #ffd000, #00d084, #00c2ff, #7c3aed, #ff3d3d, #ff0080);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute; inset:-30%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
+      transform: rotate(18deg);
+      animation: shine 2.4s ease-in-out infinite;
+      opacity:.7;
+    }
+    @keyframes shine{
+      0%{ transform: translateX(-60%) rotate(18deg); opacity:.0; }
+      30%{ opacity:.8; }
+      60%{ opacity:.8; }
+      100%{ transform: translateX(70%) rotate(18deg); opacity:.0; }
+    }
+
+    .hgroup h1{
+      margin:0; font-size:16px; letter-spacing:.2px; font-weight: 900;
+      text-shadow: 0 2px 10px rgba(0,0,0,.10);
+    }
+    .hgroup .sub{
+      margin-top:2px;
+      font-size:12px;
+      color: rgba(11,18,32,.75);
+      font-weight:800;
+    }
+
+    .chip{
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.40);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 10px 25px rgba(0,0,0,.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .grid{display:grid; gap: 12px;}
+
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.30);
+      background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.18));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      padding: 14px;
+      position: relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(circle at 40% 90%, rgba(255,255,255,.35), transparent 60%);
+      transform: rotate(-8deg);
+      opacity:.6;
+      pointer-events:none;
+    }
+
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between; position:relative;}
+    .title{font-weight: 1000; font-size: 14px;}
+    .muted{color: var(--muted); font-size: 12px; font-weight: 800;}
+    .big{font-size: 28px; font-weight: 1000; letter-spacing: .2px; margin: 10px 0 2px; text-shadow: 0 8px 30px rgba(0,0,0,.12);}
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; position:relative;}
+    button{
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-weight: 1000;
+      cursor:pointer;
+      background: var(--btn2);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 25px rgba(0,0,0,.10);
+      transition: transform .12s ease, filter .12s ease;
+      user-select:none;
+    }
+    button:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    button:active{ transform: translateY(1px) scale(.98); }
+
+    .primary{
+      background: linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.45));
+      border-color: rgba(255,255,255,.65);
+      position: relative;
+      overflow:hidden;
+    }
+    .primary::after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: conic-gradient(from 180deg,
+        rgba(255,0,128,.55), rgba(255,140,0,.55), rgba(255,208,0,.55),
+        rgba(0,208,132,.55), rgba(0,194,255,.55), rgba(124,58,237,.55),
+        rgba(255,61,61,.55), rgba(255,0,128,.55));
+      filter: blur(14px);
+      opacity:.35;
+      animation: swirl 3.2s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes swirl{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg);} }
+
+    .good{ background: rgba(34,197,94,.22); }
+    .warn{ background: rgba(245,158,11,.22); }
+    .bad{ background: rgba(239,68,68,.18); }
+
+    input, select, textarea{
+      width:100%;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.35);
+      color: var(--text);
+      outline:none;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
+    }
+    label{font-size:12px; color: rgba(11,18,32,.72); font-weight: 1000;}
+
+    .hidden{display:none !important;}
+    .list{display:grid; gap:10px; margin-top:10px; position:relative;}
+    .item{
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.32);
+      background: rgba(255,255,255,.24);
+      display:flex; justify-content:space-between; gap:10px; align-items:center;
+      backdrop-filter: blur(10px);
+    }
+    .small{font-size:11px; color: rgba(11,18,32,.70); font-weight: 900;}
+
+    .badge{
+      display:flex; gap:10px; align-items:center;
+      padding:10px 12px; border-radius:18px;
+      border: 1px dashed rgba(255,255,255,.55);
+      background: rgba(255,255,255,.25);
+      backdrop-filter: blur(10px);
+    }
+    .dot{width:12px;height:12px;border-radius:999px;background: conic-gradient(#ff0080,#ff8c00,#ffd000,#00d084,#00c2ff,#7c3aed,#ff3d3d,#ff0080);}
+
+    /* Bottom nav */
+    .nav{
+      position: fixed; bottom:0; left:0; right:0;
+      display:flex; justify-content:center;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.28);
+      border-top: 1px solid rgba(255,255,255,.45);
+      backdrop-filter: blur(12px);
+    }
+    .navin{ width:100%; max-width:var(--max); display:flex; gap:10px; justify-content:space-between; }
+    .tab{
+      flex:1; text-align:center;
+      padding:10px 8px;
+      border-radius: 18px;
+      color: rgba(11,18,32,.72);
+      font-weight: 1000;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.45);
+      background: rgba(255,255,255,.28);
+      user-select:none;
+      transition: transform .12s ease;
+    }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.35));
+      border-color: rgba(255,255,255,.75);
+      transform: translateY(-1px);
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      left:50%;
+      transform: translateX(-50%);
+      bottom: 92px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.55);
+      background: rgba(255,255,255,.55);
+      color: rgba(11,18,32,.88);
+      font-weight: 1000;
+      display:none;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      max-width: calc(var(--max) - 40px);
+      text-align:center;
+    }
+
+    /* Sparkle click effect elements */
+    .spark{
+      position: fixed;
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      pointer-events:none;
+      background: conic-gradient(#ff0080,#ff8c00,#ffd000,#00d084,#00c2ff,#7c3aed,#ff3d3d,#ff0080);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.65));
+      animation: pop .65s ease-out forwards;
+      z-index: 9999;
+    }
+    @keyframes pop{
+      0%{ transform: translate(-50%,-50%) scale(.2); opacity: 0; }
+      15%{ opacity: 1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+    }
+
+    /* Confetti particles canvas */
+    canvas#fx{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      z-index: 9998;
+    }
+
+    /* Respect motion preferences */
+    @media (prefers-reduced-motion: reduce){
+      .stars, .stars2, .logo::after, .primary::after{ animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="stars2" aria-hidden="true"></div>
+  <canvas id="fx"></canvas>
+
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="hgroup">
+          <h1>Snoet • SuperApp ✨</h1>
+          <div class="sub">Regenboog herinneringen + dappere badges</div>
+        </div>
+      </div>
+      <div class="chip" id="chip">🌈 Offline-ready</div>
+    </header>
+
+    <main class="grid">
+      <!-- HOME -->
+      <section id="screen-home" class="grid">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="title">Volgende afspraak 🦷</div>
+              <div class="muted" id="nextMeta">Nog geen afspraak ingevoerd</div>
+            </div>
+            <button class="primary" onclick="go('appointments')">+ Afspraak</button>
+          </div>
+          <div class="big" id="countdown">—</div>
+          <div class="muted" id="countdownSub">Voeg een afspraak toe om een countdown te zien.</div>
+
+          <div class="btns">
+            <button class="good" onclick="go('prepare')">🙂 Rust</button>
+            <button class="warn" onclick="downloadICS()">📅 Agenda</button>
+            <button class="bad" onclick="go('parent')">👨‍👩‍👧 Ouder</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title">Badges (power-up!) ⭐</div>
+          <div class="muted" style="margin-top:8px">Verdien sterren en laat confetti knallen!</div>
+          <div class="list" id="badgesPreview"></div>
+          <div class="btns">
+            <button class="primary" onclick="go('rewards')">Open badges</button>
+            <button onclick="party()">🎉 Test confetti</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- APPOINTMENTS -->
+      <section id="screen-appointments" class="grid hidden">
+        <div class="card">
+          <div class="title">Nieuwe afspraak</div>
+
+          <label>Naam kind (optioneel)</label>
+          <input id="childName" placeholder="bijv. Sara" maxlength="30" />
+
+          <label>Datum & tijd</label>
+          <input id="apptDT" type="datetime-local" />
+
+          <label>Type afspraak</label>
+          <select id="apptType">
+            <option>Controle</option>
+            <option>Behandeling</option>
+            <option>Mondhygiëne</option>
+            <option>Anders</option>
+          </select>
+
+          <label>Notitie (optioneel)</label>
+          <textarea id="apptNote" rows="3" placeholder="bijv. 'eerst uitleg' of 'stickers'"></textarea>
+
+          <div class="btns">
+            <button class="primary" onclick="saveAppointment()">Opslaan ✨</button>
+            <button onclick="go('home')">Terug</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title">Afsprakenlijst</div>
+          <div class="list" id="apptsList"></div>
+        </div>
+      </section>
+
+      <!-- PREPARE -->
+      <section id="screen-prepare" class="grid hidden">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="title">Rust & Dapper 🌟</div>
+              <div class="muted">Tip + mini oefening</div>
+            </div>
+            <button class="primary" onclick="randomTip()">🎲 Nieuwe tip</button>
+          </div>
+
+          <div class="big" style="font-size:18px; margin-top:12px" id="prepTitle">Wat gaat er gebeuren?</div>
+          <div class="muted" id="prepText" style="margin-top:8px; line-height:1.5"></div>
+
+          <div class="btns">
+            <button class="good" onclick="award('Ik heb geoefend')">✅ Geoefend</button>
+            <button class="warn" onclick="award('Ik was dapper')">🦷 Dapper</button>
+            <button class="primary" onclick="party()">🌈 Confetti!</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title">Adem-oefening (30 sec) 🫧</div>
+          <div class="muted" style="margin-top:8px">4 tellen in… 4 tellen uit… (4x)</div>
+          <div class="btns">
+            <button class="primary" onclick="startBreathing()">Start</button>
+            <button onclick="stopBreathing()">Stop</button>
+          </div>
+          <div class="big" id="breath">—</div>
+        </div>
+      </section>
+
+      <!-- REWARDS -->
+      <section id="screen-rewards" class="grid hidden">
+        <div class="card">
+          <div class="title">Badges toevoegen ⭐</div>
+          <div class="btns">
+            <button class="good" onclick="award('Ik kwam opdagen')">🎉 Op komen dagen</button>
+            <button class="good" onclick="award('Ik was dapper')">🦷 Dapper</button>
+            <button class="good" onclick="award('Ik heb geoefend')">🧘 Geoefend</button>
+          </div>
+          <div class="muted" style="margin-top:10px">Elke badge = sparkle + confetti!</div>
+        </div>
+
+        <div class="card">
+          <div class="title">Jouw badges</div>
+          <div class="list" id="rewardsList"></div>
+        </div>
+      </section>
+
+      <!-- PARENT -->
+      <section id="screen-parent" class="grid hidden">
+        <div class="card">
+          <div class="title">Ouder-instellingen</div>
+
+          <label>Contact e-mail (voor verzet)</label>
+          <input id="contactEmail" placeholder="planning@snoet.nl" />
+
+          <label>Herinneringen (dagen vóór afspraak)</label>
+          <input id="reminders" placeholder="bijv. 7,3,1" />
+
+          <div class="btns">
+            <button class="primary" onclick="saveSettings()">Opslaan</button>
+            <button onclick="go('home')">Terug</button>
+          </div>
+
+          <div class="muted" style="margin-top:10px; line-height:1.45">
+            Privacy: alles blijft op dit apparaat (geen account).
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title">Verzet/verhinderd?</div>
+          <div class="muted" style="margin-top:8px">Maak snel een verzet-mail met de afspraakinfo.</div>
+          <div class="btns">
+            <button class="warn" onclick="requestReschedule()">📨 Verzet-verzoek</button>
+            <button class="bad" onclick="resetAll()">🗑️ Wis alles</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="nav">
+      <div class="navin">
+        <div class="tab active" id="tab-home" onclick="go('home')">Home</div>
+        <div class="tab" id="tab-appointments" onclick="go('appointments')">Afspraken</div>
+        <div class="tab" id="tab-prepare" onclick="go('prepare')">Rust</div>
+        <div class="tab" id="tab-rewards" onclick="go('rewards')">Badges</div>
+        <div class="tab" id="tab-parent" onclick="go('parent')">Ouder</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // PWA
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+  }
+
+  // Sparkles on click/tap
+  window.addEventListener("pointerdown", (e)=>{
+    // don’t spam sparkles when selecting text inputs
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT")) return;
+    sparkleBurst(e.clientX, e.clientY, 10);
+  });
+
+  function sparkleBurst(x,y,n=10){
+    for(let i=0;i<n;i++){
+      const s = document.createElement("div");
+      s.className = "spark";
+      const ang = Math.random()*Math.PI*2;
+      const dist = 40 + Math.random()*90;
+      const dx = Math.cos(ang)*dist;
+      const dy = Math.sin(ang)*dist;
+      s.style.left = x+"px";
+      s.style.top  = y+"px";
+      s.style.setProperty("--dx", dx+"px");
+      s.style.setProperty("--dy", dy+"px");
+      s.style.width = (6+Math.random()*10)+"px";
+      s.style.height= s.style.width;
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(), 700);
+    }
+  }
+
+  // State
+  const KEY = "snoet_super_pwa";
+  const state = load() ?? {
+    appts: [],
+    badges: [],
+    settings: { contactEmail:"planning@snoet.nl", reminders:"7,3,1" }
+  };
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+
+  // Navigation
+  function go(screen){
+    for(const el of document.querySelectorAll("section[id^='screen-']")) el.classList.add("hidden");
+    document.getElementById(`screen-${screen}`).classList.remove("hidden");
+    for(const t of document.querySelectorAll(".tab")) t.classList.remove("active");
+    document.getElementById(`tab-${screen}`).classList.add("active");
+    render();
+  }
+
+  // Toast
+  function toast(msg){
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.style.display = "block";
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=> el.style.display="none", 1700);
+  }
+
+  // Helpers
+  function fmt(dt){
+    const d = new Date(dt);
+    return d.toLocaleString("nl-NL",{weekday:"short", year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit"});
+  }
+  function nextAppt(){
+    const now = Date.now();
+    return state.appts
+      .map(a => ({...a, ts: new Date(a.dt).getTime()}))
+      .filter(a => a.ts && a.ts >= now)
+      .sort((a,b)=>a.ts-b.ts)[0] ?? null;
+  }
+
+  // Appointments
+  function saveAppointment(){
+    const name = document.getElementById("childName").value.trim();
+    const dt   = document.getElementById("apptDT").value;
+    const type = document.getElementById("apptType").value;
+    const note = document.getElementById("apptNote").value.trim();
+    if(!dt){ alert("Kies datum & tijd."); return; }
+
+    state.appts.push({ id: crypto.randomUUID(), name, dt, type, note });
+    state.appts.sort((a,b)=> new Date(a.dt) - new Date(b.dt));
+
+    document.getElementById("childName").value="";
+    document.getElementById("apptDT").value="";
+    document.getElementById("apptNote").value="";
+
+    save();
+    sparkleBurst(window.innerWidth/2, 120, 18);
+    toast("Afspraak opgeslagen ✨");
+    go("home");
+  }
+
+  function deleteAppt(id){
+    state.appts = state.appts.filter(a=>a.id!==id);
+    save();
+    toast("Afspraak verwijderd 🗑️");
+  }
+
+  function markDone(id){
+    state.appts = state.appts.filter(a=>a.id!==id);
+    award("Ik kwam opdagen", false);
+    save();
+    party();
+    toast("YES! Badge + confetti 🎉");
+  }
+
+  // Badges
+  function award(label, doSave=true){
+    state.badges.unshift({ label, when: new Date().toISOString() });
+    state.badges = state.badges.slice(0, 40);
+    if(doSave) save();
+    party();
+    sparkleBurst(window.innerWidth/2, 160, 24);
+    toast("Badge verdiend ⭐");
+  }
+
+  // Prepare tips + breathing
+  const tips = [
+    { t:"Wat gebeurt er bij de tandarts?", b:"Eerst hallo zeggen. Dan kijkt de tandarts met een spiegeltje. Hand omhoog = stop (pauze)." },
+    { t:"Geluiden zijn normaal", b:"Sommige apparaten maken geluid. Dat betekent niet dat het pijn doet. Vraag: “Wat is dat?”" },
+    { t:"Jij hebt controle", b:"Spreek af: hand omhoog = stop. Dat geeft rust en controle." },
+    { t:"Mini-plan", b:"Neem iets kleins mee: knuffel, fidget of muziek (als dat mag)." },
+    { t:"Dappere zin", b:"Oefen: “Ik wil graag dat je eerst uitlegt wat je doet.” Dat is heel slim." }
+  ];
+  let breathTimer = null;
+
+  function randomTip(){
+    const x = tips[Math.floor(Math.random()*tips.length)];
+    document.getElementById("prepTitle").textContent = x.t;
+    document.getElementById("prepText").textContent  = x.b;
+  }
+
+  function startBreathing(){
+    stopBreathing();
+    const steps = ["In…1","In…2","In…3","In…4","Uit…1","Uit…2","Uit…3","Uit…4"];
+    let i=0, rounds=4;
+    document.getElementById("breath").textContent="Start…";
+    breathTimer = setInterval(()=>{
+      document.getElementById("breath").textContent = steps[i];
+      i++;
+      if(i>=steps.length){
+        i=0; rounds--;
+        if(rounds<=0){
+          stopBreathing();
+          document.getElementById("breath").textContent="Klaar ✅";
+          sparkleBurst(window.innerWidth/2, 240, 20);
+        }
+      }
+    }, 650);
+  }
+  function stopBreathing(){
+    if(breathTimer) clearInterval(breathTimer);
+    breathTimer = null;
+  }
+
+  // Parent
+  function saveSettings(){
+    state.settings.contactEmail = document.getElementById("contactEmail").value.trim() || "planning@snoet.nl";
+    state.settings.reminders    = document.getElementById("reminders").value.trim() || "7,3,1";
+    save();
+    toast("Opgeslagen ✅");
+    sparkleBurst(window.innerWidth/2, 180, 14);
+  }
+
+  function requestReschedule(){
+    const a = nextAppt();
+    if(!a){ alert("Geen komende afspraak gevonden."); return; }
+    const email = (state.settings.contactEmail || "planning@snoet.nl").trim();
+    const subject = encodeURIComponent("Verzet-verzoek afspraak (Snoet)");
+    const body = encodeURIComponent(
+`Hallo Snoet,
+
+Ik wil graag de afspraak verzetten.
+
+Afspraak: ${fmt(a.dt)}
+Type: ${a.type}
+Naam kind: ${a.name || "(niet ingevuld)"}
+Notitie: ${a.note || "-"}
+
+Kunt u een nieuw moment voorstellen?
+
+Met vriendelijke groet,`
+    );
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  }
+
+  // Calendar (.ics)
+  function downloadICS(){
+    const a = nextAppt();
+    if(!a){ alert("Geen komende afspraak."); return; }
+    const dt = new Date(a.dt);
+    const dtEnd = new Date(dt.getTime() + 30*60*1000);
+
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Snoet SuperPWA//NL",
+      "BEGIN:VEVENT",
+      `UID:${a.id}@snoet-super`,
+      `DTSTAMP:${toICS(new Date())}`,
+      `DTSTART:${toICS(dt)}`,
+      `DTEND:${toICS(dtEnd)}`,
+      `SUMMARY:${escapeICS("Snoet - " + a.type)}`,
+      `DESCRIPTION:${escapeICS("Notitie: " + (a.note||"-"))}`,
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\r\n");
+
+    const blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "snoet-afspraak.ics";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    sparkleBurst(window.innerWidth/2, 140, 16);
+    toast("Agenda bestand klaar 📅");
+  }
+
+  function toICS(d){
+    const pad = n => String(n).padStart(2,"0");
+    return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+
+           pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
+  }
+  function escapeICS(s){ return String(s).replace(/\n/g," ").replace(/,/g,"\\,").replace(/;/g,"\\;"); }
+
+  // Reset
+  function resetAll(){
+    if(!confirm("Alles wissen?")) return;
+    localStorage.removeItem(KEY);
+    location.reload();
+  }
+
+  // Render
+  function render(){
+    // chip
+    const chip = document.getElementById("chip");
+    chip.textContent = navigator.onLine ? "🌈 Online" : "🌈 Offline";
+
+    // settings
+    const ce = document.getElementById("contactEmail");
+    if(ce){
+      ce.value = state.settings.contactEmail;
+      document.getElementById("reminders").value = state.settings.reminders;
+    }
+
+    // home countdown
+    const a = nextAppt();
+    const meta = document.getElementById("nextMeta");
+    const cd = document.getElementById("countdown");
+    const cdSub = document.getElementById("countdownSub");
+
+    if(!a){
+      meta.textContent = "Nog geen afspraak ingevoerd";
+      cd.textContent = "—";
+      cdSub.textContent = "Voeg een afspraak toe om een countdown te zien.";
+    } else {
+      meta.textContent = `${a.type} • ${fmt(a.dt)}${a.name ? " • " + a.name : ""}`;
+      const ms = new Date(a.dt).getTime() - Date.now();
+      const days = Math.floor(ms / (24*3600e3));
+      const hrs  = Math.floor((ms % (24*3600e3)) / 3600e3);
+      const mins = Math.floor((ms % 3600e3) / 60e3);
+      cd.textContent = `${days}d ${hrs}u ${mins}m`;
+      cdSub.textContent = "Tip: open ‘Rust’ voor dapper oefenen 🌟";
+    }
+
+    // tip default
+    const pt = document.getElementById("prepText");
+    if(pt && pt.textContent.trim()==="") randomTip();
+
+    // appointments list
+    const apptsList = document.getElementById("apptsList");
+    if(apptsList){
+      apptsList.innerHTML="";
+      if(state.appts.length===0){
+        apptsList.innerHTML = `<div class="muted">Geen afspraken. Voeg er één toe.</div>`;
+      } else {
+        for(const ap of state.appts){
+          const el = document.createElement("div");
+          el.className="item";
+          el.innerHTML = `
+            <div>
+              <div class="title">${ap.type}${ap.name ? " • " + ap.name : ""}</div>
+              <div class="small">${fmt(ap.dt)}${ap.note ? " • " + ap.note : ""}</div>
+            </div>
+            <div class="btns" style="margin:0">
+              <button class="good" onclick="markDone('${ap.id}')">✅</button>
+              <button class="bad" onclick="deleteAppt('${ap.id}')">🗑️</button>
+            </div>`;
+          apptsList.appendChild(el);
+        }
+      }
+    }
+
+    // badges preview + list
+    const preview = document.getElementById("badgesPreview");
+    if(preview){
+      preview.innerHTML="";
+      const top = state.badges.slice(0,3);
+      if(top.length===0){
+        preview.innerHTML = `<div class="muted">Nog geen badges. Verdien er één bij ‘Rust’ of ‘Badges’ ⭐</div>`;
+      } else {
+        for(const b of top){
+          const d = new Date(b.when).toLocaleString("nl-NL",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+          const el = document.createElement("div");
+          el.className="badge";
+          el.innerHTML = `<span class="dot"></span><div><div class="title">${b.label}</div><div class="small">${d}</div></div>`;
+          preview.appendChild(el);
+        }
+      }
+    }
+
+    const rewardsList = document.getElementById("rewardsList");
+    if(rewardsList){
+      rewardsList.innerHTML="";
+      if(state.badges.length===0){
+        rewardsList.innerHTML = `<div class="muted">Nog geen badges. Klik bovenaan om er één toe te voegen.</div>`;
+      } else {
+        for(const b of state.badges){
+          const d = new Date(b.when).toLocaleString("nl-NL",{year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+          const el = document.createElement("div");
+          el.className="item";
+          el.innerHTML = `<div><div class="title">${b.label}</div><div class="small">${d}</div></div><div class="dot"></div>`;
+          rewardsList.appendChild(el);
+        }
+      }
+    }
+  }
+
+  // Confetti FX (canvas)
+  const canvas = document.getElementById("fx");
+  const ctx = canvas.getContext("2d");
+  let W=0,H=0;
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  const confetti = [];
+  function party(){
+    const count = 140;
+    for(let i=0;i<count;i++){
+      confetti.push({
+        x: W/2 + (Math.random()*80-40),
+        y: 140 + (Math.random()*30-15),
+        vx: (Math.random()*2-1)*6,
+        vy: - (6 + Math.random()*8),
+        g: 0.25 + Math.random()*0.12,
+        r: 3 + Math.random()*5,
+        a: Math.random()*Math.PI*2,
+        va: (Math.random()*2-1)*0.25,
+        life: 90 + Math.random()*60,
+        hue: Math.floor(Math.random()*360)
+      });
+    }
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+
+    for(let i=confetti.length-1; i>=0; i--){
+      const p = confetti[i];
+      p.life -= 1;
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a += p.va;
+
+      const fade = Math.max(0, Math.min(1, p.life/140));
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.a);
+      ctx.fillStyle = `hsla(${p.hue}, 95%, 60%, ${0.9*fade})`;
+      ctx.fillRect(-p.r, -p.r/2, p.r*2.2, p.r);
+      ctx.restore();
+
+      if(p.life<=0 || p.y>H+30) confetti.splice(i,1);
+    }
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Run
+  render();
+  setInterval(render, 30000);
+  window.addEventListener("online", ()=>render());
+  window.addEventListener("offline", ()=>render());
+</script>
+</body>
+</html>
