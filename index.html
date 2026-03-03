@@ -1,180 +1,1143 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snoet App</title>
-<style>
-body {
-   margin: 0;
-   font-family: Arial, sans-serif;
-   background: #f2f6ff;
-}
-.app {
-   max-width: 390px;
-   margin: auto;
-   height: 100vh;
-   background: white;
-   position: relative;
-   overflow: hidden;
-   border: 3px solid #ddd;
-   border-radius: 30px;
-}
-.screen {
-   display: none;
-   padding: 25px;
-   height: 100%;
-   overflow-y: auto;
-}
-.active {
-   display: block;
-}
-h1 {
-   color: #2a6df4;
-}
-button {
-   background: #2a6df4;
-   color: white;
-   border: none;
-   padding: 12px;
-   border-radius: 10px;
-   width: 100%;
-   margin-top: 10px;
-   font-size: 16px;
-}
-input, select {
-   width: 100%;
-   padding: 10px;
-   margin-top: 10px;
-   border-radius: 8px;
-   border: 1px solid #ccc;
-}
-.bottom-nav {
-   position: absolute;
-   bottom: 0;
-   width: 100%;
-   display: flex;
-   justify-content: space-around;
-   background: #ffffff;
-   padding: 10px 0;
-   border-top: 1px solid #ddd;
-}
-.nav-btn {
-   font-size: 12px;
-   text-align: center;
-   cursor: pointer;
-}
-.card {
-   background: #f2f6ff;
-   padding: 15px;
-   border-radius: 12px;
-   margin-top: 15px;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <title>Snoet App (Web/PWA)</title>
+  <link rel="manifest" href="./manifest.json" />
+
+  <style>
+    :root{
+      --bg1:#07101f; --bg2:#0b1220;
+      --card: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.16);
+      --text:#eaf2ff; --muted:#a7b7da;
+      --brand:#38bdf8; --brand2:#0ea5e9;
+      --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+      --r:22px; --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --max: 520px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      background:
+        radial-gradient(1000px 600px at 10% 15%, rgba(56,189,248,.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(124,58,237,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+    .app{ width:100%; max-width:var(--max); min-height:100vh; padding:18px 16px 92px; }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:14px;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: conic-gradient(from 180deg, #7dd3fc, #38bdf8, #0ea5e9, #7c3aed, #7dd3fc);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
+      transform: rotate(18deg);
+      animation: shine 2.4s ease-in-out infinite;
+      opacity:.6;
+    }
+    @keyframes shine{
+      0%{ transform: translateX(-70%) rotate(18deg); opacity:0; }
+      25%{ opacity:.8; }
+      60%{ opacity:.8; }
+      100%{ transform: translateX(70%) rotate(18deg); opacity:0; }
+    }
+    h1{ margin:0; font-size:16px; font-weight:900; letter-spacing:.2px; }
+    .sub{ margin-top:2px; font-size:12px; color:var(--muted); font-weight:700; }
+    .chip{
+      padding:8px 10px; border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid var(--stroke);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .grid{ display:grid; gap:12px; }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+    }
+    .row{ display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .title{ font-weight:900; font-size:14px; }
+    .muted{ color:var(--muted); font-size:12px; }
+    .big{ font-size:26px; font-weight:1000; margin:10px 0 2px; }
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    button{
+      border:0; border-radius:16px;
+      padding:10px 12px;
+      font-weight:900;
+      cursor:pointer;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+    }
+    button.primary{ background: linear-gradient(180deg, var(--brand), var(--brand2)); color:#04101f; border-color: transparent; }
+    button.good{ background: rgba(34,197,94,.18); border:1px solid rgba(34,197,94,.35); }
+    button.warn{ background: rgba(245,158,11,.16); border:1px solid rgba(245,158,11,.35); }
+    button.bad{ background: rgba(239,68,68,.14); border:1px solid rgba(239,68,68,.32); }
+
+    input, select, textarea{
+      width:100%;
+      margin-top:8px;
+      padding:10px 12px;
+      border-radius:16px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+      outline:none;
+      font-weight:800;
+    }
+    label{ font-size:12px; color:var(--muted); font-weight:800; }
+
+    .hidden{ display:none !important; }
+
+    /* Bottom nav like sketch */
+    .nav{
+      position:fixed; bottom:0; left:0; right:0;
+      display:flex; justify-content:center;
+      padding:10px 12px;
+      background: rgba(7,16,31,.75);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(12px);
+    }
+    .navin{ width:100%; max-width:var(--max); display:flex; gap:10px; justify-content:space-between; }
+    .tab{
+      flex:1; text-align:center;
+      padding:10px 8px;
+      border-radius:18px;
+      font-size:12px;
+      font-weight:1000;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      user-select:none;
+    }
+    .tab.active{
+      color:#04101f;
+      background: linear-gradient(180deg, #7dd3fc, #38bdf8);
+      border-color: transparent;
+    }
+
+    /* Lists */
+    .list{ display:grid; gap:10px; margin-top:10px; }
+    .item{
+      padding:12px;
+      border-radius:18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex; justify-content:space-between; gap:10px; align-items:center;
+    }
+    .small{ font-size:11px; color:var(--muted); font-weight:700; }
+
+    /* RTL for Arabic */
+    .rtl{ direction: rtl; text-align:right; }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%; transform:translateX(-50%);
+      bottom: 88px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.45);
+      color: var(--text);
+      font-weight:900;
+      display:none;
+      max-width: calc(var(--max) - 40px);
+      text-align:center;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-<!-- WELKOM -->
-<div class="screen active" id="welcome">
-<h1>🦷 Snoet</h1>
-<p>Welkom bij jouw tandzorg assistent</p>
-<button onclick="showScreen('login')">Start ➜</button>
-</div>
-<!-- LOGIN -->
-<div class="screen" id="login">
-<h1>Login</h1>
-<input type="text" placeholder="Email">
-<input type="password" placeholder="Wachtwoord">
-<button onclick="showScreen('home')">Inloggen</button>
-<button onclick="showScreen('register')">Registreren</button>
-</div>
-<!-- REGISTRATIE -->
-<div class="screen" id="register">
-<h1>Registreren</h1>
-<input type="text" placeholder="Naam">
-<input type="email" placeholder="Email">
-<input type="password" placeholder="Wachtwoord">
-<button onclick="showScreen('language')">Bevestigen</button>
-</div>
-<!-- TAALKEUZE -->
-<div class="screen" id="language">
-<h1>Kies Taal</h1>
-<select>
-<option>Nederlands</option>
-<option>English</option>
-<option>Türkçe</option>
-<option>العربية</option>
-</select>
-<button onclick="showScreen('home')">Doorgaan</button>
-</div>
-<!-- HOME -->
-<div class="screen" id="home">
-<h1>Snoet</h1>
-<div class="card">
-<strong>Volgende afspraak:</strong>
-<p>15 april - 15:00</p>
-</div>
-<div class="card">
-<strong>Herinnering Tandenpoetsen</strong>
-<button onclick="poetsHerinnering()">Activeer</button>
-</div>
-</div>
-<!-- AGENDA -->
-<div class="screen" id="agenda">
-<h1>Agenda</h1>
-<div class="card">
-       15 April - Controle
-</div>
-<div class="card">
-       20 Mei - Mondhygiënist
-</div>
-<button onclick="agendaSync()">Synchroniseer met Google / Apple</button>
-</div>
-<!-- DOCUMENTEN -->
-<div class="screen" id="documenten">
-<h1>Mijn Documenten</h1>
-<div class="card">
-       Laatste controle: 10 Jan 2026
-</div>
-<div class="card">
-       Behandeling: Vulling kies
-</div>
-</div>
-<!-- ACTIVITEITEN -->
-<div class="screen" id="activiteiten">
-<h1>Activiteiten</h1>
-<div class="card">
-       🔔 Meldingen
-<button onclick="tandartsHerinnering()">Test melding</button>
-</div>
-<div class="card">
-       🎥 Filmpjes
-<p>Hoe poets je goed?</p>
-</div>
-</div>
-<!-- ONDERSTE NAVIGATIE -->
-<div class="bottom-nav">
-<div class="nav-btn" onclick="showScreen('home')">🏠<br>Home</div>
-<div class="nav-btn" onclick="showScreen('agenda')">📅<br>Agenda</div>
-<div class="nav-btn" onclick="showScreen('documenten')">📁<br>Docs</div>
-<div class="nav-btn" onclick="showScreen('activiteiten')">⭐<br>Acties</div>
-</div>
-</div>
-<script>
-function showScreen(id) {
-   let screens = document.querySelectorAll(".screen");
-   screens.forEach(screen => screen.classList.remove("active"));
-   document.getElementById(id).classList.add("active");
-}
-function poetsHerinnering() {
-   alert("🪥 Herinnering ingesteld: 08:00 & 20:00");
-}
-function tandartsHerinnering() {
-   alert("📅 Je tandartsafspraak komt eraan!");
-}
-function agendaSync() {
-   alert("🔄 Gesynchroniseerd met Google / Apple Agenda");
-}
-</script>
-</body>
-</html>
+  <div class="app" id="appRoot">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="t_appName">Snoet App</h1>
+          <div class="sub" id="t_appSub">Afspraken • Dossier • Herinneringen</div>
+        </div>
+      </div>
+      <div class="chip" id="statusChip">📱 PWA</div>
+    </header>
+
+    <main class="grid">
+      <!-- 1) WELKOM -->
+      <section id="screen-welcome" class="grid">
+        <div class="card">
+          <div class="title" id="t_welcomeTitle">Welkom 👋</div>
+          <div class="muted" style="margin-top:8px" id="t_welcomeText">
+            Deze app helpt met poetsherinneringen, afspraken en dossier-overzicht.
+          </div>
+          <div class="btns">
+            <button class="primary" onclick="go('login')" id="t_welcomeBtn">Start</button>
+            <button onclick="go('language')" id="t_langBtn">Taal</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" id="t_featuresTitle">In de app zit:</div>
+          <!-- VEREIST: aparte kopjes -->
+          <div class="list">
+            <div class="item"><div>
+              <div class="title" id="t_featBrushH">🪥 Herinnering tandenpoetsen</div>
+              <div class="small" id="t_featBrushS">Ochtend + avond reminders</div>
+            </div></div>
+            <div class="item"><div>
+              <div class="title" id="t_featLangH">🌍 Taalkeuze</div>
+              <div class="small" id="t_featLangS">Nederlands • Engels • Turks • Arabisch</div>
+            </div></div>
+            <div class="item"><div>
+              <div class="title" id="t_featApptH">📅 Overzicht afspraken</div>
+              <div class="small" id="t_featApptS">Duidelijk overzicht van komende afspraken</div>
+            </div></div>
+            <div class="item"><div>
+              <div class="title" id="t_featNotifH">🔔 Notificaties afspraken</div>
+              <div class="small" id="t_featNotifS">Herinneren via notificaties / in-app reminders</div>
+            </div></div>
+            <div class="item"><div>
+              <div class="title" id="t_featDossierH">📁 Overzicht patiëntendossier</div>
+              <div class="small" id="t_featDossierS">Documenten + notities (lokaal demo)</div>
+            </div></div>
+            <div class="item"><div>
+              <div class="title" id="t_featSyncH">🔄 Kalender sync</div>
+              <div class="small" id="t_featSyncS">Export .ics voor Google/Apple Kalender</div>
+            </div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) LOGIN -->
+      <section id="screen-login" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_loginTitle">Login</div>
+          <label id="t_loginUser">Gebruikersnaam</label>
+          <input id="loginUser" placeholder="bijv. ouder@..." />
+          <label id="t_loginPass">Wachtwoord</label>
+          <input id="loginPass" type="password" placeholder="••••••••" />
+          <div class="btns">
+            <button class="primary" onclick="doLogin()" id="t_loginBtn">Login</button>
+            <button onclick="go('welcome')" id="t_backBtn1">Terug</button>
+          </div>
+          <div class="muted" style="margin-top:8px" id="t_loginNote">
+            Demo: elke login is oké (voor schoolproject).
+          </div>
+        </div>
+      </section>
+
+      <!-- 3) PROFIEL -->
+      <section id="screen-profile" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_profileTitle">Profiel</div>
+          <label id="t_childName">Naam kind</label>
+          <input id="childName" placeholder="bijv. Sara" maxlength="30" />
+          <label id="t_parentEmail">E-mail ouder (voor verzet)</label>
+          <input id="parentEmail" placeholder="planning@snoet.nl" />
+          <div class="btns">
+            <button class="primary" onclick="saveProfile()" id="t_profileSave">Bewaren</button>
+            <button onclick="go('language')" id="t_profileLang">Taal kiezen</button>
+            <button onclick="go('home')" id="t_profileGo">Naar app</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4) TAAL -->
+      <section id="screen-language" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_langTitle">Choose your language</div>
+          <div class="btns">
+            <button class="primary" onclick="setLang('nl')">Nederlands</button>
+            <button class="primary" onclick="setLang('en')">English</button>
+            <button class="primary" onclick="setLang('tr')">Türkçe</button>
+            <button class="primary" onclick="setLang('ar')">العربية</button>
+          </div>
+          <div class="btns">
+            <button onclick="go('welcome')" id="t_backBtn2">Terug</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5) HOME -->
+      <section id="screen-home" class="grid hidden">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="title" id="t_homeNext">Volgende afspraak</div>
+              <div class="muted" id="nextMeta">Nog geen afspraak ingevoerd</div>
+            </div>
+            <button class="primary" onclick="go('agenda')" id="t_homeAgenda">Agenda</button>
+          </div>
+
+          <div class="big" id="countdown">—</div>
+          <div class="muted" id="countdownSub">Voeg een afspraak toe voor countdown.</div>
+
+          <div class="btns">
+            <button class="good" onclick="requestNotifyPermission()" id="t_homeNotifPerm">🔔 Notificaties aan</button>
+            <button class="warn" onclick="scheduleInAppReminders()" id="t_homeReminders">⏱️ Reminders plannen</button>
+            <button onclick="go('dossier')" id="t_homeDossier">📁 Dossier</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" id="t_brushTitle">🪥 Tandenpoets herinneringen</div>
+          <div class="muted" style="margin-top:8px" id="t_brushText">
+            Stel tijden in voor ochtend en avond. (In-app reminder + notificatie als mogelijk)
+          </div>
+
+          <label id="t_brushMorning">Ochtend tijd</label>
+          <input type="time" id="brushMorning" />
+
+          <label id="t_brushEvening">Avond tijd</label>
+          <input type="time" id="brushEvening" />
+
+          <div class="btns">
+            <button class="primary" onclick="saveBrushTimes()" id="t_brushSave">Opslaan</button>
+            <button class="warn" onclick="testBrushNow()" id="t_brushTest">Test nu</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" id="t_syncTitle">🔄 Kalender synchroniseren</div>
+          <div class="muted" style="margin-top:8px" id="t_syncText">
+            Download .ics en importeer in Apple/Google Kalender (werkt zonder account/back-end).
+          </div>
+          <div class="btns">
+            <button class="primary" onclick="downloadNextICS()" id="t_syncBtn">Download .ics</button>
+            <button onclick="openGoogleCalendarLink()" id="t_syncGoogle">Open Google Calendar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6) AGENDA -->
+      <section id="screen-agenda" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_agendaTitle">Agenda</div>
+
+          <label id="t_apptDate">Datum & tijd</label>
+          <input id="apptDT" type="datetime-local" />
+
+          <label id="t_apptType">Type afspraak</label>
+          <select id="apptType">
+            <option>Controle</option>
+            <option>Behandeling</option>
+            <option>Mondhygiëne</option>
+            <option>Anders</option>
+          </select>
+
+          <label id="t_apptNote">Notitie</label>
+          <textarea id="apptNote" rows="3" placeholder="bijv. 'eerst uitleg'"></textarea>
+
+          <div class="btns">
+            <button class="primary" onclick="addAppointment()" id="t_apptSave">Opslaan</button>
+            <button onclick="go('home')" id="t_backHome1">Terug</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" id="t_apptList">Komende afspraken</div>
+          <div class="list" id="apptsList"></div>
+        </div>
+      </section>
+
+      <!-- 7) DOSSIER -->
+      <section id="screen-dossier" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_dossierTitle">Patiëntendossier</div>
+          <div class="muted" style="margin-top:8px" id="t_dossierText">
+            Demo-overzicht (lokaal opgeslagen): notities + documentenlijst.
+          </div>
+
+          <label id="t_dossierNotes">Notities</label>
+          <textarea id="dossierNotes" rows="4" placeholder="bijv. angst, triggers, afspraken..."></textarea>
+
+          <div class="btns">
+            <button class="primary" onclick="saveDossier()" id="t_dossierSave">Bewaar</button>
+            <button onclick="go('home')" id="t_backHome2">Terug</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" id="t_docsTitle">Documenten</div>
+          <div class="muted" style="margin-top:8px" id="t_docsText">
+            Voeg “documenten” toe (titel + datum). (Voor demo; geen echte medische data uploaden.)
+          </div>
+
+          <label id="t_docName">Document titel</label>
+          <input id="docTitle" placeholder="bijv. behandelplan" />
+
+          <label id="t_docDate">Datum</label>
+          <input id="docDate" type="date" />
+
+          <div class="btns">
+            <button class="primary" onclick="addDoc()" id="t_docAdd">Toevoegen</button>
+          </div>
+
+          <div class="list" id="docsList"></div>
+        </div>
+      </section>
+
+      <!-- 8) ACTIVITEITEN -->
+      <section id="screen-activities" class="grid hidden">
+        <div class="card">
+          <div class="title" id="t_actTitle">Activiteiten</div>
+          <div class="muted" style="margin-top:8px" id="t_actText">
+            Beloningen, filmpjes, taken… (hier kun je later uitbreiden).
+          </div>
+
+          <div class="list">
+            <div class="item">
+              <div>
+                <div class="title" id="t_actRewardH">⭐ Beloning</div>
+                <div class="small" id="t_actRewardS">Sticker / badge bij op komen dagen</div>
+              </div>
+              <button class="good" onclick="toast(msg('badgeEarned'))">+1</button>
+            </div>
+
+            <div class="item">
+              <div>
+                <div class="title" id="t_actVideoH">🎥 Filmpjes</div>
+                <div class="small" id="t_actVideoS">Uitleg: wat gebeurt er bij de tandarts?</div>
+              </div>
+              <button class="primary" onclick="toast(msg('comingSoon'))">Open</button>
+            </div>
+
+            <div class="item">
+              <div>
+                <div class="title" id="t_actMsgH">🔔 Meldingen</div>
+                <div class="small" id="t_actMsgS">Notificaties aan/uit</div>
+              </div>
+              <button class="warn" onclick="requestNotifyPermission()">Aan</button>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button onclick="go('home')" id="t_backHome3">Terug</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Bottom nav (zoals schets) -->
+    <div class="nav">
+      <div class="navin">
+        <div class="tab" id="tab-home" onclick="go('home')">Home</div>
+        <div class="tab" id="tab-agenda" onclick="go('agenda')">Agenda</div>
+        <div class="tab" id="tab-dossier" onclick="go('dossier')">Dossier</div>
+        <div class="tab" id="tab-activities" onclick="go('activities')">Acties</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- PWA ----------
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+    }
+
+    // ---------- State ----------
+    const KEY = "snoet_app_v1";
+    const state = load() ?? {
+      lang: "nl",
+      loggedIn: false,
+      profile: { childName:"", parentEmail:"planning@snoet.nl" },
+      brush: { morning:"07:30", evening:"20:30" },
+      appts: [],
+      dossier: { notes:"", docs: [] },
+      scheduled: { brush:false, appt:false }
+    };
+
+    function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
+    function save(){ localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+
+    // ---------- i18n ----------
+    const I18N = {
+      nl: {
+        appName:"Snoet App",
+        appSub:"Afspraken • Dossier • Herinneringen",
+        welcomeTitle:"Welkom 👋",
+        welcomeText:"Deze app helpt met poetsherinneringen, afspraken en dossier-overzicht.",
+        start:"Start",
+        lang:"Taal",
+        features:"In de app zit:",
+        featBrushH:"🪥 Herinnering tandenpoetsen",
+        featBrushS:"Ochtend + avond reminders",
+        featLangH:"🌍 Taalkeuze",
+        featLangS:"Nederlands • Engels • Turks • Arabisch",
+        featApptH:"📅 Overzicht afspraken",
+        featApptS:"Duidelijk overzicht van komende afspraken",
+        featNotifH:"🔔 Notificaties afspraken",
+        featNotifS:"Herinneren via notificaties / in-app reminders",
+        featDossierH:"📁 Overzicht patiëntendossier",
+        featDossierS:"Documenten + notities (lokaal demo)",
+        featSyncH:"🔄 Kalender sync",
+        featSyncS:"Export .ics voor Google/Apple Kalender",
+        login:"Login",
+        user:"Gebruikersnaam",
+        pass:"Wachtwoord",
+        loginBtn:"Login",
+        back:"Terug",
+        loginNote:"Demo: elke login is oké (voor schoolproject).",
+        profile:"Profiel",
+        childName:"Naam kind",
+        parentEmail:"E-mail ouder (voor verzet)",
+        save:"Bewaren",
+        chooseLang:"Taal kiezen",
+        toApp:"Naar app",
+        chooseLanguage:"Kies je taal",
+        nextAppt:"Volgende afspraak",
+        agenda:"Agenda",
+        noAppt:"Nog geen afspraak ingevoerd",
+        addApptCountdown:"Voeg een afspraak toe voor countdown.",
+        notifOn:"🔔 Notificaties aan",
+        planRem:"⏱️ Reminders plannen",
+        dossier:"📁 Dossier",
+        brushTitle:"🪥 Tandenpoets herinneringen",
+        brushText:"Stel tijden in voor ochtend en avond. (In-app reminder + notificatie als mogelijk)",
+        morning:"Ochtend tijd",
+        evening:"Avond tijd",
+        saveTimes:"Opslaan",
+        testNow:"Test nu",
+        syncTitle:"🔄 Kalender synchroniseren",
+        syncText:"Download .ics en importeer in Apple/Google Kalender (werkt zonder account/back-end).",
+        downloadIcs:"Download .ics",
+        openGoogle:"Open Google Calendar",
+        agendaTitle:"Agenda",
+        apptDT:"Datum & tijd",
+        apptType:"Type afspraak",
+        apptNote:"Notitie",
+        apptSave:"Opslaan",
+        comingAppts:"Komende afspraken",
+        dossierTitle:"Patiëntendossier",
+        dossierText:"Demo-overzicht (lokaal opgeslagen): notities + documentenlijst.",
+        notes:"Notities",
+        docsTitle:"Documenten",
+        docsText:"Voeg “documenten” toe (titel + datum). (Voor demo; geen echte medische data uploaden.)",
+        docName:"Document titel",
+        docDate:"Datum",
+        docAdd:"Toevoegen",
+        activities:"Activiteiten",
+        activitiesText:"Beloningen, filmpjes, taken… (hier kun je later uitbreiden).",
+        rewardH:"⭐ Beloning",
+        rewardS:"Sticker / badge bij op komen dagen",
+        videoH:"🎥 Filmpjes",
+        videoS:"Uitleg: wat gebeurt er bij de tandarts?",
+        msgH:"🔔 Meldingen",
+        msgS:"Notificaties aan/uit",
+        badgeEarned:"Badge toegevoegd ⭐",
+        comingSoon:"Komt binnenkort 🙂",
+        permOk:"Notificaties toegestaan ✅",
+        permNo:"Notificaties geweigerd (kan later in instellingen) ❌",
+        saved:"Opgeslagen ✅",
+        added:"Toegevoegd ✅",
+        deleted:"Verwijderd 🗑️",
+        noNext:"Geen komende afspraak",
+        icsReady:"ICS gedownload 📅",
+        remindersSet:"Reminders actief (als app open is) ⏱️",
+        brushNow:"Poets-timer: ga nu poetsen 🪥"
+      },
+      en: {
+        appName:"Snoet App",
+        appSub:"Appointments • Records • Reminders",
+        welcomeTitle:"Welcome 👋",
+        welcomeText:"This app helps with brushing reminders, appointments and record overview.",
+        start:"Start",
+        lang:"Language",
+        features:"This app includes:",
+        featBrushH:"🪥 Toothbrushing reminders",
+        featBrushS:"Morning + evening reminders",
+        featLangH:"🌍 Language choice",
+        featLangS:"Dutch • English • Turkish • Arabic",
+        featApptH:"📅 Upcoming appointments overview",
+        featApptS:"Clear overview of upcoming appointments",
+        featNotifH:"🔔 Appointment notifications",
+        featNotifS:"Notifications / in-app reminders",
+        featDossierH:"📁 Patient record overview",
+        featDossierS:"Documents + notes (local demo)",
+        featSyncH:"🔄 Calendar sync",
+        featSyncS:"Export .ics for Google/Apple Calendar",
+        login:"Login",
+        user:"Username",
+        pass:"Password",
+        loginBtn:"Login",
+        back:"Back",
+        loginNote:"Demo: any login works (school project).",
+        profile:"Profile",
+        childName:"Child name",
+        parentEmail:"Parent email (reschedule)",
+        save:"Save",
+        chooseLang:"Choose language",
+        toApp:"Go to app",
+        chooseLanguage:"Choose your language",
+        nextAppt:"Next appointment",
+        agenda:"Calendar",
+        noAppt:"No appointment yet",
+        addApptCountdown:"Add an appointment to see the countdown.",
+        notifOn:"🔔 Enable notifications",
+        planRem:"⏱️ Set reminders",
+        dossier:"📁 Record",
+        brushTitle:"🪥 Brushing reminders",
+        brushText:"Set morning and evening times. (In-app reminder + notification if possible)",
+        morning:"Morning time",
+        evening:"Evening time",
+        saveTimes:"Save",
+        testNow:"Test now",
+        syncTitle:"🔄 Calendar sync",
+        syncText:"Download .ics and import into Apple/Google Calendar.",
+        downloadIcs:"Download .ics",
+        openGoogle:"Open Google Calendar",
+        agendaTitle:"Calendar",
+        apptDT:"Date & time",
+        apptType:"Appointment type",
+        apptNote:"Note",
+        apptSave:"Save",
+        comingAppts:"Upcoming appointments",
+        dossierTitle:"Patient record",
+        dossierText:"Demo overview (stored locally): notes + documents list.",
+        notes:"Notes",
+        docsTitle:"Documents",
+        docsText:"Add “documents” (title + date). (Demo: don’t upload real medical data.)",
+        docName:"Document title",
+        docDate:"Date",
+        docAdd:"Add",
+        activities:"Activities",
+        activitiesText:"Rewards, videos, tasks… (you can expand later).",
+        rewardH:"⭐ Reward",
+        rewardS:"Sticker/badge for showing up",
+        videoH:"🎥 Videos",
+        videoS:"Explain: what happens at the dentist?",
+        msgH:"🔔 Notifications",
+        msgS:"Turn notifications on/off",
+        badgeEarned:"Badge added ⭐",
+        comingSoon:"Coming soon 🙂",
+        permOk:"Notifications allowed ✅",
+        permNo:"Notifications blocked (change later in settings) ❌",
+        saved:"Saved ✅",
+        added:"Added ✅",
+        deleted:"Deleted 🗑️",
+        noNext:"No upcoming appointment",
+        icsReady:"ICS downloaded 📅",
+        remindersSet:"Reminders active (when app is open) ⏱️",
+        brushNow:"Brush now 🪥"
+      },
+      tr: {
+        appName:"Snoet Uygulaması",
+        appSub:"Randevular • Dosya • Hatırlatmalar",
+        welcomeTitle:"Hoş geldin 👋",
+        welcomeText:"Bu uygulama diş fırçalama ve randevu hatırlatmalarına yardımcı olur.",
+        start:"Başla",
+        lang:"Dil",
+        features:"Uygulamada var:",
+        featBrushH:"🪥 Diş fırçalama hatırlatması",
+        featBrushS:"Sabah + akşam",
+        featLangH:"🌍 Dil seçimi",
+        featLangS:"Hollandaca • İngilizce • Türkçe • Arapça",
+        featApptH:"📅 Yaklaşan randevular",
+        featApptS:"Randevu özeti",
+        featNotifH:"🔔 Randevu bildirimleri",
+        featNotifS:"Bildirim / uygulama içi",
+        featDossierH:"📁 Hasta dosyası",
+        featDossierS:"Belge + not (demo)",
+        featSyncH:"🔄 Takvim senkron",
+        featSyncS:"Google/Apple için .ics",
+        login:"Giriş",
+        user:"Kullanıcı adı",
+        pass:"Şifre",
+        loginBtn:"Giriş",
+        back:"Geri",
+        loginNote:"Demo: her giriş kabul.",
+        profile:"Profil",
+        childName:"Çocuk adı",
+        parentEmail:"Ebeveyn e-posta",
+        save:"Kaydet",
+        chooseLang:"Dil seç",
+        toApp:"Uygulamaya git",
+        chooseLanguage:"Dil seç",
+        nextAppt:"Sonraki randevu",
+        agenda:"Takvim",
+        noAppt:"Randevu yok",
+        addApptCountdown:"Geri sayım için randevu ekle.",
+        notifOn:"🔔 Bildirimleri aç",
+        planRem:"⏱️ Hatırlatmaları ayarla",
+        dossier:"📁 Dosya",
+        brushTitle:"🪥 Fırçalama hatırlatması",
+        brushText:"Sabah ve akşam saatlerini ayarla.",
+        morning:"Sabah saati",
+        evening:"Akşam saati",
+        saveTimes:"Kaydet",
+        testNow:"Test",
+        syncTitle:"🔄 Takvim senkron",
+        syncText:".ics indir ve takvime ekle.",
+        downloadIcs:".ics indir",
+        openGoogle:"Google Takvim",
+        agendaTitle:"Takvim",
+        apptDT:"Tarih & saat",
+        apptType:"Randevu türü",
+        apptNote:"Not",
+        apptSave:"Kaydet",
+        comingAppts:"Yaklaşan randevular",
+        dossierTitle:"Hasta dosyası",
+        dossierText:"Demo: notlar + belgeler.",
+        notes:"Notlar",
+        docsTitle:"Belgeler",
+        docsText:"Belge ekle (başlık + tarih).",
+        docName:"Belge başlığı",
+        docDate:"Tarih",
+        docAdd:"Ekle",
+        activities:"Aktiviteler",
+        activitiesText:"Ödül, video, görev…",
+        rewardH:"⭐ Ödül",
+        rewardS:"Geldiğinde rozet",
+        videoH:"🎥 Videolar",
+        videoS:"Dişçi ne yapar?",
+        msgH:"🔔 Bildirimler",
+        msgS:"Aç/kapat",
+        badgeEarned:"Rozet eklendi ⭐",
+        comingSoon:"Yakında 🙂",
+        permOk:"Bildirim açık ✅",
+        permNo:"Bildirim kapalı ❌",
+        saved:"Kaydedildi ✅",
+        added:"Eklendi ✅",
+        deleted:"Silindi 🗑️",
+        noNext:"Yaklaşan randevu yok",
+        icsReady:"ICS indirildi 📅",
+        remindersSet:"Hatırlatmalar aktif ⏱️",
+        brushNow:"Şimdi fırçala 🪥"
+      },
+      ar: {
+        appName:"تطبيق سنوت",
+        appSub:"المواعيد • الملف • التذكيرات",
+        welcomeTitle:"مرحباً 👋",
+        welcomeText:"هذا التطبيق يساعد بتذكير تنظيف الأسنان والمواعيد وملف المريض.",
+        start:"ابدأ",
+        lang:"اللغة",
+        features:"يحتوي التطبيق على:",
+        featBrushH:"🪥 تذكير تنظيف الأسنان",
+        featBrushS:"صباحاً + مساءً",
+        featLangH:"🌍 اختيار اللغة",
+        featLangS:"هولندي • إنجليزي • تركي • عربي",
+        featApptH:"📅 مواعيد قادمة",
+        featApptS:"عرض واضح للمواعيد",
+        featNotifH:"🔔 إشعارات المواعيد",
+        featNotifS:"إشعارات / داخل التطبيق",
+        featDossierH:"📁 ملف المريض",
+        featDossierS:"مستندات + ملاحظات (تجريبي)",
+        featSyncH:"🔄 مزامنة التقويم",
+        featSyncS:"تصدير .ics لـ Apple/Google",
+        login:"تسجيل الدخول",
+        user:"اسم المستخدم",
+        pass:"كلمة المرور",
+        loginBtn:"دخول",
+        back:"رجوع",
+        loginNote:"تجريبي: أي تسجيل دخول يعمل.",
+        profile:"الملف الشخصي",
+        childName:"اسم الطفل",
+        parentEmail:"بريد ولي الأمر",
+        save:"حفظ",
+        chooseLang:"اختيار اللغة",
+        toApp:"إلى التطبيق",
+        chooseLanguage:"اختر لغتك",
+        nextAppt:"الموعد القادم",
+        agenda:"التقويم",
+        noAppt:"لا يوجد موعد",
+        addApptCountdown:"أضف موعداً لعرض العدّ التنازلي.",
+        notifOn:"🔔 تفعيل الإشعارات",
+        planRem:"⏱️ ضبط التذكيرات",
+        dossier:"📁 الملف",
+        brushTitle:"🪥 تذكيرات تنظيف الأسنان",
+        brushText:"اضبط وقت الصباح والمساء.",
+        morning:"وقت الصباح",
+        evening:"وقت المساء",
+        saveTimes:"حفظ",
+        testNow:"اختبار الآن",
+        syncTitle:"🔄 مزامنة التقويم",
+        syncText:"حمّل .ics وأضفه إلى التقويم.",
+        downloadIcs:"تحميل .ics",
+        openGoogle:"فتح Google Calendar",
+        agendaTitle:"التقويم",
+        apptDT:"التاريخ والوقت",
+        apptType:"نوع الموعد",
+        apptNote:"ملاحظة",
+        apptSave:"حفظ",
+        comingAppts:"المواعيد القادمة",
+        dossierTitle:"ملف المريض",
+        dossierText:"تجريبي: ملاحظات + مستندات.",
+        notes:"ملاحظات",
+        docsTitle:"المستندات",
+        docsText:"أضف مستنداً (عنوان + تاريخ).",
+        docName:"عنوان المستند",
+        docDate:"التاريخ",
+        docAdd:"إضافة",
+        activities:"الأنشطة",
+        activitiesText:"مكافآت، فيديوهات، مهام…",
+        rewardH:"⭐ مكافأة",
+        rewardS:"شارة عند الحضور",
+        videoH:"🎥 فيديوهات",
+        videoS:"ماذا يحدث عند طبيب الأسنان؟",
+        msgH:"🔔 الإشعارات",
+        msgS:"تشغيل/إيقاف",
+        badgeEarned:"تمت إضافة شارة ⭐",
+        comingSoon:"قريباً 🙂",
+        permOk:"تم السماح بالإشعارات ✅",
+        permNo:"تم رفض الإشعارات ❌",
+        saved:"تم الحفظ ✅",
+        added:"تمت الإضافة ✅",
+        deleted:"تم الحذف 🗑️",
+        noNext:"لا يوجد موعد قادم",
+        icsReady:"تم تحميل ICS 📅",
+        remindersSet:"التذكيرات فعّالة ⏱️",
+        brushNow:"حان وقت التنظيف 🪥"
+      }
+    };
+
+    function msg(key){ return (I18N[state.lang] && I18N[state.lang][key]) ? I18N[state.lang][key] : key; }
+
+    function setLang(lang){
+      state.lang = lang;
+      save();
+      // RTL toggle
+      const root = document.getElementById("appRoot");
+      if(lang === "ar") root.classList.add("rtl"); else root.classList.remove("rtl");
+      go("welcome");
+      toast("✅ " + lang.toUpperCase());
+    }
+
+    // ---------- Navigation ----------
+    function go(screen){
+      for(const el of document.querySelectorAll("section[id^='screen-']")) el.classList.add("hidden");
+      document.getElementById(`screen-${screen}`).classList.remove("hidden");
+
+      // bottom nav tabs
+      for(const t of document.querySelectorAll(".tab")) t.classList.remove("active");
+      const tabMap = { home:"home", agenda:"agenda", dossier:"dossier", activities:"activities" };
+      if(tabMap[screen]){
+        document.getElementById(`tab-${tabMap[screen]}`).classList.add("active");
+      } else {
+        // no tab active on welcome/login/profile/language
+      }
+
+      render();
+    }
+
+    // ---------- Toast ----------
+    function toast(text){
+      const el = document.getElementById("toast");
+      el.textContent = text;
+      el.style.display = "block";
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=> el.style.display="none", 1700);
+    }
+
+    // ---------- Login/Profile ----------
+    function doLogin(){
+      state.loggedIn = true;
+      save();
+      go("profile");
+    }
+
+    function saveProfile(){
+      state.profile.childName = (document.getElementById("childName").value || "").trim();
+      state.profile.parentEmail = (document.getElementById("parentEmail").value || "planning@snoet.nl").trim();
+      save();
+      toast(msg("saved"));
+    }
+
+    // ---------- Appointments ----------
+    function addAppointment(){
+      const dt = document.getElementById("apptDT").value;
+      const type = document.getElementById("apptType").value;
+      const note = (document.getElementById("apptNote").value || "").trim();
+      if(!dt){ alert(msg("apptDT")); return; }
+
+      state.appts.push({
+        id: crypto.randomUUID(),
+        dt,
+        type,
+        note
+      });
+      state.appts.sort((a,b)=> new Date(a.dt) - new Date(b.dt));
+
+      document.getElementById("apptDT").value = "";
+      document.getElementById("apptNote").value = "";
+
+      save();
+      toast(msg("added"));
+    }
+
+    function deleteAppt(id){
+      state.appts = state.appts.filter(a=>a.id!==id);
+      save();
+      toast(msg("deleted"));
+    }
+
+    function nextAppt(){
+      const now = Date.now();
+      return state.appts
+        .map(a=>({...a, ts:new Date(a.dt).getTime()}))
+        .filter(a=>a.ts && a.ts>=now)
+        .sort((a,b)=>a.ts-b.ts)[0] ?? null;
+    }
+
+    // ---------- Dossier ----------
+    function saveDossier(){
+      state.dossier.notes = (document.getElementById("dossierNotes").value || "").trim();
+      save();
+      toast(msg("saved"));
+    }
+
+    function addDoc(){
+      const title = (document.getElementById("docTitle").value || "").trim();
+      const date = document.getElementById("docDate").value;
+      if(!title || !date){ alert("Titel + datum"); return; }
+      state.dossier.docs.unshift({ id: crypto.randomUUID(), title, date });
+      document.getElementById("docTitle").value="";
+      document.getElementById("docDate").value="";
+      save();
+      toast(msg("added"));
+    }
+
+    function deleteDoc(id){
+      state.dossier.docs = state.dossier.docs.filter(d=>d.id!==id);
+      save();
+      toast(msg("deleted"));
+    }
+
+    // ---------- Notifications ----------
+    async function requestNotifyPermission(){
+      if(!("Notification" in window)){
+        alert("Notifications not supported in this browser.");
+        return;
+      }
+      const res = await Notification.requestPermission();
+      if(res === "granted") toast(msg("permOk"));
+      else toast(msg("permNo"));
+    }
+
+    function tryNotify(title, body){
+      if(!("Notification" in window)) return false;
+      if(Notification.permission !== "granted") return false;
+      try{
+        new Notification(title, { body });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // In-app scheduled reminders (works when page is open)
+    let timers = [];
+    function clearTimers(){
+      for(const t of timers) clearTimeout(t);
+      timers = [];
+    }
+
+    function scheduleInAppReminders(){
+      clearTimers();
+
+      // brush reminders
+      const morning = state.brush.morning;
+      const evening = state.brush.evening;
+      scheduleDaily(morning, () => {
+        toast(msg("brushNow"));
+        tryNotify("🪥 Snoet", msg("brushNow"));
+      });
+      scheduleDaily(evening, () => {
+        toast(msg("brushNow"));
+        tryNotify("🪥 Snoet", msg("brushNow"));
+      });
+
+      // appointment reminder: 24h + 2h before next appointment
+      const ap = nextAppt();
+      if(ap){
+        const apTs = new Date(ap.dt).getTime();
+        scheduleAt(apTs - 24*3600e3, () => {
+          toast("📅 " + msg("nextAppt"));
+          tryNotify("📅 Snoet", "Herinnering: afspraak morgen (" + ap.type + ")");
+        });
+        scheduleAt(apTs - 2*3600e3, () => {
+          toast("📅 " + msg("nextAppt"));
+          tryNotify("📅 Snoet", "Herinnering: afspraak over 2 uur (" + ap.type + ")");
+        });
+      }
+
+      state.scheduled.brush = true;
+      state.scheduled.appt = true;
+      save();
+      toast(msg("remindersSet"));
+    }
+
+    function scheduleAt(ts, fn){
+      const delay = ts - Date.now();
+      if(delay <= 0) return;
+      timers.push(setTimeout(fn, delay));
+    }
+
+    function scheduleDaily(hhmm, fn){
+      if(!hhmm) return;
+      const [hh, mm] = hhmm.split(":").map(n=>parseInt(n,10));
+      const now = new Date();
+      let next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+      if(next.getTime() <= now.getTime()) next = new Date(next.getTime() + 24*3600e3);
+      scheduleAt(next.getTime(), () => {
+        fn();
+        // schedule again for tomorrow
+        scheduleDaily(hhmm, fn);
+      });
+    }
+
+    // ---------- Brush times ----------
+    function saveBrushTimes(){
+      const m = document.getElementById("brushMorning").value;
+      const e = document.getElementById("brushEvening").value;
+      if(m) state.brush.morning = m;
+      if(e) state.brush.evening = e;
+      save();
+      toast(msg("saved"));
+    }
+
+    function testBrushNow(){
+      toast(msg("brushNow"));
+      tryNotify("🪥 Snoet", msg("brushNow"));
+    }
+
+    // ---------- Calendar export ----------
+    function downloadNextICS(){
+      const ap = nextAppt();
+      if(!ap){ alert(msg("noNext")); return; }
+      downloadICS(ap);
+      toast(msg("icsReady"));
+    }
+
+    function downloadICS(ap){
+      const dt = new Date(ap.dt);
+      const dtEnd = new Date(dt.getTime() + 30*60*1000);
+
+      const summary = `Snoet - ${ap.type}`;
+      const description = ap.note ? `Notitie: ${ap.note}` : "Snoet afspraak";
+
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Snoet PWA//NL",
+        "BEGIN:VEVENT",
+        `UID:${ap.id}@snoet`,
+        `DTSTAMP:${toICS(new Date())}`,
+        `DTSTART:${toICS(dt)}`,
+        `DTEND:${toICS(dtEnd)}`,
+        `SUMMARY:${escapeICS(summary)}`,
+        `DESCRIPTION:${escapeICS(description)}`,
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      const blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "snoet-afspraak.ics";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function toICS(d){
+      const pad = n => String(n).padStart(2,"0");
+      return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+
+             pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
+    }
+    function escapeICS(s){ return String(s).replace(/\n/g," ").replace(/,/g,"\\,").replace(/;/g,"\\;"); }
+
+    // Optional: Google Calendar "add event" link (basic)
+    function openGoogleCalendarLink(){
+      const ap = nextAppt();
+      if(!ap){ alert(msg("noNext")); return; }
+      const dt = new Date(ap.dt);
+      const end = new Date(dt.getTime() + 30*60*1000);
+      const fmt = (d)=> d.toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+      const dates = `${fmt(dt)}/${fmt(end)}`;
+      const text = encodeURIComponent(`Snoet - ${ap.type}`);
+      const details = encodeURIComponent(ap.note || "Snoet afspraak");
+      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}`;
+      window.open(url, "_blank");
+    }
+
+    // ---------- Render ----------
+    function render(){
+      // status chip
+      document.getElementById("statusChip").textContent =
+        (Notification.permission === "granted") ? "🔔 Notif: aan" : "🔔 Notif: uit";
+
+      // fill profile/brush fields
+      const cn = document.getElementById("childName");
+      if(cn){
+        cn.value = state.profile.childName || "";
+        document.getElementById("parentEmail").value = state.profile.parentEmail || "planning@snoet.nl";
+      }
+      const bm = document.getElementById("brushMorning");
+      if(bm){
+        bm.value = state.brush.morning || "07:30";
+        document.getElementById("brushEvening").value = state.brush.evening || "20:30";
+      }
+
+      // next appointment + countdown
+      const ap = nextAppt();
+      const meta = document.getElementById("nextMeta");
+      const cd = document.getElementById("countdown");
+      const cdSub = document.getElementById("countdownSub");
+      if(meta){
+        if(!ap){
+          meta.textContent = msg("noAppt");
+          cd.textContent = "—";
+          cdSub.textContent = msg("addApptCountdown");
+        } else {
+          meta.textContent = `${ap.type} • ${formatNL(ap.dt)}${state.profile.childName ? " • " + state.profile.childName : ""}`;
+          const ms = new Date(ap.dt).getTime() - Date.now();
+          const days = Math.floor(ms / (24*3600e3));
+          const hrs  = Math.floor((ms % (24*3600e3)) / 3600e3);
+          const mins = Math.floor((ms % 3600e3) / 60e3);
+          cd.textContent = `${days}d ${hrs}u ${mins}m`;
+          cdSub.textContent = (state.scheduled.appt || state.scheduled.brush) ? msg("remindersSet") : " ";
+        }
+      }
+
+      // appointments list
+      const list = document.getElementById("apptsList");
+      if(list){
+        list.innerHTML = "";
+        if(state.appts.length === 0){
+          list.innerHTML = `<div class="muted">${msg("noAppt")}</div>`;
+        } else {
+          for(const a of state.appts){
+            const el = document.createElement("div");
+            el.className = "item";
+            el.innerHTML = `
+              <div>
+                <div class="title">${a.type}</div>
+                <div class="small">${formatNL(a.dt)}${a.note ? " • " + escapeHTML(a.note) : ""}</div>
+              </div>
+              <div class="btns" style="margin:0">
+                <button class="warn" onclick="downloadICSById('${a.id}')">.
