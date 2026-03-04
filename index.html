@@ -1,853 +1,1328 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#38bdf8" />
-  <title>Snoet SuperApp</title>
-  <link rel="manifest" href="./manifest.json" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snoet SuperApp (demo)</title>
+
+  <!-- PWA basics (werkt met jullie manifest/service worker als je ze al hebt) -->
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="manifest" href="manifest.json" />
 
   <style>
     :root{
-      --bg1:#07101f; --bg2:#0b1220;
-      --card: rgba(255,255,255,.10);
-      --stroke: rgba(255,255,255,.16);
-      --text:#eaf2ff; --muted:#a7b7da;
-      --brand:#7dd3fc; --brand2:#38bdf8;
-      --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-      --r:22px; --shadow: 0 18px 50px rgba(0,0,0,.35);
-      --max: 520px;
+      --bg1:#0ea5e9; --bg2:#a78bfa; --bg3:#f472b6; --bg4:#facc15;
+      --card:#0b1220cc;
+      --card2:#0b1220a8;
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --accent:#7c3aed;
+      --accent2:#22c55e;
+      --danger:#ef4444;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 22px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box; }
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       min-height:100vh;
-      display:flex;
-      justify-content:center;
       background:
-        radial-gradient(1000px 600px at 10% 15%, rgba(56,189,248,.25), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(124,58,237,.18), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+        radial-gradient(1200px 700px at 10% 20%, rgba(250,204,21,.35), transparent 60%),
+        radial-gradient(1000px 700px at 90% 10%, rgba(244,114,182,.35), transparent 55%),
+        radial-gradient(900px 700px at 15% 90%, rgba(167,139,250,.35), transparent 55%),
+        linear-gradient(135deg, #0b1220 0%, #0b1220 40%, #111827 100%);
+      overflow-x:hidden;
     }
-    .app{ width:100%; max-width:var(--max); min-height:100vh; padding:18px 16px 92px; }
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      margin-bottom:14px;
+
+    /* animated rainbow ribbons */
+    .ribbons{
+      position:fixed; inset:-40px; pointer-events:none; z-index:0; opacity:.85;
+      filter: blur(0px) saturate(1.15);
     }
-    .brand{ display:flex; gap:12px; align-items:center; }
+    .ribbons::before, .ribbons::after{
+      content:""; position:absolute; inset:0;
+      background:
+        conic-gradient(from 180deg at 50% 50%,
+          rgba(14,165,233,.18),
+          rgba(167,139,250,.18),
+          rgba(244,114,182,.18),
+          rgba(250,204,21,.18),
+          rgba(34,197,94,.18),
+          rgba(14,165,233,.18));
+      mask: radial-gradient(circle at 30% 25%, rgba(0,0,0,.9), transparent 55%),
+            radial-gradient(circle at 75% 70%, rgba(0,0,0,.8), transparent 58%),
+            radial-gradient(circle at 55% 45%, rgba(0,0,0,.9), transparent 62%);
+      transform: rotate(6deg) scale(1.1);
+      animation: floaty 10s ease-in-out infinite;
+    }
+    .ribbons::after{ animation-duration: 14s; transform: rotate(-7deg) scale(1.08); opacity:.8;}
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0px) rotate(6deg) scale(1.1); }
+      50%{ transform: translateY(18px) rotate(9deg) scale(1.12); }
+    }
+
+    .app{
+      position:relative; z-index:1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px 14px 110px;
+    }
+
+    /* top bar */
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      border-radius: 24px;
+      padding: 12px 14px;
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      min-width: 220px;
+    }
     .logo{
       width:44px; height:44px; border-radius:16px;
-      background: conic-gradient(from 180deg, #7dd3fc, #38bdf8, #0ea5e9, #7c3aed, #7dd3fc);
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2)),
+                  linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4));
+      box-shadow: 0 10px 25px rgba(0,0,0,.35);
+      display:grid; place-items:center;
+      font-weight:900; color:#0b1220;
+    }
+    .brand h1{ font-size: 16px; margin:0; line-height:1.1; }
+    .brand p{ margin:0; color:var(--muted); font-size:12px; }
+
+    .langRow{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pill{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:12px;
+      transition: transform .08s ease, background .2s ease, border .2s ease;
+      user-select:none;
+    }
+    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .pill.active{
+      background: linear-gradient(135deg, rgba(124,58,237,.65), rgba(34,197,94,.35));
+      border-color: rgba(255,255,255,.22);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr; }
+      .brand{ min-width:auto; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2{ margin: 0 0 8px; font-size: 16px; }
+    .muted{ color: var(--muted); font-size: 13px; line-height:1.45; }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+    .btn{
+      border: none;
+      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(14,165,233,.55));
+      color: white;
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(124,58,237,.25);
+      transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+    .btn.secondary{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+    }
+    .btn.green{
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(250,204,21,.45));
+      box-shadow: 0 12px 30px rgba(34,197,94,.18);
+    }
+    .btn.danger{
+      background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(244,114,182,.45));
+      box-shadow: 0 12px 30px rgba(239,68,68,.16);
+    }
+
+    /* "photo" header (no external images needed) */
+    .hero{
       position:relative;
       overflow:hidden;
+      padding: 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(120px 120px at 15% 20%, rgba(255,255,255,.25), transparent 60%),
+        radial-gradient(180px 140px at 80% 10%, rgba(250,204,21,.18), transparent 65%),
+        linear-gradient(135deg, rgba(14,165,233,.35), rgba(167,139,250,.25), rgba(244,114,182,.18));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      margin-top: 14px;
     }
-    .logo:after{
-      content:"";
-      position:absolute; inset:-40%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
-      transform: rotate(18deg);
-      animation: shine 2.4s ease-in-out infinite;
-      opacity:.6;
+    .hero .title{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
     }
-    @keyframes shine{
-      0%{ transform: translateX(-70%) rotate(18deg); opacity:0; }
-      25%{ opacity:.8; }
-      60%{ opacity:.8; }
-      100%{ transform: translateX(70%) rotate(18deg); opacity:0; }
-    }
-    h1{ margin:0; font-size:16px; font-weight:900; letter-spacing:.2px; }
-    .sub{ margin-top:2px; font-size:12px; color:var(--muted); font-weight:700; }
-    .chip{
-      padding:8px 10px; border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid var(--stroke);
-      color:var(--muted);
+    .badge{
       font-size:12px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 6px 10px;
+      border-radius: 999px;
       font-weight:800;
+    }
+    .toothArt{
+      position:absolute; right:-30px; bottom:-40px;
+      width: 210px; height:210px; opacity:.22;
+      transform: rotate(8deg);
+    }
+
+    /* bottom nav */
+    .nav{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 14px;
+      width: min(980px, calc(100% - 18px));
+      background: rgba(11,18,32,.78);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      border-radius: 22px;
+      padding: 10px;
+      backdrop-filter: blur(12px);
+      z-index: 10;
+      display:flex; gap:8px; justify-content:space-between;
+    }
+    .tab{
+      flex:1;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:4px;
+      border-radius: 16px;
+      padding: 10px 6px;
+      cursor:pointer;
+      border: 1px solid transparent;
+      user-select:none;
+      transition: background .2s ease, transform .08s ease, border .2s ease;
+    }
+    .tab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(124,58,237,.55), rgba(34,197,94,.18));
+      border-color: rgba(255,255,255,.14);
+    }
+    .tab .ico{ font-size: 18px; line-height:1; }
+    .tab .lbl{ font-size: 11px; font-weight: 800; color: var(--text); opacity:.95; }
+
+    /* pages */
+    .page{ display:none; }
+    .page.active{ display:block; }
+
+    .list{
+      display:flex; flex-direction:column; gap:10px; margin-top: 10px;
+    }
+    .item{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+    }
+    .item strong{ display:block; font-size: 14px; }
+    .item small{ color: var(--muted); }
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 12px; font-weight: 800;
       white-space:nowrap;
     }
 
-    .grid{ display:grid; gap:12px; }
-    .card{
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      padding: 14px;
-    }
-    .row{ display:flex; gap:10px; align-items:center; justify-content:space-between; }
-    .title{ font-weight:900; font-size:14px; }
-    .muted{ color:var(--muted); font-size:12px; }
-    .big{ font-size:26px; font-weight:1000; margin:10px 0 2px; }
-    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    button{
-      border:0; border-radius:16px;
-      padding:10px 12px;
-      font-weight:900;
-      cursor:pointer;
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.14);
-      color:var(--text);
-    }
-    button.primary{ background: linear-gradient(180deg, var(--brand), var(--brand2)); color:#04101f; border-color: transparent; }
-    button.good{ background: rgba(34,197,94,.18); border:1px solid rgba(34,197,94,.35); }
-    button.warn{ background: rgba(245,158,11,.16); border:1px solid rgba(245,158,11,.35); }
-    button.bad{ background: rgba(239,68,68,.14); border:1px solid rgba(239,68,68,.32); }
-
     input, select, textarea{
       width:100%;
-      margin-top:8px;
-      padding:10px 12px;
-      border-radius:16px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      color:var(--text);
-      outline:none;
-      font-weight:800;
-    }
-    label{ font-size:12px; color:var(--muted); font-weight:800; display:block; margin-top:10px; }
-
-    .hidden{ display:none !important; }
-
-    .nav{
-      position:fixed; bottom:0; left:0; right:0;
-      display:flex; justify-content:center;
-      padding:10px 12px;
-      background: rgba(7,16,31,.75);
-      border-top:1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(12px);
-    }
-    .navin{ width:100%; max-width:var(--max); display:flex; gap:10px; justify-content:space-between; }
-    .tab{
-      flex:1; text-align:center;
-      padding:10px 8px;
-      border-radius:18px;
-      font-size:12px;
-      font-weight:1000;
-      color:var(--muted);
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      user-select:none;
-      cursor:pointer;
-    }
-    .tab.active{
-      color:#04101f;
-      background: linear-gradient(180deg, #7dd3fc, #38bdf8);
-      border-color: transparent;
-    }
-
-    .list{ display:grid; gap:10px; margin-top:10px; }
-    .item{
-      padding:12px;
-      border-radius:18px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      display:flex; justify-content:space-between; gap:10px; align-items:center;
-    }
-    .small{ font-size:11px; color:var(--muted); font-weight:700; }
-
-    .toast{
-      position:fixed;
-      left:50%; transform:translateX(-50%);
-      bottom: 88px;
-      padding:10px 12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.45);
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
       color: var(--text);
-      font-weight:900;
-      display:none;
-      max-width: calc(var(--max) - 40px);
-      text-align:center;
-      z-index:9999;
+      outline:none;
+      font-size: 14px;
+    }
+    label{ font-size: 12px; font-weight: 800; color: var(--muted); display:block; margin: 8px 0 6px; }
+    .two{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    @media (max-width: 520px){ .two{ grid-template-columns:1fr; } }
+
+    /* timer */
+    .timerBox{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .ring{
+      width: 90px; height: 90px; border-radius: 999px;
+      background:
+        conic-gradient(rgba(34,197,94,.95) var(--p, 0%), rgba(255,255,255,.10) 0);
+      display:grid; place-items:center;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: inset 0 0 0 8px rgba(0,0,0,.18);
+    }
+    .ring span{ font-weight:900; font-size: 18px; }
+
+    /* confetti stars */
+    .star{
+      position:fixed; z-index:9999; pointer-events:none;
+      font-size: 18px;
+      animation: pop 900ms ease-out forwards;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.35));
+    }
+    @keyframes pop{
+      0%{ transform: translate(0,0) scale(.7); opacity: 1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; }
     }
 
-    /* Arabic RTL */
-    .rtl{ direction: rtl; text-align:right; }
+    /* mini-game */
+    .gameArea{
+      position:relative;
+      height: 220px;
+      border-radius: 20px;
+      background:
+        radial-gradient(120px 120px at 20% 30%, rgba(255,255,255,.18), transparent 60%),
+        radial-gradient(120px 120px at 70% 40%, rgba(250,204,21,.12), transparent 60%),
+        rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+    }
+    .plaque{
+      position:absolute;
+      width: 44px; height: 44px;
+      border-radius: 999px;
+      display:grid; place-items:center;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,.12));
+      border: 1px solid rgba(255,255,255,.18);
+      cursor:pointer;
+      user-select:none;
+      font-size: 22px;
+      animation: floatPlaque 2.6s ease-in-out infinite;
+    }
+    @keyframes floatPlaque{
+      0%,100%{ transform: translateY(0px); }
+      50%{ transform: translateY(-10px); }
+    }
+
+    .footerNote{ margin-top:10px; font-size: 12px; color: var(--muted); }
   </style>
 </head>
 
 <body>
-  <div class="app" id="root">
-    <header>
+  <div class="ribbons"></div>
+
+  <div class="app">
+    <div class="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="logo">🦷</div>
         <div>
-          <h1 id="ui_appName">Snoet SuperApp</h1>
-          <div class="sub" id="ui_appSub">Afspraken • Dossier • Herinneringen</div>
+          <h1 id="t_appName">Snoet SuperApp</h1>
+          <p id="t_tagline">Samen rustig naar de tandarts ✨</p>
         </div>
       </div>
-      <div class="chip" id="ui_status">🔔 Notif: ?</div>
-    </header>
 
-    <main class="grid">
-      <!-- WELKOM -->
-      <section id="screen-welcome" class="grid">
-        <div class="card">
-          <div class="title" id="ui_welcomeTitle">Welkom 👋</div>
-          <div class="muted" style="margin-top:8px" id="ui_welcomeText">
-            Deze app helpt met poetsherinneringen, afspraken en dossier-overzicht.
-          </div>
-          <div class="btns">
-            <button class="primary" id="ui_startBtn">Start</button>
-            <button id="ui_langBtn">Taal</button>
-          </div>
-        </div>
+      <!-- Language selector ALWAYS visible -->
+      <div class="langRow" aria-label="Language selector">
+        <span class="badge" id="t_lang">Taal</span>
+        <button class="pill" data-lang="nl">🇳🇱 NL</button>
+        <button class="pill" data-lang="en">🇬🇧 EN</button>
+        <button class="pill" data-lang="tr">🇹🇷 TR</button>
+        <button class="pill" data-lang="ar">🇸🇦 AR</button>
+      </div>
+    </div>
 
-        <div class="card">
-          <div class="title" id="ui_featuresTitle">In de app zit:</div>
-          <div class="list">
-            <div class="item"><div>
-              <div class="title" id="ui_featBrushH">🪥 Herinnering tandenpoetsen</div>
-              <div class="small" id="ui_featBrushS">Ochtend + avond reminders</div>
-            </div></div>
-
-            <div class="item"><div>
-              <div class="title" id="ui_featLangH">🌍 Taalkeuze</div>
-              <div class="small" id="ui_featLangS">Nederlands • Engels • Turks • Arabisch</div>
-            </div></div>
-
-            <div class="item"><div>
-              <div class="title" id="ui_featApptH">📅 Overzicht aankomende afspraken</div>
-              <div class="small" id="ui_featApptS">Duidelijk overzicht van komende afspraken</div>
-            </div></div>
-
-            <div class="item"><div>
-              <div class="title" id="ui_featNotifH">🔔 Herinneringen tandartsafspraken</div>
-              <div class="small" id="ui_featNotifS">Notificaties + in-app reminders</div>
-            </div></div>
-
-            <div class="item"><div>
-              <div class="title" id="ui_featDossierH">📁 Overzicht patiëntendossier</div>
-              <div class="small" id="ui_featDossierS">Notities + documenten (demo)</div>
-            </div></div>
-
-            <div class="item"><div>
-              <div class="title" id="ui_featSyncH">🔄 Kalender sync</div>
-              <div class="small" id="ui_featSyncS">.ics export voor Google/Apple</div>
-            </div></div>
+    <div class="hero">
+      <div class="title">
+        <div>
+          <div class="badge" id="t_welcomeBadge">Welkom!</div>
+          <h2 style="margin:8px 0 6px;" id="t_heroTitle">Alles op één plek: afspraken, poetsen & uitleg</h2>
+          <div class="muted" id="t_heroText">
+            Deze demo-app helpt kinderen én ouders: herinneringen, agenda, dossier en leuke uitleg.
           </div>
         </div>
-      </section>
-
-      <!-- LOGIN -->
-      <section id="screen-login" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_loginTitle">Login</div>
-
-          <label id="ui_userLbl">Gebruikersnaam</label>
-          <input id="loginUser" placeholder="bijv. ouder@..." />
-
-          <label id="ui_passLbl">Wachtwoord</label>
-          <input id="loginPass" type="password" placeholder="••••••••" />
-
-          <div class="btns">
-            <button class="primary" id="ui_loginBtn">Login</button>
-            <button id="ui_back1">Terug</button>
-          </div>
-
-          <div class="muted" style="margin-top:8px" id="ui_loginNote">
-            Demo: elke login is oké (voor schoolproject).
-          </div>
+        <div class="row">
+          <button class="btn green" id="btnEnableNotifs">🔔 <span id="t_enableNotifs">Notificaties aan</span></button>
+          <button class="btn secondary" id="btnSparkle">✨ <span id="t_sparkle">Sterretjes!</span></button>
         </div>
-      </section>
+      </div>
 
-      <!-- PROFIEL -->
-      <section id="screen-profile" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_profileTitle">Profiel</div>
+      <!-- simple tooth svg -->
+      <svg class="toothArt" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="M100 18c-30 0-52 22-52 52 0 21 8 34 16 46 8 11 16 22 16 42 0 13 7 24 20 24 12 0 18-12 20-22 2-9 4-18 12-18s10 9 12 18c2 10 8 22 20 22 13 0 20-11 20-24 0-20 8-31 16-42 8-12 16-25 16-46 0-30-22-52-52-52-12 0-22 3-30 9-8-6-18-9-30-9Z"
+              fill="rgba(255,255,255,.9)"/>
+      </svg>
+    </div>
 
-          <label id="ui_childLbl">Naam kind</label>
-          <input id="childName" placeholder="bijv. Sara" maxlength="30" />
+    <div class="grid">
+      <div class="card">
+        <!-- PAGES -->
+        <section class="page active" id="page-home">
+          <h2 id="t_homeTitle">🏠 Home</h2>
+          <div class="muted" id="t_homeText">Je volgende afspraak + snelle acties.</div>
 
-          <label id="ui_emailLbl">E-mail ouder (voor verzet)</label>
-          <input id="parentEmail" placeholder="planning@snoet.nl" />
+          <div class="list" id="nextApptBox"></div>
 
-          <div class="btns">
-            <button class="primary" id="ui_saveProfile">Opslaan</button>
-            <button class="good" id="ui_toApp">Naar app</button>
-            <button id="ui_profileLang">Taal</button>
+          <div class="row" style="margin-top:12px;">
+            <button class="btn" id="btnAddDemo">➕ <span id="t_addDemo">Demo-afspraak toevoegen</span></button>
+            <button class="btn secondary" id="btnGoAgenda">📅 <span id="t_openAgenda">Open agenda</span></button>
           </div>
-        </div>
-      </section>
 
-      <!-- TAAL -->
-      <section id="screen-language" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_langTitle">Choose your language</div>
-          <div class="btns">
-            <button class="primary" id="lang_nl">Nederlands</button>
-            <button class="primary" id="lang_en">English</button>
-            <button class="primary" id="lang_tr">Türkçe</button>
-            <button class="primary" id="lang_ar">العربية</button>
+          <div class="footerNote" id="t_noteHome">
+            Tip: zet notificaties aan voor poetsen (ochtend/avond) en tandarts-afspraken.
           </div>
-          <div class="btns">
-            <button id="ui_back2">Terug</button>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- HOME -->
-      <section id="screen-home" class="grid hidden">
-        <div class="card">
-          <div class="row">
+        <section class="page" id="page-agenda">
+          <h2 id="t_agendaTitle">📅 Agenda</h2>
+          <div class="muted" id="t_agendaText">Afspraken toevoegen, bekijken en exporteren naar je kalender.</div>
+
+          <div class="two" style="margin-top:10px;">
             <div>
-              <div class="title" id="ui_nextTitle">Volgende afspraak</div>
-              <div class="muted" id="ui_nextMeta">Nog geen afspraak ingevoerd</div>
+              <label id="t_lblDate">Datum</label>
+              <input type="date" id="apptDate"/>
             </div>
-            <button class="primary" id="ui_goAgenda">Agenda</button>
+            <div>
+              <label id="t_lblTime">Tijd</label>
+              <input type="time" id="apptTime"/>
+            </div>
           </div>
 
-          <div class="big" id="ui_countdown">—</div>
-          <div class="muted" id="ui_countdownSub">Voeg een afspraak toe om een countdown te zien.</div>
-
-          <div class="btns">
-            <button class="good" id="ui_notifPerm">🔔 Notificaties aan</button>
-            <button class="warn" id="ui_planRem">⏱️ Reminders plannen</button>
-            <button id="ui_goDossier">📁 Dossier</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="title" id="ui_brushTitle">🪥 Tandenpoets herinneringen</div>
-          <div class="muted" style="margin-top:8px" id="ui_brushText">
-            Stel tijden in voor ochtend en avond. (Werkt als de app open is.)
-          </div>
-
-          <label id="ui_morningLbl">Ochtend tijd</label>
-          <input type="time" id="brushMorning">
-
-          <label id="ui_eveningLbl">Avond tijd</label>
-          <input type="time" id="brushEvening">
-
-          <div class="btns">
-            <button class="primary" id="ui_saveBrush">Opslaan</button>
-            <button class="warn" id="ui_testBrush">Test nu</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="title" id="ui_syncTitle">🔄 Kalender synchroniseren</div>
-          <div class="muted" style="margin-top:8px" id="ui_syncText">
-            Download .ics en importeer in Apple/Google Kalender.
-          </div>
-          <div class="btns">
-            <button class="primary" id="ui_icsBtn">Download .ics</button>
-            <button id="ui_googleBtn">Open Google Calendar</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- AGENDA -->
-      <section id="screen-agenda" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_agendaTitle">Agenda</div>
-
-          <label id="ui_apptDTLbl">Datum & tijd</label>
-          <input id="apptDT" type="datetime-local">
-
-          <label id="ui_apptTypeLbl">Type afspraak</label>
-          <select id="apptType">
-            <option>Controle</option>
-            <option>Behandeling</option>
-            <option>Mondhygiëne</option>
-            <option>Anders</option>
-          </select>
-
-          <label id="ui_apptNoteLbl">Notitie</label>
-          <textarea id="apptNote" rows="3" placeholder="bijv. 'eerst uitleg'"></textarea>
-
-          <div class="btns">
-            <button class="primary" id="ui_saveAppt">Opslaan</button>
-            <button id="ui_backHomeA">Terug</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="title" id="ui_apptListTitle">Komende afspraken</div>
-          <div class="list" id="ui_apptList"></div>
-        </div>
-      </section>
-
-      <!-- DOSSIER -->
-      <section id="screen-dossier" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_dossierTitle">Patiëntendossier</div>
-          <div class="muted" style="margin-top:8px" id="ui_dossierText">
-            Demo: notities + documenten (lokaal opgeslagen).
+          <div class="two">
+            <div>
+              <label id="t_lblType">Type</label>
+              <select id="apptType">
+                <option value="Controle">Controle</option>
+                <option value="Behandeling">Behandeling</option>
+                <option value="Mondhygiëne">Mondhygiëne</option>
+              </select>
+            </div>
+            <div>
+              <label id="t_lblDoctor">Behandelaar</label>
+              <input id="apptDoctor" placeholder="Dr. Snoet"/>
+            </div>
           </div>
 
-          <label id="ui_notesLbl">Notities</label>
-          <textarea id="dossierNotes" rows="4" placeholder="bijv. angst, triggers, afspraken..."></textarea>
+          <label id="t_lblNotes">Opmerking</label>
+          <textarea id="apptNotes" rows="2" placeholder="Bijv. kindje is wat spannend, graag rustig uitleggen."></textarea>
 
-          <div class="btns">
-            <button class="primary" id="ui_saveDossier">Bewaar</button>
-            <button id="ui_backHomeD">Terug</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="title" id="ui_docsTitle">Documenten</div>
-
-          <label id="ui_docTitleLbl">Document titel</label>
-          <input id="docTitle" placeholder="bijv. behandelplan">
-
-          <label id="ui_docDateLbl">Datum</label>
-          <input id="docDate" type="date">
-
-          <div class="btns">
-            <button class="primary" id="ui_addDoc">Toevoegen</button>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn green" id="btnSaveAppt">💾 <span id="t_saveAppt">Afspraak opslaan</span></button>
+            <button class="btn secondary" id="btnExportICS">⬇️ <span id="t_exportIcs">Download .ics</span></button>
+            <button class="btn secondary" id="btnSetApptNotif">🔔 <span id="t_setApptNotif">Test afspraak-notificatie</span></button>
           </div>
 
-          <div class="list" id="ui_docsList"></div>
-        </div>
-      </section>
+          <div class="list" id="apptList"></div>
 
-      <!-- ACTIVITEITEN -->
-      <section id="screen-activities" class="grid hidden">
-        <div class="card">
-          <div class="title" id="ui_actTitle">Activiteiten</div>
-          <div class="muted" style="margin-top:8px" id="ui_actText">
-            Voor later: beloningen, filmpjes, taken.
+          <div class="footerNote" id="t_noteAgenda">
+            Kalender-sync: download .ics → open op iPhone (Apple Kalender) of importeer in Google Calendar.
           </div>
+        </section>
+
+        <section class="page" id="page-dossier">
+          <h2 id="t_dossierTitle">📁 Dossier</h2>
+          <div class="muted" id="t_dossierText">Voorbeeld-overzicht (demo) van documenten en behandelingen.</div>
 
           <div class="list">
             <div class="item">
               <div>
-                <div class="title" id="ui_rewardH">⭐ Beloning</div>
-                <div class="small" id="ui_rewardS">Sticker/badge bij op komen dagen</div>
+                <strong id="t_doc1">Röntgenfoto (demo)</strong>
+                <small id="t_doc1s">Laatste update: 2 weken geleden</small>
               </div>
-              <button class="good" id="ui_rewardBtn">+1</button>
+              <span class="chip">🖼️ PDF</span>
             </div>
-
             <div class="item">
               <div>
-                <div class="title" id="ui_videoH">🎥 Filmpjes</div>
-                <div class="small" id="ui_videoS">Uitleg: wat gebeurt er bij de tandarts?</div>
+                <strong id="t_doc2">Behandelplan (demo)</strong>
+                <small id="t_doc2s">Controle + advies poetsen</small>
               </div>
-              <button class="primary" id="ui_videoBtn">Open</button>
+              <span class="chip">📄 DOC</span>
             </div>
-
             <div class="item">
               <div>
-                <div class="title" id="ui_msgH">🔔 Meldingen</div>
-                <div class="small" id="ui_msgS">Notificaties aan/uit</div>
+                <strong id="t_doc3">Declaraties (demo)</strong>
+                <small id="t_doc3s">Alles netjes op één plek</small>
               </div>
-              <button class="warn" id="ui_msgBtn">Aan</button>
+              <span class="chip">💳 Overzicht</span>
             </div>
           </div>
+
+          <div class="footerNote" id="t_noteDossier">
+            In een echte versie komt dit veilig uit het systeem van de praktijk (AVG).
+          </div>
+        </section>
+
+        <section class="page" id="page-voorjou">
+          <h2 id="t_forYouTitle">🧡 Voor jou</h2>
+          <div class="muted" id="t_forYouText">Poetstimer, uitleg en een klein spelletje tegen tandarts-angst.</div>
+
+          <div class="card" style="margin-top:10px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+            <h2 style="margin:0 0 8px;" id="t_brushTitle">🪥 Poetstimer (2 minuten)</h2>
+            <div class="timerBox">
+              <div class="ring" id="ring" style="--p:0%;">
+                <span id="timerTxt">2:00</span>
+              </div>
+              <div style="flex:1; min-width:200px;">
+                <div class="muted" id="t_brushHint">
+                  Druk op start. Je kunt ook een test-notificatie voor ochtend/avond aanzetten.
+                </div>
+                <div class="row" style="margin-top:10px;">
+                  <button class="btn green" id="btnStartTimer">▶️ <span id="t_start">Start</span></button>
+                  <button class="btn secondary" id="btnStopTimer">⏸️ <span id="t_stop">Stop</span></button>
+                  <button class="btn secondary" id="btnBrushNotifs">🔔 <span id="t_brushNotifs">Poets-notificaties testen</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+            <h2 style="margin:0 0 8px;" id="t_videoTitle">🎬 Filmpje (demo)</h2>
+            <div class="muted" id="t_videoText">In een echte versie kun je hier uitlegvideo’s zetten (poetsen / wat gebeurt er bij de tandarts?).</div>
+            <div style="margin-top:10px; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.25);">
+              <!-- No external dependency: simple placeholder -->
+              <div style="padding:18px; display:flex; align-items:center; gap:12px;">
+                <div style="font-size:34px;">🦷</div>
+                <div>
+                  <div style="font-weight:900;" id="t_videoPhTitle">Uitleg: rustig naar de tandarts</div>
+                  <div class="muted" id="t_videoPhSub">Tip: later kun je een YouTube/Vimeo embed plaatsen of eigen mp4 bestand.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+            <h2 style="margin:0 0 8px;" id="t_gameTitle">🫧 Mini-game: Plaque Pop!</h2>
+            <div class="muted" id="t_gameText">Klik op de “plaque” bolletjes om ze weg te poetsen. (Leuk + ontspannend.)</div>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn" id="btnStartGame">🎮 <span id="t_gameStart">Start spel</span></button>
+              <span class="chip">⭐ <span id="scoreTxt">0</span></span>
+            </div>
+            <div class="gameArea" id="gameArea" style="margin-top:10px;"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-gegevens">
+          <h2 id="t_meTitle">👤 Mijn gegevens</h2>
+          <div class="muted" id="t_meText">Instellingen, contact en meldingen.</div>
+
+          <label id="t_lblName">Naam</label>
+          <input id="meName" placeholder="Bijv. Samira / Youssef / Emma" />
+
+          <label id="t_lblEmail">E-mail</label>
+          <input id="meEmail" placeholder="naam@email.com" />
+
+          <div class="two">
+            <div>
+              <label id="t_lblNotifPref">Meldingen</label>
+              <select id="meNotifPref">
+                <option value="all">Alles</option>
+                <option value="appointments">Alleen afspraken</option>
+                <option value="brush">Alleen poetsen</option>
+                <option value="none">Uit</option>
+              </select>
+            </div>
+            <div>
+              <label id="t_lblPractice">Praktijk</label>
+              <input id="mePractice" value="Kindermondzorgcentrum Snoet" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn green" id="btnSaveMe">💾 <span id="t_saveMe">Opslaan</span></button>
+            <button class="btn secondary" id="btnReset">🧹 <span id="t_reset">Reset demo-data</span></button>
+          </div>
+
+          <div class="footerNote" id="t_noteMe">
+            iPhone “app-gevoel”: open de site in Safari → Deel → ‘Zet op beginscherm’.
+          </div>
+        </section>
+      </div>
+
+      <div class="card">
+        <h2 id="t_sideTitle">✨ Snelle acties</h2>
+        <div class="muted" id="t_sideText">Alles wat je vaak gebruikt, meteen bij de hand.</div>
+
+        <div class="list" style="margin-top:10px;">
+          <div class="item">
+            <div>
+              <strong id="t_quick1">🔔 Notificaties</strong>
+              <small id="t_quick1s">Zet meldingen aan voor poetsen & afspraken</small>
+            </div>
+            <button class="btn secondary" id="btnEnableNotifs2" style="padding:8px 10px;">Aan</button>
+          </div>
+
+          <div class="item">
+            <div>
+              <strong id="t_quick2">📅 Agenda-sync</strong>
+              <small id="t_quick2s">Download .ics voor Apple/Google</small>
+            </div>
+            <button class="btn secondary" id="btnExportICS2" style="padding:8px 10px;">.ics</button>
+          </div>
+
+          <div class="item">
+            <div>
+              <strong id="t_quick3">🪥 Poetsen</strong>
+              <small id="t_quick3s">Timer van 2 minuten</small>
+            </div>
+            <button class="btn secondary" id="btnGoForYou" style="padding:8px 10px;">Start</button>
+          </div>
         </div>
-      </section>
-    </main>
 
-    <div class="toast" id="toast"></div>
-
-    <!-- Bottom nav -->
-    <div class="nav">
-      <div class="navin">
-        <div class="tab" id="tab-home">Home</div>
-        <div class="tab" id="tab-agenda">Agenda</div>
-        <div class="tab" id="tab-dossier">Dossier</div>
-        <div class="tab" id="tab-activities">Acties</div>
+        <div class="footerNote" id="t_sideNote">
+          Let op: browser-notificaties werken perfect voor demo, maar “echte” push op iPhone vraagt meestal een echte PWA setup + service worker push.
+        </div>
       </div>
     </div>
   </div>
 
+  <div class="nav" role="navigation" aria-label="Bottom navigation">
+    <div class="tab active" data-page="home"><div class="ico">🏠</div><div class="lbl" id="t_tabHome">Home</div></div>
+    <div class="tab" data-page="agenda"><div class="ico">📅</div><div class="lbl" id="t_tabAgenda">Agenda</div></div>
+    <div class="tab" data-page="dossier"><div class="ico">📁</div><div class="lbl" id="t_tabDossier">Dossier</div></div>
+    <div class="tab" data-page="voorjou"><div class="ico">🧡</div><div class="lbl" id="t_tabForYou">Voor jou</div></div>
+    <div class="tab" data-page="gegevens"><div class="ico">👤</div><div class="lbl" id="t_tabMe">Mijn</div></div>
+  </div>
+
 <script>
-  // ====== STATE ======
-  const KEY = "snoet_superapp_v1";
-  const state = load() ?? {
-    lang: "nl",
-    loggedIn: false,
-    profile: { childName:"", parentEmail:"planning@snoet.nl" },
-    brush: { morning:"07:30", evening:"20:30" },
-    appts: [],
-    dossier: { notes:"", docs: [] },
-    remindersActive: false
-  };
+/* ---------------------------
+   TRANSLATIONS (NL/EN/TR/AR)
+---------------------------- */
+const STR = {
+  nl: {
+    appName:"Snoet SuperApp", tagline:"Samen rustig naar de tandarts ✨", lang:"Taal",
+    welcomeBadge:"Welkom!", heroTitle:"Alles op één plek: afspraken, poetsen & uitleg",
+    heroText:"Deze demo-app helpt kinderen én ouders: herinneringen, agenda, dossier en leuke uitleg.",
+    enableNotifs:"Notificaties aan", sparkle:"Sterretjes!",
+    homeTitle:"🏠 Home", homeText:"Je volgende afspraak + snelle acties.",
+    addDemo:"Demo-afspraak toevoegen", openAgenda:"Open agenda",
+    noteHome:"Tip: zet notificaties aan voor poetsen (ochtend/avond) en tandarts-afspraken.",
+    agendaTitle:"📅 Agenda", agendaText:"Afspraken toevoegen, bekijken en exporteren naar je kalender.",
+    lblDate:"Datum", lblTime:"Tijd", lblType:"Type", lblDoctor:"Behandelaar", lblNotes:"Opmerking",
+    saveAppt:"Afspraak opslaan", exportIcs:"Download .ics", setApptNotif:"Test afspraak-notificatie",
+    noteAgenda:"Kalender-sync: download .ics → open op iPhone (Apple Kalender) of importeer in Google Calendar.",
+    dossierTitle:"📁 Dossier", dossierText:"Voorbeeld-overzicht (demo) van documenten en behandelingen.",
+    doc1:"Röntgenfoto (demo)", doc1s:"Laatste update: 2 weken geleden",
+    doc2:"Behandelplan (demo)", doc2s:"Controle + advies poetsen",
+    doc3:"Declaraties (demo)", doc3s:"Alles netjes op één plek",
+    noteDossier:"In een echte versie komt dit veilig uit het systeem van de praktijk (AVG).",
+    forYouTitle:"🧡 Voor jou", forYouText:"Poetstimer, uitleg en een klein spelletje tegen tandarts-angst.",
+    brushTitle:"🪥 Poetstimer (2 minuten)", brushHint:"Druk op start. Je kunt ook een test-notificatie voor ochtend/avond aanzetten.",
+    start:"Start", stop:"Stop", brushNotifs:"Poets-notificaties testen",
+    videoTitle:"🎬 Filmpje (demo)", videoText:"In een echte versie kun je hier uitlegvideo’s zetten (poetsen / wat gebeurt er bij de tandarts?).",
+    videoPhTitle:"Uitleg: rustig naar de tandarts", videoPhSub:"Tip: later kun je een YouTube/Vimeo embed plaatsen of eigen mp4 bestand.",
+    gameTitle:"🫧 Mini-game: Plaque Pop!", gameText:"Klik op de “plaque” bolletjes om ze weg te poetsen. (Leuk + ontspannend.)",
+    gameStart:"Start spel",
+    meTitle:"👤 Mijn gegevens", meText:"Instellingen, contact en meldingen.",
+    lblName:"Naam", lblEmail:"E-mail", lblNotifPref:"Meldingen", lblPractice:"Praktijk",
+    saveMe:"Opslaan", reset:"Reset demo-data",
+    noteMe:"iPhone “app-gevoel”: open de site in Safari → Deel → ‘Zet op beginscherm’.",
+    sideTitle:"✨ Snelle acties", sideText:"Alles wat je vaak gebruikt, meteen bij de hand.",
+    quick1:"🔔 Notificaties", quick1s:"Zet meldingen aan voor poetsen & afspraken",
+    quick2:"📅 Agenda-sync", quick2s:"Download .ics voor Apple/Google",
+    quick3:"🪥 Poetsen", quick3s:"Timer van 2 minuten",
+    sideNote:"Let op: browser-notificaties werken perfect voor demo, maar “echte” push op iPhone vraagt meestal een echte PWA setup + service worker push.",
+    tabHome:"Home", tabAgenda:"Agenda", tabDossier:"Dossier", tabForYou:"Voor jou", tabMe:"Mijn",
+    toastSaved:"Opgeslagen ✅", toastNeedDate:"Vul datum + tijd in.", toastNotifsOn:"Notificaties staan aan ✅", toastNotifsDenied:"Notificaties geweigerd in browser-instellingen.",
+    apptNext:"Volgende afspraak", apptNone:"Nog geen afspraken. Voeg er eentje toe in Agenda 🙂",
+    apptAdded:"Demo-afspraak toegevoegd!",
+    notifBrushAM:"🪥 Tijd om te poetsen (ochtend)!", notifBrushPM:"🪥 Tijd om te poetsen (avond)!",
+    notifAppt:"📅 Herinnering: tandartsafspraak!",
+    delete:"Verwijderen"
+  },
+  en: {
+    appName:"Snoet SuperApp", tagline:"Calm dental visits together ✨", lang:"Language",
+    welcomeBadge:"Welcome!", heroTitle:"All in one place: appointments, brushing & info",
+    heroText:"This demo helps kids and parents: reminders, agenda, records and fun learning.",
+    enableNotifs:"Enable notifications", sparkle:"Sparkles!",
+    homeTitle:"🏠 Home", homeText:"Your next appointment + quick actions.",
+    addDemo:"Add demo appointment", openAgenda:"Open agenda",
+    noteHome:"Tip: enable reminders for brushing (morning/evening) and dentist appointments.",
+    agendaTitle:"📅 Agenda", agendaText:"Add, view and export appointments to your calendar.",
+    lblDate:"Date", lblTime:"Time", lblType:"Type", lblDoctor:"Provider", lblNotes:"Note",
+    saveAppt:"Save appointment", exportIcs:"Download .ics", setApptNotif:"Test appointment notification",
+    noteAgenda:"Calendar sync: download .ics → open on iPhone (Apple Calendar) or import into Google Calendar.",
+    dossierTitle:"📁 Records", dossierText:"Example overview (demo) of documents and treatments.",
+    doc1:"X-ray (demo)", doc1s:"Updated: 2 weeks ago",
+    doc2:"Treatment plan (demo)", doc2s:"Check-up + brushing advice",
+    doc3:"Invoices (demo)", doc3s:"Everything in one place",
+    noteDossier:"In a real version this is securely connected to the clinic system (privacy).",
+    forYouTitle:"🧡 For you", forYouText:"2-minute timer, videos and a small anti-anxiety game.",
+    brushTitle:"🪥 Brush timer (2 minutes)", brushHint:"Press start. You can also test morning/evening reminders.",
+    start:"Start", stop:"Stop", brushNotifs:"Test brush reminders",
+    videoTitle:"🎬 Video (demo)", videoText:"In a real version, add videos (how to brush / what happens at the dentist).",
+    videoPhTitle:"Info: calm dentist visit", videoPhSub:"Later you can embed YouTube/Vimeo or add your own mp4 file.",
+    gameTitle:"🫧 Mini-game: Plaque Pop!", gameText:"Tap the plaque bubbles to clean them away. (Fun + relaxing.)",
+    gameStart:"Start game",
+    meTitle:"👤 My details", meText:"Settings, contact and notifications.",
+    lblName:"Name", lblEmail:"Email", lblNotifPref:"Notifications", lblPractice:"Clinic",
+    saveMe:"Save", reset:"Reset demo data",
+    noteMe:"iPhone ‘app feel’: open in Safari → Share → ‘Add to Home Screen’.",
+    sideTitle:"✨ Quick actions", sideText:"Your most used actions, instantly.",
+    quick1:"🔔 Notifications", quick1s:"Enable brushing & appointment reminders",
+    quick2:"📅 Calendar sync", quick2s:"Download .ics for Apple/Google",
+    quick3:"🪥 Brushing", quick3s:"2-minute timer",
+    sideNote:"Note: browser notifications work for demos; real iPhone push usually needs full PWA + push setup.",
+    tabHome:"Home", tabAgenda:"Agenda", tabDossier:"Records", tabForYou:"For you", tabMe:"Me",
+    toastSaved:"Saved ✅", toastNeedDate:"Please fill date + time.", toastNotifsOn:"Notifications enabled ✅", toastNotifsDenied:"Notifications denied in browser settings.",
+    apptNext:"Next appointment", apptNone:"No appointments yet. Add one in Agenda 🙂",
+    apptAdded:"Demo appointment added!",
+    notifBrushAM:"🪥 Time to brush (morning)!", notifBrushPM:"🪥 Time to brush (evening)!",
+    notifAppt:"📅 Reminder: dentist appointment!",
+    delete:"Delete"
+  },
+  tr: {
+    appName:"Snoet SuperApp", tagline:"Diş hekimine birlikte sakin ✨", lang:"Dil",
+    welcomeBadge:"Hoş geldiniz!", heroTitle:"Her şey tek yerde: randevu, fırçalama & bilgi",
+    heroText:"Bu demo çocuklar ve ebeveynler için: hatırlatmalar, ajanda, dosya ve eğlenceli öğrenme.",
+    enableNotifs:"Bildirimleri aç", sparkle:"Parıltı!",
+    homeTitle:"🏠 Ana Sayfa", homeText:"Bir sonraki randevu + hızlı işlemler.",
+    addDemo:"Demo randevu ekle", openAgenda:"Ajandayı aç",
+    noteHome:"İpucu: sabah/akşam fırçalama ve diş randevusu hatırlatmalarını açın.",
+    agendaTitle:"📅 Ajanda", agendaText:"Randevu ekle, görüntüle ve takvime aktar.",
+    lblDate:"Tarih", lblTime:"Saat", lblType:"Tür", lblDoctor:"Doktor", lblNotes:"Not",
+    saveAppt:"Randevuyu kaydet", exportIcs:".ics indir", setApptNotif:"Randevu bildirimi test et",
+    noteAgenda:".ics indir → iPhone (Apple Takvim) aç veya Google Takvim’e içe aktar.",
+    dossierTitle:"📁 Dosya", dossierText:"Belge ve tedaviler için demo örnek.",
+    doc1:"Röntgen (demo)", doc1s:"Güncelleme: 2 hafta önce",
+    doc2:"Tedavi planı (demo)", doc2s:"Kontrol + fırçalama önerisi",
+    doc3:"Faturalar (demo)", doc3s:"Hepsi tek yerde",
+    noteDossier:"Gerçek sürümde klinik sistemiyle güvenli bağlanır (gizlilik).",
+    forYouTitle:"🧡 Senin için", forYouText:"2 dk zamanlayıcı, video ve küçük oyun.",
+    brushTitle:"🪥 Fırçalama zamanlayıcı (2 dk)", brushHint:"Başlat’a basın. Sabah/akşam hatırlatma testi de var.",
+    start:"Başlat", stop:"Durdur", brushNotifs:"Fırçalama hatırlatmalarını test et",
+    videoTitle:"🎬 Video (demo)", videoText:"Gerçek sürümde: fırçalama / dişçide neler olur videoları.",
+    videoPhTitle:"Bilgi: sakin dişçi ziyareti", videoPhSub:"Sonra YouTube/Vimeo ekleyebilir veya mp4 koyabilirsiniz.",
+    gameTitle:"🫧 Mini oyun: Plaque Pop!", gameText:"Kabarcıklara tıkla ve temizle. (Eğlenceli + rahatlatıcı.)",
+    gameStart:"Oyunu başlat",
+    meTitle:"👤 Bilgilerim", meText:"Ayarlar, iletişim ve bildirimler.",
+    lblName:"İsim", lblEmail:"E-posta", lblNotifPref:"Bildirimler", lblPractice:"Klinik",
+    saveMe:"Kaydet", reset:"Demo veriyi sıfırla",
+    noteMe:"iPhone ‘uygulama gibi’: Safari → Paylaş → ‘Ana Ekrana Ekle’.",
+    sideTitle:"✨ Hızlı işlemler", sideText:"En çok kullandıkların hemen burada.",
+    quick1:"🔔 Bildirimler", quick1s:"Fırçalama & randevu hatırlatmaları",
+    quick2:"📅 Takvim", quick2s:".ics indir (Apple/Google)",
+    quick3:"🪥 Fırçalama", quick3s:"2 dk zamanlayıcı",
+    sideNote:"Not: tarayıcı bildirimleri demo için iyi; iPhone gerçek push için tam PWA gerekir.",
+    tabHome:"Ana", tabAgenda:"Ajanda", tabDossier:"Dosya", tabForYou:"Senin için", tabMe:"Ben",
+    toastSaved:"Kaydedildi ✅", toastNeedDate:"Tarih + saat girin.", toastNotifsOn:"Bildirimler açıldı ✅", toastNotifsDenied:"Bildirimler reddedildi.",
+    apptNext:"Sıradaki randevu", apptNone:"Henüz randevu yok. Ajandadan ekleyin 🙂",
+    apptAdded:"Demo randevu eklendi!",
+    notifBrushAM:"🪥 Fırçalama zamanı (sabah)!", notifBrushPM:"🪥 Fırçalama zamanı (akşam)!",
+    notifAppt:"📅 Hatırlatma: diş randevusu!",
+    delete:"Sil"
+  },
+  ar: {
+    appName:"تطبيق سنوت", tagline:"زيارة هادئة لطبيب الأسنان ✨", lang:"اللغة",
+    welcomeBadge:"أهلاً!", heroTitle:"كل شيء في مكان واحد: المواعيد والتنظيف والمعلومات",
+    heroText:"هذا عرض تجريبي يساعد الأطفال والأهل: تذكيرات، تقويم، ملف، وتعلّم ممتع.",
+    enableNotifs:"تفعيل الإشعارات", sparkle:"نجوم!",
+    homeTitle:"🏠 الرئيسية", homeText:"موعدك القادم + إجراءات سريعة.",
+    addDemo:"إضافة موعد تجريبي", openAgenda:"فتح التقويم",
+    noteHome:"نصيحة: فعّل تذكيرات التنظيف صباحاً/مساءً وتذكيرات مواعيد الطبيب.",
+    agendaTitle:"📅 التقويم", agendaText:"أضف المواعيد وشاهدها وصدّرها للتقويم.",
+    lblDate:"التاريخ", lblTime:"الوقت", lblType:"النوع", lblDoctor:"الطبيب", lblNotes:"ملاحظة",
+    saveAppt:"حفظ الموعد", exportIcs:"تحميل .ics", setApptNotif:"تجربة إشعار الموعد",
+    noteAgenda:"تحميل .ics → افتحه في iPhone (تقويم Apple) أو استورده في Google Calendar.",
+    dossierTitle:"📁 الملف", dossierText:"عرض تجريبي للوثائق والعلاجات.",
+    doc1:"صورة أشعة (تجريبي)", doc1s:"آخر تحديث: قبل أسبوعين",
+    doc2:"خطة العلاج (تجريبي)", doc2s:"فحص + نصائح تنظيف",
+    doc3:"الفواتير (تجريبي)", doc3s:"كل شيء في مكان واحد",
+    noteDossier:"في النسخة الحقيقية يتم الربط الآمن مع نظام العيادة (الخصوصية).",
+    forYouTitle:"🧡 لك", forYouText:"مؤقّت تنظيف، فيديو، ولعبة صغيرة لتخفيف الخوف.",
+    brushTitle:"🪥 مؤقّت تنظيف (دقيقتان)", brushHint:"اضغط ابدأ. يمكنك أيضاً تجربة تذكيرات الصباح/المساء.",
+    start:"ابدأ", stop:"إيقاف", brushNotifs:"تجربة تذكيرات التنظيف",
+    videoTitle:"🎬 فيديو (تجريبي)", videoText:"في النسخة الحقيقية: فيديوهات عن التنظيف وماذا يحدث عند الطبيب.",
+    videoPhTitle:"معلومة: زيارة هادئة", videoPhSub:"لاحقاً يمكنك إضافة YouTube/Vimeo أو ملف mp4.",
+    gameTitle:"🫧 لعبة صغيرة: Pop Plaque!", gameText:"انقر على الفقاعات لتنظيفها. (ممتع ومريح.)",
+    gameStart:"ابدأ اللعبة",
+    meTitle:"👤 بياناتي", meText:"الإعدادات والتواصل والإشعارات.",
+    lblName:"الاسم", lblEmail:"البريد", lblNotifPref:"الإشعارات", lblPractice:"العيادة",
+    saveMe:"حفظ", reset:"إعادة ضبط بيانات العرض",
+    noteMe:"iPhone ‘كأنه تطبيق’: Safari → مشاركة → ‘إضافة إلى الشاشة الرئيسية’.",
+    sideTitle:"✨ إجراءات سريعة", sideText:"الأكثر استخداماً مباشرة.",
+    quick1:"🔔 إشعارات", quick1s:"تذكيرات التنظيف والمواعيد",
+    quick2:"📅 مزامنة التقويم", quick2s:"تحميل .ics (Apple/Google)",
+    quick3:"🪥 تنظيف", quick3s:"مؤقّت دقيقتين",
+    sideNote:"ملاحظة: إشعارات المتصفح ممتازة للعرض؛ push الحقيقي على iPhone يحتاج إعداد PWA كامل.",
+    tabHome:"الرئيسية", tabAgenda:"التقويم", tabDossier:"الملف", tabForYou:"لك", tabMe:"أنا",
+    toastSaved:"تم الحفظ ✅", toastNeedDate:"أدخل التاريخ والوقت.", toastNotifsOn:"تم تفعيل الإشعارات ✅", toastNotifsDenied:"تم رفض الإشعارات.",
+    apptNext:"الموعد القادم", apptNone:"لا توجد مواعيد بعد. أضف موعداً من التقويم 🙂",
+    apptAdded:"تمت إضافة موعد تجريبي!",
+    notifBrushAM:"🪥 وقت تنظيف الأسنان (صباحاً)!", notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!",
+    notifAppt:"📅 تذكير: موعد طبيب الأسنان!",
+    delete:"حذف"
+  }
+};
 
-  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
-  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+let lang = localStorage.getItem("snoet_lang") || "nl";
 
-  // ====== NAVIGATIE (DIT is de fix dat alles klikbaar is) ======
-  function go(screen){
-    document.querySelectorAll("section[id^='screen-']").forEach(s => s.classList.add("hidden"));
-    const target = document.getElementById("screen-" + screen);
-    if(target) target.classList.remove("hidden");
+/* ---------------------------
+   NAVIGATION
+---------------------------- */
+const pages = ["home","agenda","dossier","voorjou","gegevens"];
+function showPage(key){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-"+key).classList.add("active");
 
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    if(["home","agenda","dossier","activities"].includes(screen)){
-      const tab = document.getElementById("tab-" + screen);
-      if(tab) tab.classList.add("active");
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelector(`.tab[data-page="${key}"]`).classList.add("active");
+}
+
+/* ---------------------------
+   TOAST (simple)
+---------------------------- */
+function toast(msg){
+  const el = document.createElement("div");
+  el.textContent = msg;
+  el.style.position="fixed";
+  el.style.left="50%";
+  el.style.bottom="92px";
+  el.style.transform="translateX(-50%)";
+  el.style.background="rgba(0,0,0,.65)";
+  el.style.border="1px solid rgba(255,255,255,.14)";
+  el.style.padding="10px 12px";
+  el.style.borderRadius="14px";
+  el.style.backdropFilter="blur(10px)";
+  el.style.fontWeight="900";
+  el.style.zIndex="9999";
+  document.body.appendChild(el);
+  setTimeout(()=> el.remove(), 1400);
+}
+
+/* ---------------------------
+   SPARKLES / STARS
+---------------------------- */
+function spawnStars(x,y,count=10){
+  const chars = ["✨","⭐","💫","🌟"];
+  for(let i=0;i<count;i++){
+    const s = document.createElement("div");
+    s.className="star";
+    s.textContent = chars[Math.floor(Math.random()*chars.length)];
+    s.style.left = (x + (Math.random()*20-10)) + "px";
+    s.style.top = (y + (Math.random()*20-10)) + "px";
+    s.style.setProperty("--dx", (Math.random()*220-110)+"px");
+    s.style.setProperty("--dy", (Math.random()*-220-60)+"px");
+    s.style.fontSize = (14 + Math.random()*18) + "px";
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 950);
+  }
+}
+
+/* ---------------------------
+   NOTIFICATIONS (demo)
+---------------------------- */
+async function enableNotifications(){
+  if(!("Notification" in window)){
+    toast("Notificaties niet ondersteund.");
+    return false;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm === "granted"){
+    toast(STR[lang].toastNotifsOn);
+    return true;
+  }
+  toast(STR[lang].toastNotifsDenied);
+  return false;
+}
+
+function notify(title, body){
+  try{
+    if(Notification.permission === "granted"){
+      new Notification(title, { body });
+    } else {
+      toast(title + " — " + body);
     }
+  }catch(e){
+    toast(title + " — " + body);
   }
+}
 
-  // ====== TOAST ======
-  function toast(text){
-    const el = document.getElementById("toast");
-    el.textContent = text;
-    el.style.display = "block";
-    clearTimeout(toast._t);
-    toast._t = setTimeout(()=> el.style.display="none", 1700);
-  }
+/* ---------------------------
+   DATA (appointments + profile)
+---------------------------- */
+function loadAppts(){
+  return JSON.parse(localStorage.getItem("snoet_appts") || "[]");
+}
+function saveAppts(appts){
+  localStorage.setItem("snoet_appts", JSON.stringify(appts));
+}
+function loadMe(){
+  return JSON.parse(localStorage.getItem("snoet_me") || "{}");
+}
+function saveMe(obj){
+  localStorage.setItem("snoet_me", JSON.stringify(obj));
+}
 
-  // ====== NOTIFICATIES ======
-  async function requestNotifyPermission(){
-    if(!("Notification" in window)){
-      alert("Notifications worden niet ondersteund in deze browser.");
-      return;
-    }
-    const res = await Notification.requestPermission();
-    toast(res === "granted" ? "Notificaties toegestaan ✅" : "Notificaties geweigerd ❌");
-    render();
-  }
-  function tryNotify(title, body){
-    if(!("Notification" in window)) return false;
-    if(Notification.permission !== "granted") return false;
-    try { new Notification(title, { body }); return true; } catch { return false; }
-  }
+/* ---------------------------
+   APPOINTMENTS UI
+---------------------------- */
+function renderAppts(){
+  const appts = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
+  const list = document.getElementById("apptList");
+  list.innerHTML = "";
 
-  // ====== REMINDERS (werkt terwijl app open is) ======
-  let timers = [];
-  function clearTimers(){ timers.forEach(t=>clearTimeout(t)); timers = []; }
+  appts.forEach((a,idx)=>{
+    const div = document.createElement("div");
+    div.className="item";
+    div.innerHTML = `
+      <div>
+        <strong>${escapeHtml(a.type)} — ${formatDT(a.dt)}</strong>
+        <small>${escapeHtml(a.doctor || "Snoet")} • ${escapeHtml(a.notes || "")}</small>
+      </div>
+      <button class="btn danger" style="padding:8px 10px;" data-del="${idx}">${STR[lang].delete}</button>
+    `;
+    list.appendChild(div);
+  });
 
-  function scheduleAt(ts, fn){
-    const delay = ts - Date.now();
-    if(delay <= 0) return;
-    timers.push(setTimeout(fn, delay));
-  }
-  function scheduleDaily(hhmm, fn){
-    if(!hhmm) return;
-    const [hh, mm] = hhmm.split(":").map(x=>parseInt(x,10));
-    const now = new Date();
-    let next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
-    if(next.getTime() <= now.getTime()) next = new Date(next.getTime() + 24*3600e3);
-    scheduleAt(next.getTime(), () => { fn(); scheduleDaily(hhmm, fn); });
-  }
-
-  function activateReminders(){
-    clearTimers();
-
-    scheduleDaily(state.brush.morning, () => {
-      toast("🪥 Ochtend: poetsen!");
-      tryNotify("🪥 Snoet", "Ochtend: poetsen!");
+  list.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const i = Number(btn.getAttribute("data-del"));
+      const ap = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
+      ap.splice(i,1);
+      saveAppts(ap);
+      renderAppts();
+      renderNextAppt();
+      toast("🗑️");
     });
-    scheduleDaily(state.brush.evening, () => {
-      toast("🪥 Avond: poetsen!");
-      tryNotify("🪥 Snoet", "Avond: poetsen!");
-    });
+  });
+}
 
-    const ap = nextAppt();
-    if(ap){
-      const ts = new Date(ap.dt).getTime();
-      scheduleAt(ts - 24*3600e3, () => {
-        toast("📅 Afspraak morgen!");
-        tryNotify("📅 Snoet", "Herinnering: afspraak morgen (" + ap.type + ")");
-      });
-      scheduleAt(ts - 2*3600e3, () => {
-        toast("📅 Afspraak over 2 uur!");
-        tryNotify("📅 Snoet", "Herinnering: afspraak over 2 uur (" + ap.type + ")");
-      });
-    }
-    state.remindersActive = true;
-    save();
-    toast("Reminders actief ⏱️ (als app open is)");
+function renderNextAppt(){
+  const box = document.getElementById("nextApptBox");
+  const appts = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
+  const next = appts[0];
+
+  box.innerHTML="";
+  const div = document.createElement("div");
+  div.className="item";
+  if(!next){
+    div.innerHTML = `
+      <div>
+        <strong>${STR[lang].apptNext}</strong>
+        <small>${STR[lang].apptNone}</small>
+      </div>
+      <span class="chip">🫶</span>
+    `;
+  } else {
+    div.innerHTML = `
+      <div>
+        <strong>${STR[lang].apptNext}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
+        <small>${escapeHtml(next.doctor || "Snoet")} • ${escapeHtml(next.notes || "")}</small>
+      </div>
+      <span class="chip">⏰ ${timeUntil(next.dt)}</span>
+    `;
   }
+  box.appendChild(div);
+}
 
-  // ====== AFSpraken ======
-  function addAppointment(){
-    const dt = document.getElementById("apptDT").value;
-    const type = document.getElementById("apptType").value;
-    const note = (document.getElementById("apptNote").value || "").trim();
-
-    if(!dt){ alert("Kies datum & tijd."); return; }
-
-    state.appts.push({ id: crypto.randomUUID(), dt, type, note });
-    state.appts.sort((a,b)=> new Date(a.dt) - new Date(b.dt));
-    document.getElementById("apptDT").value = "";
-    document.getElementById("apptNote").value = "";
-    save();
-    toast("Toegevoegd ✅");
-  }
-  function deleteAppt(id){
-    state.appts = state.appts.filter(a => a.id !== id);
-    save();
-    toast("Verwijderd 🗑️");
-  }
-  function nextAppt(){
+function timeUntil(dtISO){
+  try{
+    const t = new Date(dtISO).getTime();
     const now = Date.now();
-    return state.appts
-      .map(a => ({...a, ts:new Date(a.dt).getTime()}))
-      .filter(a => a.ts >= now)
-      .sort((a,b)=>a.ts-b.ts)[0] ?? null;
-  }
-  function formatDT(dtStr){
-    const d = new Date(dtStr);
-    return d.toLocaleString("nl-NL",{weekday:"short", year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit"});
-  }
-  function escapeHTML(s){
-    return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
+    const diff = t - now;
+    if(diff <= 0) return "nu";
+    const h = Math.floor(diff/3600000);
+    const d = Math.floor(h/24);
+    if(d>=1) return `${d}d`;
+    const m = Math.floor((diff%3600000)/60000);
+    return `${h}u ${m}m`;
+  }catch(e){ return ""; }
+}
 
-  // ====== DOSSIER ======
-  function saveDossier(){
-    state.dossier.notes = (document.getElementById("dossierNotes").value || "").trim();
-    save();
-    toast("Opgeslagen ✅");
-  }
-  function addDoc(){
-    const title = (document.getElementById("docTitle").value || "").trim();
-    const date = document.getElementById("docDate").value;
-    if(!title || !date){ alert("Vul titel + datum in."); return; }
-    state.dossier.docs.unshift({ id: crypto.randomUUID(), title, date });
-    document.getElementById("docTitle").value = "";
-    document.getElementById("docDate").value = "";
-    save();
-    toast("Toegevoegd ✅");
-  }
-  function deleteDoc(id){
-    state.dossier.docs = state.dossier.docs.filter(d => d.id !== id);
-    save();
-    toast("Verwijderd 🗑️");
-  }
+function formatDT(dtISO){
+  const d = new Date(dtISO);
+  if(isNaN(d)) return dtISO;
+  return d.toLocaleString(undefined, { weekday:"short", year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+}
 
-  // ====== POETS TIJD ======
-  function saveBrushTimes(){
-    const m = document.getElementById("brushMorning").value;
-    const e = document.getElementById("brushEvening").value;
-    if(m) state.brush.morning = m;
-    if(e) state.brush.evening = e;
-    save();
-    toast("Tijden opgeslagen ✅");
-  }
-  function testBrushNow(){
-    toast("🪥 Tijd om te poetsen!");
-    tryNotify("🪥 Snoet", "Tijd om te poetsen!");
-  }
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
-  // ====== KALENDER SYNC (.ics + Google link) ======
-  function toICS(d){
-    const pad = n => String(n).padStart(2,"0");
-    return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+
-           pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
-  }
-  function escapeICS(s){ return String(s).replace(/\n/g," ").replace(/,/g,"\\,").replace(/;/g,"\\;"); }
+/* ---------------------------
+   ICS EXPORT
+---------------------------- */
+function makeICS(appts){
+  // Minimal ICS with multiple events
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Snoet SuperApp Demo//NL",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH"
+  ];
+  appts.forEach((a,i)=>{
+    const dtStart = toICSDate(new Date(a.dt));
+    const dtEnd = toICSDate(new Date(new Date(a.dt).getTime() + 30*60000)); // +30 min
+    const uid = `snoet-${Date.now()}-${i}@demo`;
+    lines.push("BEGIN:VEVENT");
+    lines.push("UID:"+uid);
+    lines.push("DTSTAMP:"+toICSDate(new Date()));
+    lines.push("DTSTART:"+dtStart);
+    lines.push("DTEND:"+dtEnd);
+    lines.push("SUMMARY:"+icsSafe(`Tandarts: ${a.type || "Afspraak"}`));
+    lines.push("DESCRIPTION:"+icsSafe(a.notes || ""));
+    lines.push("LOCATION:"+icsSafe("Kindermondzorgcentrum Snoet"));
+    lines.push("END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+function toICSDate(d){
+  // UTC format YYYYMMDDTHHMMSSZ
+  const pad = n => String(n).padStart(2,"0");
+  return d.getUTCFullYear()
+    + pad(d.getUTCMonth()+1)
+    + pad(d.getUTCDate())
+    + "T"
+    + pad(d.getUTCHours())
+    + pad(d.getUTCMinutes())
+    + "00Z";
+}
+function icsSafe(s){
+  return String(s||"").replace(/\\n/g," ").replace(/[,\;]/g," ").replace(/\r?\n/g," ");
+}
 
-  function downloadNextICS(){
-    const ap = nextAppt();
-    if(!ap){ alert("Geen komende afspraak."); return; }
-    const dt = new Date(ap.dt);
-    const dtEnd = new Date(dt.getTime() + 30*60*1000);
+/* ---------------------------
+   BRUSH TIMER (2 min)
+---------------------------- */
+let timer = null;
+let total = 120; // seconds
+let left = 120;
 
-    const ics = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Snoet PWA//NL",
-      "BEGIN:VEVENT",
-      `UID:${ap.id}@snoet`,
-      `DTSTAMP:${toICS(new Date())}`,
-      `DTSTART:${toICS(dt)}`,
-      `DTEND:${toICS(dtEnd)}`,
-      `SUMMARY:${escapeICS("Snoet - " + ap.type)}`,
-      `DESCRIPTION:${escapeICS(ap.note ? ("Notitie: " + ap.note) : "Snoet afspraak")}`,
-      "END:VEVENT",
-      "END:VCALENDAR"
-    ].join("\r\n");
+function renderTimer(){
+  const m = Math.floor(left/60);
+  const s = left%60;
+  document.getElementById("timerTxt").textContent = `${m}:${String(s).padStart(2,"0")}`;
+  const pct = ((total-left)/total)*100;
+  document.getElementById("ring").style.setProperty("--p", pct.toFixed(1)+"%");
+}
 
-    const blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "snoet-afspraak.ics";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    toast("ICS gedownload 📅");
-  }
+function startTimer(){
+  if(timer) return;
+  timer = setInterval(()=>{
+    left--;
+    renderTimer();
+    if(left<=0){
+      stopTimer();
+      left = total;
+      renderTimer();
+      spawnStars(window.innerWidth/2, window.innerHeight/2, 18);
+      notify("⭐ Top!", "2 minuten gepoetst! Goed gedaan!");
+    }
+  }, 1000);
+}
+function stopTimer(){
+  if(timer){ clearInterval(timer); timer=null; }
+}
 
-  function openGoogleCalendarLink(){
-    const ap = nextAppt();
-    if(!ap){ alert("Geen komende afspraak."); return; }
-    const dt = new Date(ap.dt);
-    const end = new Date(dt.getTime() + 30*60*1000);
-    const fmt = (d)=> d.toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
-    const dates = `${fmt(dt)}/${fmt(end)}`;
-    const text = encodeURIComponent(`Snoet - ${ap.type}`);
-    const details = encodeURIComponent(ap.note || "Snoet afspraak");
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}`;
-    window.open(url, "_blank");
-  }
+/* ---------------------------
+   MINI GAME
+---------------------------- */
+let score = 0;
+let gameInterval = null;
 
-  // ====== TAAL (NL/EN/TR/AR) ======
-  const I18N = {
-    nl: { appSub:"Afspraken • Dossier • Herinneringen", welcomeTitle:"Welkom 👋", welcomeText:"Deze app helpt met poetsherinneringen, afspraken en dossier-overzicht." },
-    en: { appSub:"Appointments • Records • Reminders", welcomeTitle:"Welcome 👋", welcomeText:"This app helps with brushing reminders, appointments and record overview." },
-    tr: { appSub:"Randevular • Dosya • Hatırlatmalar", welcomeTitle:"Hoş geldin 👋", welcomeText:"Bu uygulama fırçalama ve randevu hatırlatmalarına yardımcı olur." },
-    ar: { appSub:"المواعيد • الملف • التذكيرات", welcomeTitle:"مرحباً 👋", welcomeText:"يساعدك التطبيق في تذكير تنظيف الأسنان والمواعيد وملف المريض." }
+function startGame(){
+  const area = document.getElementById("gameArea");
+  area.innerHTML = "";
+  score = 0;
+  document.getElementById("scoreTxt").textContent = score;
+
+  if(gameInterval) clearInterval(gameInterval);
+
+  const spawn = ()=>{
+    const p = document.createElement("div");
+    p.className="plaque";
+    p.textContent = "🦠";
+    const x = Math.random()*(area.clientWidth-50);
+    const y = Math.random()*(area.clientHeight-50);
+    p.style.left = x+"px";
+    p.style.top = y+"px";
+    p.addEventListener("click",(e)=>{
+      score++;
+      document.getElementById("scoreTxt").textContent = score;
+      spawnStars(e.clientX, e.clientY, 10);
+      p.remove();
+      if(score % 5 === 0){
+        notify("🌟 Nice!", "Je bent goed bezig!");
+      }
+    });
+    area.appendChild(p);
+    // auto remove after a while
+    setTimeout(()=>{ if(p.isConnected) p.remove(); }, 3500);
   };
 
-  function setLang(lang){
-    state.lang = lang;
-    save();
-    const root = document.getElementById("root");
-    if(lang === "ar") root.classList.add("rtl"); else root.classList.remove("rtl");
+  for(let i=0;i<6;i++) spawn();
+  gameInterval = setInterval(spawn, 650);
+  setTimeout(()=>{ if(gameInterval) clearInterval(gameInterval); gameInterval=null; }, 15000);
+}
 
-    document.getElementById("ui_appSub").textContent = I18N[lang].appSub;
-    document.getElementById("ui_welcomeTitle").textContent = I18N[lang].welcomeTitle;
-    document.getElementById("ui_welcomeText").textContent = I18N[lang].welcomeText;
+/* ---------------------------
+   APPLY LANGUAGE TO UI
+---------------------------- */
+function applyLang(){
+  const T = STR[lang] || STR.nl;
 
-    toast("✅ " + lang.toUpperCase());
-    go("welcome");
-  }
-
-  // ====== RENDER ======
-  function render(){
-    // status chip
-    const perm = ("Notification" in window) ? Notification.permission : "unsupported";
-    const s = document.getElementById("ui_status");
-    s.textContent =
-      perm === "granted" ? "🔔 Notif: aan" :
-      perm === "denied" ? "🔔 Notif: uit" :
-      perm === "default" ? "🔔 Notif: vraag" :
-      "🔔 Notif: n.v.t.";
-
-    // profile fields
-    document.getElementById("childName").value = state.profile.childName || "";
-    document.getElementById("parentEmail").value = state.profile.parentEmail || "planning@snoet.nl";
-
-    // brush times
-    document.getElementById("brushMorning").value = state.brush.morning || "07:30";
-    document.getElementById("brushEvening").value = state.brush.evening || "20:30";
-
-    // next appointment + countdown
-    const ap = nextAppt();
-    const meta = document.getElementById("ui_nextMeta");
-    const cd = document.getElementById("ui_countdown");
-    const cdSub = document.getElementById("ui_countdownSub");
-
-    if(!ap){
-      meta.textContent = "Nog geen afspraak ingevoerd";
-      cd.textContent = "—";
-      cdSub.textContent = "Voeg een afspraak toe om een countdown te zien.";
-    } else {
-      meta.textContent = `${ap.type} • ${formatDT(ap.dt)}${state.profile.childName ? " • " + state.profile.childName : ""}`;
-      const ms = new Date(ap.dt).getTime() - Date.now();
-      const days = Math.floor(ms / (24*3600e3));
-      const hrs  = Math.floor((ms % (24*3600e3)) / 3600e3);
-      const mins = Math.floor((ms % 3600e3) / 60e3);
-      cd.textContent = `${days}d ${hrs}u ${mins}m`;
-      cdSub.textContent = state.remindersActive ? "Reminders actief ⏱️ (als app open is)" : "Tip: plan reminders.";
-    }
-
-    // appointments list
-    const list = document.getElementById("ui_apptList");
-    list.innerHTML = "";
-    if(state.appts.length === 0){
-      list.innerHTML = `<div class="muted">Geen afspraken. Voeg er één toe.</div>`;
-    } else {
-      state.appts.forEach(a=>{
-        const el = document.createElement("div");
-        el.className = "item";
-        el.innerHTML = `
-          <div>
-            <div class="title">${escapeHTML(a.type)}</div>
-            <div class="small">${escapeHTML(formatDT(a.dt))}${a.note ? " • " + escapeHTML(a.note) : ""}</div>
-          </div>
-          <button class="bad">🗑️</button>
-        `;
-        el.querySelector("button").addEventListener("click", ()=>deleteAppt(a.id));
-        list.appendChild(el);
-      });
-    }
-
-    // dossier
-    document.getElementById("dossierNotes").value = state.dossier.notes || "";
-    const docs = document.getElementById("ui_docsList");
-    docs.innerHTML = "";
-    if(state.dossier.docs.length === 0){
-      docs.innerHTML = `<div class="muted">Nog geen documenten.</div>`;
-    } else {
-      state.dossier.docs.forEach(d=>{
-        const el = document.createElement("div");
-        el.className = "item";
-        el.innerHTML = `
-          <div>
-            <div class="title">${escapeHTML(d.title)}</div>
-            <div class="small">${escapeHTML(d.date)}</div>
-          </div>
-          <button class="bad">🗑️</button>
-        `;
-        el.querySelector("button").addEventListener("click", ()=>deleteDoc(d.id));
-        docs.appendChild(el);
-      });
-    }
-  }
-
-  // ====== EVENTS (alles klikbaar maken) ======
-  document.getElementById("ui_startBtn").addEventListener("click", ()=>go("login"));
-  document.getElementById("ui_langBtn").addEventListener("click", ()=>go("language"));
-  document.getElementById("ui_back1").addEventListener("click", ()=>go("welcome"));
-  document.getElementById("ui_back2").addEventListener("click", ()=>go("welcome"));
-
-  document.getElementById("ui_loginBtn").addEventListener("click", ()=>{
-    state.loggedIn = true;
-    save();
-    go("profile");
+  // mark active pills
+  document.querySelectorAll(".pill[data-lang]").forEach(b=>{
+    b.classList.toggle("active", b.getAttribute("data-lang") === lang);
   });
 
-  document.getElementById("ui_saveProfile").addEventListener("click", ()=>{
-    state.profile.childName = (document.getElementById("childName").value || "").trim();
-    state.profile.parentEmail = (document.getElementById("parentEmail").value || "planning@snoet.nl").trim();
-    save();
-    toast("Opgeslagen ✅");
+  // RTL for Arabic
+  document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+
+  // text bindings
+  setText("t_appName", T.appName);
+  setText("t_tagline", T.tagline);
+  setText("t_lang", T.lang);
+  setText("t_welcomeBadge", T.welcomeBadge);
+  setText("t_heroTitle", T.heroTitle);
+  setText("t_heroText", T.heroText);
+  setText("t_enableNotifs", T.enableNotifs);
+  setText("t_sparkle", T.sparkle);
+
+  setText("t_homeTitle", T.homeTitle);
+  setText("t_homeText", T.homeText);
+  setText("t_addDemo", T.addDemo);
+  setText("t_openAgenda", T.openAgenda);
+  setText("t_noteHome", T.noteHome);
+
+  setText("t_agendaTitle", T.agendaTitle);
+  setText("t_agendaText", T.agendaText);
+  setText("t_lblDate", T.lblDate);
+  setText("t_lblTime", T.lblTime);
+  setText("t_lblType", T.lblType);
+  setText("t_lblDoctor", T.lblDoctor);
+  setText("t_lblNotes", T.lblNotes);
+  setText("t_saveAppt", T.saveAppt);
+  setText("t_exportIcs", T.exportIcs);
+  setText("t_setApptNotif", T.setApptNotif);
+  setText("t_noteAgenda", T.noteAgenda);
+
+  setText("t_dossierTitle", T.dossierTitle);
+  setText("t_dossierText", T.dossierText);
+  setText("t_doc1", T.doc1); setText("t_doc1s", T.doc1s);
+  setText("t_doc2", T.doc2); setText("t_doc2s", T.doc2s);
+  setText("t_doc3", T.doc3); setText("t_doc3s", T.doc3s);
+  setText("t_noteDossier", T.noteDossier);
+
+  setText("t_forYouTitle", T.forYouTitle);
+  setText("t_forYouText", T.forYouText);
+  setText("t_brushTitle", T.brushTitle);
+  setText("t_brushHint", T.brushHint);
+  setText("t_start", T.start);
+  setText("t_stop", T.stop);
+  setText("t_brushNotifs", T.brushNotifs);
+  setText("t_videoTitle", T.videoTitle);
+  setText("t_videoText", T.videoText);
+  setText("t_videoPhTitle", T.videoPhTitle);
+  setText("t_videoPhSub", T.videoPhSub);
+  setText("t_gameTitle", T.gameTitle);
+  setText("t_gameText", T.gameText);
+  setText("t_gameStart", T.gameStart);
+
+  setText("t_meTitle", T.meTitle);
+  setText("t_meText", T.meText);
+  setText("t_lblName", T.lblName);
+  setText("t_lblEmail", T.lblEmail);
+  setText("t_lblNotifPref", T.lblNotifPref);
+  setText("t_lblPractice", T.lblPractice);
+  setText("t_saveMe", T.saveMe);
+  setText("t_reset", T.reset);
+  setText("t_noteMe", T.noteMe);
+
+  setText("t_sideTitle", T.sideTitle);
+  setText("t_sideText", T.sideText);
+  setText("t_quick1", T.quick1); setText("t_quick1s", T.quick1s);
+  setText("t_quick2", T.quick2); setText("t_quick2s", T.quick2s);
+  setText("t_quick3", T.quick3); setText("t_quick3s", T.quick3s);
+  setText("t_sideNote", T.sideNote);
+
+  setText("t_tabHome", T.tabHome);
+  setText("t_tabAgenda", T.tabAgenda);
+  setText("t_tabDossier", T.tabDossier);
+  setText("t_tabForYou", T.tabForYou);
+  setText("t_tabMe", T.tabMe);
+
+  // rerender lists with new language
+  renderAppts();
+  renderNextAppt();
+}
+
+function setText(id, val){
+  const el = document.getElementById(id);
+  if(el) el.textContent = val;
+}
+
+/* ---------------------------
+   EVENTS
+---------------------------- */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click", ()=> showPage(t.getAttribute("data-page")));
+});
+
+document.getElementById("btnGoAgenda").addEventListener("click", ()=> showPage("agenda"));
+document.getElementById("btnGoForYou").addEventListener("click", ()=> showPage("voorjou"));
+
+document.getElementById("btnSparkle").addEventListener("click",(e)=>{
+  spawnStars(e.clientX, e.clientY, 14);
+});
+document.getElementById("btnEnableNotifs").addEventListener("click", enableNotifications);
+document.getElementById("btnEnableNotifs2").addEventListener("click", enableNotifications);
+
+document.querySelectorAll(".pill[data-lang]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    lang = b.getAttribute("data-lang");
+    localStorage.setItem("snoet_lang", lang);
+    applyLang();
+    toast("🌍");
   });
+});
 
-  document.getElementById("ui_toApp").addEventListener("click", ()=>go("home"));
-  document.getElementById("ui_profileLang").addEventListener("click", ()=>go("language"));
+document.getElementById("btnAddDemo").addEventListener("click", ()=>{
+  const appts = loadAppts();
+  const dt = new Date(Date.now() + 6*24*3600000);
+  dt.setHours(10, 0, 0, 0);
+  appts.push({ dt: dt.toISOString(), type:"Controle", doctor:"Dr. Snoet", notes:"Rustig uitleggen + sticker na afloop 😊" });
+  saveAppts(appts);
+  renderAppts();
+  renderNextAppt();
+  toast(STR[lang].apptAdded);
+});
 
-  document.getElementById("lang_nl").addEventListener("click", ()=>setLang("nl"));
-  document.getElementById("lang_en").addEventListener("click", ()=>setLang("en"));
-  document.getElementById("lang_tr").addEventListener("click", ()=>setLang("tr"));
-  document.getElementById("lang_ar").addEventListener("click", ()=>setLang("ar"));
+document.getElementById("btnSaveAppt").addEventListener("click", ()=>{
+  const date = document.getElementById("apptDate").value;
+  const time = document.getElementById("apptTime").value;
+  if(!date || !time){
+    toast(STR[lang].toastNeedDate);
+    return;
+  }
+  const dtISO = new Date(date + "T" + time + ":00").toISOString();
+  const appts = loadAppts();
+  appts.push({
+    dt: dtISO,
+    type: document.getElementById("apptType").value,
+    doctor: document.getElementById("apptDoctor").value,
+    notes: document.getElementById("apptNotes").value
+  });
+  saveAppts(appts);
+  renderAppts();
+  renderNextAppt();
+  toast(STR[lang].toastSaved);
+});
 
-  document.getElementById("ui_goAgenda").addEventListener("click", ()=>go("agenda"));
-  document.getElementById("ui_goDossier").addEventListener("click", ()=>go("dossier"));
+function download(filename, text){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type:"text/calendar;charset=utf-8"}));
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
-  document.getElementById("ui_notifPerm").addEventListener("click", requestNotifyPermission);
-  document.getElementById("ui_planRem").addEventListener("click", activateReminders);
+function exportICS(){
+  const appts = loadAppts();
+  if(appts.length === 0){
+    toast("Geen afspraken.");
+    return;
+  }
+  download("snoet-afspraken.ics", makeICS(appts));
+  spawnStars(window.innerWidth/2, 80, 10);
+}
 
-  document.getElementById("ui_saveBrush").addEventListener("click", saveBrushTimes);
-  document.getElementById("ui_testBrush").addEventListener("click", testBrushNow);
+document.getElementById("btnExportICS").addEventListener("click", exportICS);
+document.getElementById("btnExportICS2").addEventListener("click", exportICS);
 
-  document.getElementById("ui_icsBtn").addEventListener("click", downloadNextICS);
-  document.getElementById("ui_googleBtn").addEventListener("click", openGoogleCalendarLink);
+document.getElementById("btnSetApptNotif").addEventListener("click", async ()=>{
+  await enableNotifications();
+  // demo: notify after 5 seconds
+  setTimeout(()=> notify("Snoet", STR[lang].notifAppt), 5000);
+  toast("🔔 (5s)");
+});
 
-  document.getElementById("ui_saveAppt").addEventListener("click", addAppointment);
-  document.getElementById("ui_backHomeA").addEventListener("click", ()=>go("home"));
-  document.getElementById("ui_backHomeD").addEventListener("click", ()=>go("home"));
+document.getElementById("btnStartTimer").addEventListener("click", startTimer);
+document.getElementById("btnStopTimer").addEventListener("click", stopTimer);
 
-  document.getElementById("ui_saveDossier").addEventListener("click", saveDossier);
-  document.getElementById("ui_addDoc").addEventListener("click", addDoc);
+document.getElementById("btnBrushNotifs").addEventListener("click", async ()=>{
+  await enableNotifications();
+  // demo notifications: 4s and 8s
+  setTimeout(()=> notify("Snoet", STR[lang].notifBrushAM), 4000);
+  setTimeout(()=> notify("Snoet", STR[lang].notifBrushPM), 8000);
+  toast("🔔 (4s/8s)");
+});
 
-  document.getElementById("ui_rewardBtn").addEventListener("click", ()=>toast("⭐ Badge toegevoegd!"));
-  document.getElementById("ui_videoBtn").addEventListener("click", ()=>toast("Komt binnenkort 🙂"));
-  document.getElementById("ui_msgBtn").addEventListener("click", requestNotifyPermission);
+document.getElementById("btnStartGame").addEventListener("click", ()=>{
+  startGame();
+  spawnStars(window.innerWidth/2, window.innerHeight/2, 12);
+});
 
-  document.getElementById("tab-home").addEventListener("click", ()=>go("home"));
-  document.getElementById("tab-agenda").addEventListener("click", ()=>go("agenda"));
-  document.getElementById("tab-dossier").addEventListener("click", ()=>go("dossier"));
-  document.getElementById("tab-activities").addEventListener("click", ()=>go("activities"));
+document.getElementById("btnSaveMe").addEventListener("click", ()=>{
+  const obj = {
+    name: document.getElementById("meName").value,
+    email: document.getElementById("meEmail").value,
+    pref: document.getElementById("meNotifPref").value,
+    practice: document.getElementById("mePractice").value
+  };
+  saveMe(obj);
+  toast(STR[lang].toastSaved);
+});
 
-  // ====== START ======
-  render();
-  setLang(state.lang); // zet taal meteen goed
-  go("welcome");
+document.getElementById("btnReset").addEventListener("click", ()=>{
+  localStorage.removeItem("snoet_appts");
+  localStorage.removeItem("snoet_me");
+  renderAppts();
+  renderNextAppt();
+  toast("Reset ✅");
+});
+
+/* ---------------------------
+   INIT
+---------------------------- */
+(function init(){
+  // Load profile
+  const me = loadMe();
+  if(me.name) document.getElementById("meName").value = me.name;
+  if(me.email) document.getElementById("meEmail").value = me.email;
+  if(me.pref) document.getElementById("meNotifPref").value = me.pref;
+  if(me.practice) document.getElementById("mePractice").value = me.practice;
+
+  // default values (today + next hour)
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  document.getElementById("apptDate").value = `${yyyy}-${mm}-${dd}`;
+  document.getElementById("apptTime").value = "10:00";
+
+  renderTimer();
+  renderAppts();
+  renderNextAppt();
+  applyLang();
+})();
 </script>
 </body>
 </html>
