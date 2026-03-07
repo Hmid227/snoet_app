@@ -5,356 +5,355 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#7c3aed" />
   <title>Snoet SuperApp</title>
-
   <style>
     :root{
-      --bg1:#0ea5e9; --bg2:#a78bfa; --bg3:#f472b6; --bg4:#facc15;
-      --card: rgba(18, 25, 40, .70);
-      --card2: rgba(18, 25, 40, .52);
+      --card: rgba(18,25,40,.72);
       --stroke: rgba(255,255,255,.14);
-      --text: #f8fafc;
+      --text:#f8fafc;
       --muted:#cbd5e1;
-      --shadow: 0 18px 60px rgba(0,0,0,.35);
-      --radius: 22px;
-      --ok: rgba(34,197,94,.95);
-      --warn: rgba(250,204,21,.90);
-      --bad: rgba(239,68,68,.92);
-      --accent: rgba(124,58,237,.95);
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:22px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color:var(--text);
       min-height:100vh;
       background:
-        radial-gradient(1100px 650px at 10% 15%, rgba(250,204,21,.32), transparent 60%),
-        radial-gradient(900px 650px at 88% 10%, rgba(244,114,182,.28), transparent 58%),
-        radial-gradient(950px 700px at 10% 92%, rgba(167,139,250,.30), transparent 56%),
+        radial-gradient(1100px 650px at 10% 15%, rgba(250,204,21,.25), transparent 60%),
+        radial-gradient(900px 650px at 88% 10%, rgba(244,114,182,.22), transparent 58%),
+        radial-gradient(950px 700px at 10% 92%, rgba(167,139,250,.22), transparent 56%),
         linear-gradient(135deg, #0b1220 0%, #0b1220 45%, #111827 100%);
       overflow-x:hidden;
     }
 
-    /* soft animated ribbons */
-    .ribbons{
-      position:fixed; inset:-40px; pointer-events:none; z-index:0; opacity:.9;
-      filter: saturate(1.15);
-    }
-    .ribbons::before, .ribbons::after{
-      content:""; position:absolute; inset:0;
-      background:
-        conic-gradient(from 180deg at 50% 50%,
-          rgba(14,165,233,.18),
-          rgba(167,139,250,.18),
-          rgba(244,114,182,.18),
-          rgba(250,204,21,.18),
-          rgba(34,197,94,.18),
-          rgba(14,165,233,.18));
-      mask:
-        radial-gradient(circle at 30% 25%, rgba(0,0,0,.9), transparent 56%),
-        radial-gradient(circle at 74% 72%, rgba(0,0,0,.82), transparent 58%),
-        radial-gradient(circle at 55% 50%, rgba(0,0,0,.9), transparent 62%);
-      transform: rotate(6deg) scale(1.1);
-      animation: floaty 11s ease-in-out infinite;
-    }
-    .ribbons::after{ animation-duration: 15s; transform: rotate(-7deg) scale(1.08); opacity:.8;}
-    @keyframes floaty{
-      0%,100%{ transform: translateY(0px) rotate(6deg) scale(1.1); }
-      50%{ transform: translateY(18px) rotate(9deg) scale(1.12); }
-    }
-
     .app{
-      position:relative; z-index:1;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 18px 14px 110px;
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 14px 110px;
     }
 
-    /* top bar */
     .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
-      border-radius: 24px;
-      padding: 12px 14px;
-      backdrop-filter: blur(10px);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      border-radius:24px;
+      padding:12px 14px;
+      backdrop-filter:blur(10px);
     }
-    .brand{ display:flex; gap:12px; align-items:center; min-width: 220px; }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
     .logo{
-      width:44px; height:44px; border-radius:16px;
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      color:#0b1220;
       background:
         radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2)),
-        linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4));
-      box-shadow: 0 10px 25px rgba(0,0,0,.35);
-      display:grid; place-items:center;
-      font-weight:900; color:#0b1220;
-      user-select:none;
+        linear-gradient(135deg, #0ea5e9, #a78bfa, #f472b6, #facc15);
+      box-shadow:0 10px 25px rgba(0,0,0,.35);
     }
-    .brand h1{ font-size: 16px; margin:0; line-height:1.1; }
-    .brand p{ margin:0; color:var(--muted); font-size:12px; }
+    .brand h1{margin:0;font-size:16px;line-height:1.1}
+    .brand p{margin:0;color:var(--muted);font-size:12px}
 
-    .langRow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .langRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
     .badge{
       font-size:12px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid var(--stroke);
-      padding: 6px 10px;
-      border-radius: 999px;
+      background:rgba(0,0,0,.22);
+      border:1px solid var(--stroke);
+      padding:6px 10px;
+      border-radius:999px;
       font-weight:900;
     }
     .pill{
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.20);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 8px 10px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      border-radius:999px;
+      padding:8px 10px;
       cursor:pointer;
       font-weight:800;
       font-size:12px;
-      transition: transform .08s ease, background .2s ease, border .2s ease;
-      user-select:none;
     }
-    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
     .pill.active{
-      background: linear-gradient(135deg, rgba(124,58,237,.65), rgba(34,197,94,.35));
-      border-color: rgba(255,255,255,.22);
+      background:linear-gradient(135deg, rgba(124,58,237,.65), rgba(34,197,94,.35));
+      border-color:rgba(255,255,255,.22);
     }
 
     .hero{
-      position:relative;
-      overflow:hidden;
-      padding: 16px;
-      border-radius: 20px;
+      margin-top:14px;
+      padding:16px;
+      border-radius:20px;
       background:
         radial-gradient(120px 120px at 15% 20%, rgba(255,255,255,.25), transparent 60%),
         radial-gradient(180px 140px at 80% 10%, rgba(250,204,21,.18), transparent 65%),
         linear-gradient(135deg, rgba(14,165,233,.32), rgba(167,139,250,.22), rgba(244,114,182,.16));
-      border: 1px solid var(--stroke);
-      box-shadow: 0 18px 60px rgba(0,0,0,.25);
-      margin-top: 14px;
+      border:1px solid var(--stroke);
+      box-shadow:0 18px 60px rgba(0,0,0,.25);
     }
     .hero .title{
-      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .muted{ color:var(--muted); font-size: 13px; line-height:1.45; }
 
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
 
     .btn{
-      border: none;
-      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(14,165,233,.55));
-      color: white;
-      border-radius: 14px;
-      padding: 10px 12px;
+      border:none;
+      background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(14,165,233,.55));
+      color:white;
+      border-radius:14px;
+      padding:10px 12px;
       cursor:pointer;
-      font-weight: 900;
-      box-shadow: 0 12px 30px rgba(124,58,237,.25);
-      transition: transform .08s ease, filter .2s ease, opacity .2s ease;
-      user-select:none;
+      font-weight:900;
+      box-shadow:0 12px 30px rgba(124,58,237,.25);
     }
-    .btn:hover{ transform: translateY(-1px); filter: brightness(1.06); }
     .btn.secondary{
-      background: rgba(255,255,255,.10);
-      border: 1px solid var(--stroke);
+      background:rgba(255,255,255,.10);
+      border:1px solid var(--stroke);
       box-shadow:none;
     }
     .btn.green{
-      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(250,204,21,.45));
-      box-shadow: 0 12px 30px rgba(34,197,94,.18);
+      background:linear-gradient(135deg, rgba(34,197,94,.95), rgba(250,204,21,.45));
+      box-shadow:0 12px 30px rgba(34,197,94,.18);
     }
     .btn.danger{
-      background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(244,114,182,.45));
-      box-shadow: 0 12px 30px rgba(239,68,68,.16);
+      background:linear-gradient(135deg, rgba(239,68,68,.95), rgba(244,114,182,.45));
+      box-shadow:0 12px 30px rgba(239,68,68,.16);
     }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap: 14px;
-      margin-top: 14px;
+      grid-template-columns:1.25fr .75fr;
+      gap:14px;
+      margin-top:14px;
     }
-    @media (max-width: 860px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width:auto; }
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
-      border-radius: var(--radius);
-      padding: 14px;
-      backdrop-filter: blur(10px);
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:14px;
+      backdrop-filter:blur(10px);
     }
-    .card h2{ margin: 0 0 8px; font-size: 16px; }
+    .card h2{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.45}
 
-    .page{ display:none; }
-    .page.active{ display:block; }
+    .page{display:none}
+    .page.active{display:block}
 
-    .list{ display:flex; flex-direction:column; gap:10px; margin-top: 10px; }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
     .item{
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      padding: 12px;
-      display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
     }
-    .item strong{ display:block; font-size: 14px; }
-    .item small{ color: var(--muted); }
+    .item strong{display:block;font-size:14px}
+    .item small{color:var(--muted)}
 
     .chip{
-      display:inline-flex; align-items:center; gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      font-size: 12px; font-weight: 900;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:12px;
+      font-weight:900;
       white-space:nowrap;
     }
 
-    label{ font-size: 12px; font-weight: 900; color: var(--muted); display:block; margin: 8px 0 6px; }
+    label{
+      font-size:12px;
+      font-weight:900;
+      color:var(--muted);
+      display:block;
+      margin:8px 0 6px;
+    }
     input, select, textarea{
       width:100%;
-      background: rgba(0,0,0,.20);
-      border: 1px solid var(--stroke);
-      border-radius: 14px;
-      padding: 10px 12px;
-      color: var(--text);
+      background:rgba(0,0,0,.20);
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:10px 12px;
+      color:var(--text);
       outline:none;
-      font-size: 14px;
+      font-size:14px;
     }
-    textarea{ resize: vertical; }
-    .two{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    @media (max-width: 520px){ .two{ grid-template-columns:1fr; } }
+    .two{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:520px){
+      .two{grid-template-columns:1fr}
+    }
 
-    /* bottom nav */
     .nav{
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 14px;
-      width: min(980px, calc(100% - 18px));
-      background: rgba(11,18,32,.78);
-      border: 1px solid var(--stroke);
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      border-radius: 22px;
-      padding: 10px;
-      backdrop-filter: blur(12px);
-      z-index: 10;
-      display:flex; gap:8px; justify-content:space-between;
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:14px;
+      width:min(980px, calc(100% - 18px));
+      background:rgba(11,18,32,.78);
+      border:1px solid var(--stroke);
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+      border-radius:22px;
+      padding:10px;
+      backdrop-filter:blur(12px);
+      z-index:10;
+      display:flex;
+      gap:8px;
+      justify-content:space-between;
     }
     .tab{
       flex:1;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
       gap:4px;
-      border-radius: 16px;
-      padding: 10px 6px;
+      border-radius:16px;
+      padding:10px 6px;
       cursor:pointer;
-      border: 1px solid transparent;
       user-select:none;
-      transition: background .2s ease, transform .08s ease, border .2s ease;
     }
-    .tab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
     .tab.active{
-      background: linear-gradient(135deg, rgba(124,58,237,.55), rgba(34,197,94,.18));
-      border-color: rgba(255,255,255,.14);
+      background:linear-gradient(135deg, rgba(124,58,237,.55), rgba(34,197,94,.18));
+      border:1px solid rgba(255,255,255,.14);
     }
-    .tab .ico{ font-size: 18px; line-height:1; }
-    .tab .lbl{ font-size: 11px; font-weight: 900; opacity:.95; }
+    .tab .ico{font-size:18px;line-height:1}
+    .tab .lbl{font-size:11px;font-weight:900}
 
-    /* sparkles */
     .star{
-      position:fixed; z-index:9999; pointer-events:none;
-      font-size: 18px;
-      animation: pop 900ms ease-out forwards;
-      filter: drop-shadow(0 10px 12px rgba(0,0,0,.35));
+      position:fixed;
+      z-index:9999;
+      pointer-events:none;
+      font-size:18px;
+      animation:pop 900ms ease-out forwards;
+      filter:drop-shadow(0 10px 12px rgba(0,0,0,.35));
     }
     @keyframes pop{
-      0%{ transform: translate(0,0) scale(.7); opacity: 1; }
-      100%{ transform: translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; }
+      0%{transform:translate(0,0) scale(.7);opacity:1}
+      100%{transform:translate(var(--dx), var(--dy)) scale(1.4);opacity:0}
     }
 
-    /* Timer ring */
     .timerBox{
-      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
     }
     .ring{
-      width: 92px; height: 92px; border-radius: 999px;
-      background: conic-gradient(var(--ok) var(--p, 0%), rgba(255,255,255,.10) 0);
-      display:grid; place-items:center;
-      border: 1px solid var(--stroke);
-      box-shadow: inset 0 0 0 8px rgba(0,0,0,.18);
+      width:92px;
+      height:92px;
+      border-radius:999px;
+      background:conic-gradient(rgba(34,197,94,.95) var(--p, 0%), rgba(255,255,255,.10) 0);
+      display:grid;
+      place-items:center;
+      border:1px solid var(--stroke);
+      box-shadow:inset 0 0 0 8px rgba(0,0,0,.18);
     }
-    .ring span{ font-weight:900; font-size: 18px; }
+    .ring span{font-weight:900;font-size:18px}
 
-    /* Mini game */
-    .gameArea{
-      position:relative;
-      height: 220px;
-      border-radius: 20px;
-      background:
-        radial-gradient(120px 120px at 20% 30%, rgba(255,255,255,.18), transparent 60%),
-        radial-gradient(120px 120px at 70% 40%, rgba(250,204,21,.12), transparent 60%),
-        rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.12);
-      overflow:hidden;
+    .tamaTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
     }
-    .plaque{
-      position:absolute;
-      width: 46px; height: 46px;
-      border-radius: 999px;
-      display:grid; place-items:center;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,.12));
-      border: 1px solid rgba(255,255,255,.18);
-      cursor:pointer;
-      user-select:none;
-      font-size: 22px;
-      animation: floatPlaque 2.6s ease-in-out infinite;
-    }
-    @keyframes floatPlaque{
-      0%,100%{ transform: translateY(0px); }
-      50%{ transform: translateY(-10px); }
-    }
-
-    /* Tamagochi */
-    .tama{ padding: 14px; }
-    .tamaTop{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
     .tamaPet{
-      width:78px; height:78px; border-radius:22px;
-      display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(14,165,233,.45), rgba(167,139,250,.35), rgba(244,114,182,.25));
-      border: 1px solid rgba(255,255,255,.16);
-      box-shadow: 0 14px 40px rgba(0,0,0,.35);
-      font-size: 36px;
+      width:78px;
+      height:78px;
+      border-radius:22px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg, rgba(14,165,233,.45), rgba(167,139,250,.35), rgba(244,114,182,.25));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      font-size:36px;
       user-select:none;
       cursor:pointer;
     }
-    .bars{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
-    .barRow{ display:grid; grid-template-columns: 96px 1fr 60px; gap:10px; align-items:center; }
+    .bars{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .barRow{
+      display:grid;
+      grid-template-columns:96px 1fr 60px;
+      gap:10px;
+      align-items:center;
+    }
     .bar{
-      height:14px; border-radius:999px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.12);
+      height:14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
       overflow:hidden;
     }
     .fill{
       height:100%;
       width:50%;
       border-radius:999px;
-      background: linear-gradient(90deg, rgba(34,197,94,.95), rgba(250,204,21,.55));
+      background:linear-gradient(90deg, rgba(34,197,94,.95), rgba(250,204,21,.55));
     }
 
-    .footerNote{ margin-top:10px; font-size: 12px; color: var(--muted); }
+    .footerNote{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
   </style>
 </head>
 
 <body>
-  <div class="ribbons"></div>
-
   <div class="app">
-    <!-- TOPBAR always visible -->
     <div class="topbar">
       <div class="brand">
         <div class="logo">🦷</div>
@@ -364,7 +363,7 @@
         </div>
       </div>
 
-      <div class="langRow" aria-label="Language selector">
+      <div class="langRow">
         <span class="badge" data-i18n="lang">Taal</span>
         <button class="pill" data-lang="nl">🇳🇱 NL</button>
         <button class="pill" data-lang="en">🇬🇧 EN</button>
@@ -392,19 +391,17 @@
     <div class="grid">
       <div class="card">
 
-        <!-- HOME -->
         <section class="page active" id="page-home">
           <h2 data-i18n="homeTitle">🏠 Home</h2>
           <div class="muted" data-i18n="homeText">Je volgende afspraak + Snoet-pet status.</div>
 
-          <!-- Tamagochi -->
-          <section class="tama card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+          <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
             <div class="tamaTop">
               <div>
                 <h2 style="margin:0 0 6px;" data-i18n="petTitle">🐣 Snoet-pet</h2>
-                <p class="muted" id="tamaStatus" data-i18n="petStatusOk">Snoet-pet voelt zich oké 🙂</p>
+                <p class="muted" id="tamaStatus" data-i18n="petOk">Snoet-pet voelt zich oké 🙂</p>
               </div>
-              <div class="tamaPet" id="tamaPet" aria-label="Snoet mascot">🦷</div>
+              <div class="tamaPet" id="tamaPet">🦷</div>
             </div>
 
             <div class="bars">
@@ -430,73 +427,27 @@
               <button class="btn" id="btnDrank">🥤 <span data-i18n="btnDrank">Ik heb gedronken</span></button>
               <button class="btn secondary" id="btnBrushed">🪥 <span data-i18n="btnBrushed">Ik heb gepoetst</span></button>
             </div>
-
-            <div class="footerNote" data-i18n="petTip">
-              Tip: veel zoet/zuur? Dan wordt Snoet-pet sneller sad 😬
-            </div>
           </section>
 
-          <!-- Next appointment -->
           <div class="list" id="nextApptBox" style="margin-top:12px;"></div>
 
           <div class="row" style="margin-top:12px;">
             <button class="btn" id="btnGoAgenda">📅 <span data-i18n="openAgenda">Open agenda</span></button>
-            <button class="btn secondary" id="btnAddDemo">➕ <span data-i18n="addDemo">Demo-afspraak toevoegen</span></button>
-          </div>
-
-          <div class="footerNote" data-i18n="noteHome">
-            Notificaties: poetsen (ochtend/avond) + afspraak herinnering.
           </div>
         </section>
 
-        <!-- AGENDA -->
         <section class="page" id="page-agenda">
           <h2 data-i18n="agendaTitle">📅 Agenda</h2>
-          <div class="muted" data-i18n="agendaText">Afspraken toevoegen, overzicht + kalender export.</div>
-
-          <div class="two" style="margin-top:10px;">
-            <div>
-              <label data-i18n="lblDate">Datum</label>
-              <input type="date" id="apptDate"/>
-            </div>
-            <div>
-              <label data-i18n="lblTime">Tijd</label>
-              <input type="time" id="apptTime"/>
-            </div>
-          </div>
-
-          <div class="two">
-            <div>
-              <label data-i18n="lblType">Type</label>
-              <select id="apptType">
-                <option value="Controle" data-i18n="typeCheck">Controle</option>
-                <option value="Behandeling" data-i18n="typeTreat">Behandeling</option>
-                <option value="Mondhygiëne" data-i18n="typeHyg">Mondhygiëne</option>
-              </select>
-            </div>
-            <div>
-              <label data-i18n="lblDoctor">Behandelaar</label>
-              <input id="apptDoctor" placeholder="Dr. Snoet"/>
-            </div>
-          </div>
-
-          <label data-i18n="lblNotes">Opmerking</label>
-          <textarea id="apptNotes" rows="2" data-i18n-ph="notesPh" placeholder="Bijv. kindje is spannend, graag rustig uitleggen."></textarea>
-
-          <div class="row" style="margin-top:10px;">
-            <button class="btn green" id="btnSaveAppt">💾 <span data-i18n="saveAppt">Afspraak opslaan</span></button>
-            <button class="btn secondary" id="btnExportICS">⬇️ <span data-i18n="exportIcs">Download .ics</span></button>
-            <button class="btn secondary" id="btnTestApptNotif">🔔 <span data-i18n="testApptNotif">Test afspraak-notificatie</span></button>
-          </div>
+          <div class="muted" data-i18n="agendaText">Hier staan de afspraken die al ingepland zijn.</div>
 
           <div class="list" id="apptList"></div>
 
-          <div class="footerNote" data-i18n="noteAgenda">
-            Kalender-sync: download .ics → open op iPhone (Apple Kalender) of importeer in Google Calendar.
+          <div class="row" style="margin-top:10px;">
+            <button class="btn secondary" id="btnExportICS">⬇️ <span data-i18n="exportIcs">Download .ics</span></button>
+            <button class="btn secondary" id="btnTestApptNotif">🔔 <span data-i18n="testApptNotif">Test afspraak-notificatie</span></button>
           </div>
         </section>
 
-        <!-- DOSSIER -->
         <section class="page" id="page-dossier">
           <h2 data-i18n="dossierTitle">📁 Dossier</h2>
           <div class="muted" data-i18n="dossierText">Documenten + eten/drinken dagboek.</div>
@@ -520,7 +471,7 @@
 
           <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
             <h2 data-i18n="logTitle">📒 Eten & drinken (dagboek)</h2>
-            <p class="muted" data-i18n="logText">Noteer wat je eet/drinkt. Handig voor zoet/zuur momenten.</p>
+            <p class="muted" data-i18n="logText">Noteer wat je eet/drinkt.</p>
 
             <div class="two">
               <div>
@@ -563,78 +514,71 @@
 
             <div class="list" id="logList" style="margin-top:10px;"></div>
           </section>
-
-          <div class="footerNote" data-i18n="noteDossier">
-            In een echte versie komt dit veilig uit het systeem van de praktijk (AVG).
-          </div>
         </section>
 
-        <!-- ACTIES -->
-        <section class="page" id="page-acties">
-          <h2 data-i18n="actionsTitle">🎉 Acties</h2>
-          <div class="muted" data-i18n="actionsText">Poetstimer, reminders en mini-game.</div>
+        <section class="page" id="page-gegevens">
+          <h2 data-i18n="meTitle">👤 Mijn gegevens</h2>
+          <div class="muted" data-i18n="meText">Overzicht van persoonsgegevens en contact met Snoet.</div>
+
+          <div class="two">
+            <div>
+              <label data-i18n="nameLbl">Naam kind</label>
+              <input id="profileName" placeholder="Bijv. Sara">
+            </div>
+            <div>
+              <label data-i18n="birthLbl">Geboortedatum</label>
+              <input id="profileBirth" type="date">
+            </div>
+          </div>
+
+          <div class="two">
+            <div>
+              <label data-i18n="parentLbl">Naam ouder/verzorger</label>
+              <input id="profileParent" placeholder="Bijv. Fatima">
+            </div>
+            <div>
+              <label data-i18n="emailLbl">E-mail</label>
+              <input id="profileEmail" placeholder="naam@email.com">
+            </div>
+          </div>
+
+          <label data-i18n="phoneLbl">Telefoonnummer</label>
+          <input id="profilePhone" placeholder="06 12345678">
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn green" id="btnSaveProfile">💾 <span data-i18n="save">Opslaan</span></button>
+          </div>
 
           <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
-            <h2 style="margin:0 0 8px;" data-i18n="brushTitle">🪥 Poetstimer (2 minuten)</h2>
-            <div class="timerBox">
-              <div class="ring" id="ring" style="--p:0%;">
-                <span id="timerTxt">2:00</span>
-              </div>
-              <div style="flex:1; min-width:220px;">
-                <div class="muted" data-i18n="brushHint">
-                  Druk op start. Na 2 minuten krijg je een beloning ⭐
+            <h2 data-i18n="contactTitle">☎️ Contactgegevens Snoet</h2>
+            <div class="list">
+              <div class="item">
+                <div>
+                  <strong data-i18n="contactPractice">Kindermondzorgcentrum Snoet</strong>
+                  <small>Amsterdam</small>
                 </div>
-                <div class="row" style="margin-top:10px;">
-                  <button class="btn green" id="btnStartTimer">▶️ <span data-i18n="start">Start</span></button>
-                  <button class="btn secondary" id="btnStopTimer">⏸️ <span data-i18n="stop">Stop</span></button>
+                <span class="chip">🏥</span>
+              </div>
+              <div class="item">
+                <div>
+                  <strong data-i18n="contactPhone">Telefoon</strong>
+                  <small>020-0000000</small>
                 </div>
+                <span class="chip">📞</span>
+              </div>
+              <div class="item">
+                <div>
+                  <strong data-i18n="contactMail">E-mail</strong>
+                  <small>info@snoet.nl</small>
+                </div>
+                <span class="chip">✉️</span>
               </div>
             </div>
-          </section>
-
-          <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
-            <h2 style="margin:0 0 8px;" data-i18n="remindersTitle">🔔 Tandenpoets herinneringen</h2>
-            <div class="muted" data-i18n="remindersText">
-              Werkt als de app open is. Stel tijden in voor ochtend en avond.
-            </div>
-
-            <div class="two" style="margin-top:10px;">
-              <div>
-                <label data-i18n="morningLbl">Ochtend tijd</label>
-                <input type="time" id="brushMorning" value="07:30">
-              </div>
-              <div>
-                <label data-i18n="eveningLbl">Avond tijd</label>
-                <input type="time" id="brushEvening" value="20:00">
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:10px;">
-              <button class="btn green" id="btnScheduleBrush">🗓️ <span data-i18n="schedule">Reminders plannen</span></button>
-              <button class="btn secondary" id="btnTestBrush">🧪 <span data-i18n="test">Test (4s/8s)</span></button>
-            </div>
-
-            <div class="footerNote" data-i18n="remindersNote">
-              iPhone “echte push” vraagt extra setup. Voor demo is dit prima.
-            </div>
-          </section>
-
-          <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
-            <h2 style="margin:0 0 8px;" data-i18n="gameTitle">🫧 Mini-game: Plaque Pop!</h2>
-            <div class="muted" data-i18n="gameText">
-              Klik op de “plaque” bolletjes om ze weg te poetsen.
-            </div>
-            <div class="row" style="margin-top:10px;">
-              <button class="btn" id="btnStartGame">🎮 <span data-i18n="gameStart">Start spel</span></button>
-              <span class="chip">⭐ <span id="scoreTxt">0</span></span>
-            </div>
-            <div class="gameArea" id="gameArea" style="margin-top:10px;"></div>
           </section>
         </section>
 
       </div>
 
-      <!-- RIGHT SIDEBAR -->
       <div class="card">
         <h2 data-i18n="sideTitle">✨ Snelle acties</h2>
         <div class="muted" data-i18n="sideText">Alles wat je vaak gebruikt, meteen bij de hand.</div>
@@ -658,30 +602,65 @@
 
           <div class="item">
             <div>
-              <strong data-i18n="quick3">🪥 Poetsen</strong>
+              <strong data-i18n="quick3">🪥 Poetstimer</strong>
               <small data-i18n="quick3s">Timer van 2 minuten</small>
             </div>
-            <button class="btn secondary" id="btnGoActions" style="padding:8px 10px;" data-i18n="open">Open</button>
+            <button class="btn secondary" id="btnOpenBrush" style="padding:8px 10px;" data-i18n="open">Open</button>
           </div>
         </div>
 
-        <div class="footerNote" data-i18n="sideNote">
-          Tip: op iPhone → Safari → Deel → “Zet op beginscherm” (app-gevoel).
-        </div>
+        <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+          <h2 style="margin:0 0 8px;" data-i18n="brushTitle">🪥 Poetstimer (2 minuten)</h2>
+          <div class="timerBox">
+            <div class="ring" id="ring" style="--p:0%;">
+              <span id="timerTxt">2:00</span>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <div class="muted" data-i18n="brushHint">
+                Druk op start. Na 2 minuten krijg je een beloning ⭐
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn green" id="btnStartTimer">▶️ <span data-i18n="start">Start</span></button>
+                <button class="btn secondary" id="btnStopTimer">⏸️ <span data-i18n="stop">Stop</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+          <h2 style="margin:0 0 8px;" data-i18n="remindersTitle">🔔 Tandenpoets herinneringen</h2>
+          <div class="muted" data-i18n="remindersText">
+            Werkt als de app open is. Stel tijden in voor ochtend en avond.
+          </div>
+
+          <div class="two" style="margin-top:10px;">
+            <div>
+              <label data-i18n="morningLbl">Ochtend tijd</label>
+              <input type="time" id="brushMorning" value="07:30">
+            </div>
+            <div>
+              <label data-i18n="eveningLbl">Avond tijd</label>
+              <input type="time" id="brushEvening" value="20:00">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn green" id="btnScheduleBrush">🗓️ <span data-i18n="schedule">Reminders plannen</span></button>
+            <button class="btn secondary" id="btnTestBrush">🧪 <span data-i18n="test">Test (4s/8s)</span></button>
+          </div>
+        </section>
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
-  <div class="nav" role="navigation" aria-label="Bottom navigation">
+  <div class="nav">
     <div class="tab active" data-page="home"><div class="ico">🏠</div><div class="lbl" data-i18n="tabHome">Home</div></div>
     <div class="tab" data-page="agenda"><div class="ico">📅</div><div class="lbl" data-i18n="tabAgenda">Agenda</div></div>
     <div class="tab" data-page="dossier"><div class="ico">📁</div><div class="lbl" data-i18n="tabDossier">Dossier</div></div>
-    <div class="tab" data-page="acties"><div class="ico">🎉</div><div class="lbl" data-i18n="tabActions">Acties</div></div>
+    <div class="tab" data-page="gegevens"><div class="ico">👤</div><div class="lbl" data-i18n="tabMe">Mijn gegevens</div></div>
   </div>
 
 <script>
-  // ---------------- I18N (reliable) ----------------
   const STR = {
     nl: {
       appName:"Snoet SuperApp",
@@ -695,51 +674,56 @@
       homeTitle:"🏠 Home",
       homeText:"Je volgende afspraak + Snoet-pet status.",
       petTitle:"🐣 Snoet-pet",
-      petStatusOk:"Snoet-pet voelt zich oké 🙂",
+      petOk:"Snoet-pet voelt zich oké 🙂",
+      petSad:"Snoet-pet is verdrietig… tijd om te poetsen 🪥",
+      petHyper:"Snoet-pet is super blij! Goed bezig ⭐",
       barBrush:"🪥 Poetsen",
       barDrink:"🥤 Drink",
       barFood:"🍎 Eten",
       btnAte:"Ik heb gegeten",
       btnDrank:"Ik heb gedronken",
       btnBrushed:"Ik heb gepoetst",
-      petTip:"Tip: veel zoet/zuur? Dan wordt Snoet-pet sneller sad 😬",
       openAgenda:"Open agenda",
-      addDemo:"Demo-afspraak toevoegen",
-      noteHome:"Notificaties: poetsen (ochtend/avond) + afspraak herinnering.",
 
       agendaTitle:"📅 Agenda",
-      agendaText:"Afspraken toevoegen, overzicht + kalender export.",
-      lblDate:"Datum", lblTime:"Tijd", lblType:"Type", lblDoctor:"Behandelaar", lblNotes:"Opmerking",
-      typeCheck:"Controle", typeTreat:"Behandeling", typeHyg:"Mondhygiëne",
-      notesPh:"Bijv. kindje is spannend, graag rustig uitleggen.",
-      saveAppt:"Afspraak opslaan", exportIcs:"Download .ics", testApptNotif:"Test afspraak-notificatie",
-      noteAgenda:"Kalender-sync: download .ics → open op iPhone (Apple Kalender) of importeer in Google Calendar.",
+      agendaText:"Hier staan de afspraken die al ingepland zijn.",
+      exportIcs:"Download .ics",
+      testApptNotif:"Test afspraak-notificatie",
+      delete:"Verwijderen",
 
       dossierTitle:"📁 Dossier",
       dossierText:"Documenten + eten/drinken dagboek.",
-      doc1:"Röntgenfoto (demo)", doc1s:"Laatste update: 2 weken geleden",
-      doc2:"Behandelplan (demo)", doc2s:"Controle + poetsadvies",
+      doc1:"Röntgenfoto (demo)",
+      doc1s:"Laatste update: 2 weken geleden",
+      doc2:"Behandelplan (demo)",
+      doc2s:"Controle + poetsadvies",
       logTitle:"📒 Eten & drinken (dagboek)",
-      logText:"Noteer wat je eet/drinkt. Handig voor zoet/zuur momenten.",
-      logWhenLbl:"Wanneer?", logTypeLbl:"Type", logFood:"🍎 Eten", logDrink:"🥤 Drinken",
-      logWhatLbl:"Wat?", logWhatPh:"Bijv. cola, water, appel, snoep…",
-      logSweetLbl:"Zoet?", logAcidLbl:"Zuur?",
-      yes:"Ja", no:"Nee", add:"Toevoegen", clear:"Wissen",
-      noteDossier:"In een echte versie komt dit veilig uit het systeem van de praktijk (AVG).",
+      logText:"Noteer wat je eet/drinkt.",
+      logWhenLbl:"Wanneer?",
+      logTypeLbl:"Type",
+      logFood:"🍎 Eten",
+      logDrink:"🥤 Drinken",
+      logWhatLbl:"Wat?",
+      logWhatPh:"Bijv. cola, water, appel, snoep…",
+      logSweetLbl:"Zoet?",
+      logAcidLbl:"Zuur?",
+      no:"Nee",
+      yes:"Ja",
+      add:"Toevoegen",
+      clear:"Wissen",
 
-      actionsTitle:"🎉 Acties",
-      actionsText:"Poetstimer, reminders en mini-game.",
-      brushTitle:"🪥 Poetstimer (2 minuten)",
-      brushHint:"Druk op start. Na 2 minuten krijg je een beloning ⭐",
-      start:"Start", stop:"Stop",
-      remindersTitle:"🔔 Tandenpoets herinneringen",
-      remindersText:"Werkt als de app open is. Stel tijden in voor ochtend en avond.",
-      morningLbl:"Ochtend tijd", eveningLbl:"Avond tijd",
-      schedule:"Reminders plannen", test:"Test (4s/8s)",
-      remindersNote:"iPhone “echte push” vraagt extra setup. Voor demo is dit prima.",
-      gameTitle:"🫧 Mini-game: Plaque Pop!",
-      gameText:"Klik op de “plaque” bolletjes om ze weg te poetsen.",
-      gameStart:"Start spel",
+      meTitle:"👤 Mijn gegevens",
+      meText:"Overzicht van persoonsgegevens en contact met Snoet.",
+      nameLbl:"Naam kind",
+      birthLbl:"Geboortedatum",
+      parentLbl:"Naam ouder/verzorger",
+      emailLbl:"E-mail",
+      phoneLbl:"Telefoonnummer",
+      save:"Opslaan",
+      contactTitle:"☎️ Contactgegevens Snoet",
+      contactPractice:"Kindermondzorgcentrum Snoet",
+      contactPhone:"Telefoon",
+      contactMail:"E-mail",
 
       sideTitle:"✨ Snelle acties",
       sideText:"Alles wat je vaak gebruikt, meteen bij de hand.",
@@ -747,27 +731,37 @@
       quick1s:"Zet meldingen aan voor poetsen & afspraken",
       quick2:"📅 Agenda-sync",
       quick2s:"Download .ics voor Apple/Google",
-      quick3:"🪥 Poetsen",
+      quick3:"🪥 Poetstimer",
       quick3s:"Timer van 2 minuten",
-      sideNote:"Tip: op iPhone → Safari → Deel → “Zet op beginscherm” (app-gevoel).",
       on:"Aan",
       open:"Open",
-      tabHome:"Home", tabAgenda:"Agenda", tabDossier:"Dossier", tabActions:"Acties",
+
+      brushTitle:"🪥 Poetstimer (2 minuten)",
+      brushHint:"Druk op start. Na 2 minuten krijg je een beloning ⭐",
+      start:"Start",
+      stop:"Stop",
+      remindersTitle:"🔔 Tandenpoets herinneringen",
+      remindersText:"Werkt als de app open is. Stel tijden in voor ochtend en avond.",
+      morningLbl:"Ochtend tijd",
+      eveningLbl:"Avond tijd",
+      schedule:"Reminders plannen",
+      test:"Test (4s/8s)",
+
+      tabHome:"Home",
+      tabAgenda:"Agenda",
+      tabDossier:"Dossier",
+      tabMe:"Mijn gegevens",
 
       toastSaved:"Opgeslagen ✅",
       toastNeedDate:"Vul datum + tijd in.",
       toastNotifsOn:"Notificaties staan aan ✅",
-      toastNotifsDenied:"Notificaties geweigerd in browser-instellingen.",
+      toastNotifsDenied:"Notificaties geweigerd.",
       apptNext:"Volgende afspraak",
       apptNone:"Nog geen afspraak ingevoerd",
       apptHint:"Voeg een afspraak toe om een countdown te zien.",
-      delete:"Verwijderen",
       notifAppt:"📅 Herinnering: tandartsafspraak!",
       notifBrushAM:"🪥 Tijd om te poetsen (ochtend)!",
-      notifBrushPM:"🪥 Tijd om te poetsen (avond)!",
-      petSad:"Snoet-pet is verdrietig… tijd om te poetsen 🪥",
-      petHyper:"Snoet-pet is super blij! Goed bezig ⭐",
-      petOk:"Snoet-pet voelt zich oké 🙂"
+      notifBrushPM:"🪥 Tijd om te poetsen (avond)!"
     },
 
     en: {
@@ -782,79 +776,94 @@
       homeTitle:"🏠 Home",
       homeText:"Your next appointment + Snoet-pet status.",
       petTitle:"🐣 Snoet-pet",
-      petStatusOk:"Snoet-pet feels ok 🙂",
+      petOk:"Snoet-pet feels ok 🙂",
+      petSad:"Snoet-pet is sad… time to brush 🪥",
+      petHyper:"Snoet-pet is super happy! Great job ⭐",
       barBrush:"🪥 Brushing",
       barDrink:"🥤 Drinks",
       barFood:"🍎 Food",
       btnAte:"I ate",
       btnDrank:"I drank",
       btnBrushed:"I brushed",
-      petTip:"Tip: lots of sweet/acidic? Snoet-pet gets sad faster 😬",
       openAgenda:"Open agenda",
-      addDemo:"Add demo appointment",
-      noteHome:"Notifications: brushing (AM/PM) + appointment reminder.",
 
       agendaTitle:"📅 Agenda",
-      agendaText:"Add appointments, see overview + export to calendar.",
-      lblDate:"Date", lblTime:"Time", lblType:"Type", lblDoctor:"Provider", lblNotes:"Note",
-      typeCheck:"Check-up", typeTreat:"Treatment", typeHyg:"Hygiene",
-      notesPh:"E.g. child is nervous, please explain calmly.",
-      saveAppt:"Save appointment", exportIcs:"Download .ics", testApptNotif:"Test appointment notification",
-      noteAgenda:"Calendar sync: download .ics → open on iPhone (Apple Calendar) or import into Google Calendar.",
+      agendaText:"Here you see the appointments that are already scheduled.",
+      exportIcs:"Download .ics",
+      testApptNotif:"Test appointment notification",
+      delete:"Delete",
 
       dossierTitle:"📁 Records",
       dossierText:"Documents + food/drink log.",
-      doc1:"X-ray (demo)", doc1s:"Updated: 2 weeks ago",
-      doc2:"Treatment plan (demo)", doc2s:"Check-up + brushing advice",
+      doc1:"X-ray (demo)",
+      doc1s:"Updated: 2 weeks ago",
+      doc2:"Treatment plan (demo)",
+      doc2s:"Check-up + brushing advice",
       logTitle:"📒 Food & drinks (log)",
-      logText:"Log what you eat/drink. Helpful for sweet/acid moments.",
-      logWhenLbl:"When?", logTypeLbl:"Type", logFood:"🍎 Food", logDrink:"🥤 Drinks",
-      logWhatLbl:"What?", logWhatPh:"E.g. cola, water, apple, candy…",
-      logSweetLbl:"Sweet?", logAcidLbl:"Acidic?",
-      yes:"Yes", no:"No", add:"Add", clear:"Clear",
-      noteDossier:"In a real version this connects securely to the clinic system (privacy).",
+      logText:"Log what you eat/drink.",
+      logWhenLbl:"When?",
+      logTypeLbl:"Type",
+      logFood:"🍎 Food",
+      logDrink:"🥤 Drinks",
+      logWhatLbl:"What?",
+      logWhatPh:"E.g. cola, water, apple, candy…",
+      logSweetLbl:"Sweet?",
+      logAcidLbl:"Acidic?",
+      no:"No",
+      yes:"Yes",
+      add:"Add",
+      clear:"Clear",
 
-      actionsTitle:"🎉 Actions",
-      actionsText:"Brush timer, reminders and mini-game.",
-      brushTitle:"🪥 Brush timer (2 minutes)",
-      brushHint:"Press start. After 2 minutes you get a reward ⭐",
-      start:"Start", stop:"Stop",
-      remindersTitle:"🔔 Brushing reminders",
-      remindersText:"Works while the app is open. Set morning and evening times.",
-      morningLbl:"Morning time", eveningLbl:"Evening time",
-      schedule:"Schedule reminders", test:"Test (4s/8s)",
-      remindersNote:"Real iPhone push needs extra setup. For demos this is fine.",
-      gameTitle:"🫧 Mini-game: Plaque Pop!",
-      gameText:"Tap the plaque bubbles to clean them away.",
-      gameStart:"Start game",
+      meTitle:"👤 My details",
+      meText:"Overview of personal details and Snoet contact information.",
+      nameLbl:"Child name",
+      birthLbl:"Date of birth",
+      parentLbl:"Parent/caregiver name",
+      emailLbl:"Email",
+      phoneLbl:"Phone number",
+      save:"Save",
+      contactTitle:"☎️ Snoet contact details",
+      contactPractice:"Snoet Pediatric Dental Center",
+      contactPhone:"Phone",
+      contactMail:"Email",
 
       sideTitle:"✨ Quick actions",
-      sideText:"Your most used actions, instantly.",
+      sideText:"Everything you use often, right at hand.",
       quick1:"🔔 Notifications",
       quick1s:"Enable brushing & appointment reminders",
       quick2:"📅 Calendar sync",
       quick2s:"Download .ics for Apple/Google",
-      quick3:"🪥 Brushing",
-      quick3s:"2-minute timer",
-      sideNote:"Tip: iPhone → Safari → Share → “Add to Home Screen” (app feel).",
+      quick3:"🪥 Brush timer",
+      quick3s:"2 minute timer",
       on:"On",
       open:"Open",
-      tabHome:"Home", tabAgenda:"Agenda", tabDossier:"Records", tabActions:"Actions",
+
+      brushTitle:"🪥 Brush timer (2 minutes)",
+      brushHint:"Press start. After 2 minutes you get a reward ⭐",
+      start:"Start",
+      stop:"Stop",
+      remindersTitle:"🔔 Brushing reminders",
+      remindersText:"Works while the app is open. Set morning and evening times.",
+      morningLbl:"Morning time",
+      eveningLbl:"Evening time",
+      schedule:"Schedule reminders",
+      test:"Test (4s/8s)",
+
+      tabHome:"Home",
+      tabAgenda:"Agenda",
+      tabDossier:"Records",
+      tabMe:"My details",
 
       toastSaved:"Saved ✅",
-      toastNeedDate:"Please fill date + time.",
+      toastNeedDate:"Fill in date + time.",
       toastNotifsOn:"Notifications enabled ✅",
-      toastNotifsDenied:"Notifications denied in browser settings.",
+      toastNotifsDenied:"Notifications denied.",
       apptNext:"Next appointment",
-      apptNone:"No appointment yet",
+      apptNone:"No appointment entered yet",
       apptHint:"Add an appointment to see a countdown.",
-      delete:"Delete",
       notifAppt:"📅 Reminder: dentist appointment!",
       notifBrushAM:"🪥 Time to brush (morning)!",
-      notifBrushPM:"🪥 Time to brush (evening)!",
-      petSad:"Snoet-pet is sad… time to brush 🪥",
-      petHyper:"Snoet-pet is super happy! Great job ⭐",
-      petOk:"Snoet-pet feels ok 🙂"
+      notifBrushPM:"🪥 Time to brush (evening)!"
     },
 
     tr: {
@@ -862,86 +871,101 @@
       tagline:"Diş hekimine birlikte sakin ✨",
       lang:"Dil",
       welcomeBadge:"Hoş geldiniz!",
-      heroTitle:"Her şey tek yerde: randevu, fırçalama & eğlence",
+      heroTitle:"Her şey tek yerde: randevu, fırçalama ve eğlence",
       heroText:"Çocuklar ve ebeveynler için: hatırlatmalar, ajanda, dosya ve Snoet-pet tamagochi.",
       enableNotifs:"Bildirimleri aç",
       sparkle:"Parıltı!",
       homeTitle:"🏠 Ana Sayfa",
       homeText:"Sıradaki randevu + Snoet-pet durumu.",
       petTitle:"🐣 Snoet-pet",
-      petStatusOk:"Snoet-pet iyi hissediyor 🙂",
+      petOk:"Snoet-pet iyi hissediyor 🙂",
+      petSad:"Snoet-pet üzgün… fırçalama zamanı 🪥",
+      petHyper:"Snoet-pet çok mutlu! Harika ⭐",
       barBrush:"🪥 Fırçalama",
       barDrink:"🥤 İçecek",
       barFood:"🍎 Yemek",
       btnAte:"Yedim",
       btnDrank:"İçtim",
       btnBrushed:"Fırçaladım",
-      petTip:"İpucu: çok tatlı/asitli? Snoet-pet daha çabuk üzülür 😬",
       openAgenda:"Ajandayı aç",
-      addDemo:"Demo randevu ekle",
-      noteHome:"Bildirimler: fırçalama (sabah/akşam) + randevu hatırlatma.",
 
       agendaTitle:"📅 Ajanda",
-      agendaText:"Randevu ekle, listele + takvime aktar.",
-      lblDate:"Tarih", lblTime:"Saat", lblType:"Tür", lblDoctor:"Doktor", lblNotes:"Not",
-      typeCheck:"Kontrol", typeTreat:"Tedavi", typeHyg:"Hijyen",
-      notesPh:"Örn. çocuk gergin, lütfen sakin anlatın.",
-      saveAppt:"Randevuyu kaydet", exportIcs:".ics indir", testApptNotif:"Randevu bildirimi test et",
-      noteAgenda:".ics indir → iPhone (Apple Takvim) aç veya Google Takvim’e içe aktar.",
+      agendaText:"Burada zaten planlanmış randevuları görürsün.",
+      exportIcs:".ics indir",
+      testApptNotif:"Randevu bildirimi test et",
+      delete:"Sil",
 
       dossierTitle:"📁 Dosya",
       dossierText:"Belgeler + yemek/içecek günlüğü.",
-      doc1:"Röntgen (demo)", doc1s:"Güncelleme: 2 hafta önce",
-      doc2:"Tedavi planı (demo)", doc2s:"Kontrol + fırçalama önerisi",
+      doc1:"Röntgen (demo)",
+      doc1s:"Güncelleme: 2 hafta önce",
+      doc2:"Tedavi planı (demo)",
+      doc2s:"Kontrol + fırçalama önerisi",
       logTitle:"📒 Yemek & içecek (günlük)",
-      logText:"Ne yediğini/içtiğini yaz. Tatlı/asit anları için faydalı.",
-      logWhenLbl:"Ne zaman?", logTypeLbl:"Tür", logFood:"🍎 Yemek", logDrink:"🥤 İçecek",
-      logWhatLbl:"Ne?", logWhatPh:"Örn. kola, su, elma, şeker…",
-      logSweetLbl:"Tatlı?", logAcidLbl:"Asitli?",
-      yes:"Evet", no:"Hayır", add:"Ekle", clear:"Temizle",
-      noteDossier:"Gerçek sürümde klinik sistemiyle güvenli bağlanır (gizlilik).",
+      logText:"Ne yediğini/içtiğini yaz.",
+      logWhenLbl:"Ne zaman?",
+      logTypeLbl:"Tür",
+      logFood:"🍎 Yemek",
+      logDrink:"🥤 İçecek",
+      logWhatLbl:"Ne?",
+      logWhatPh:"Örn. kola, su, elma, şeker…",
+      logSweetLbl:"Tatlı?",
+      logAcidLbl:"Asitli?",
+      no:"Hayır",
+      yes:"Evet",
+      add:"Ekle",
+      clear:"Temizle",
 
-      actionsTitle:"🎉 İşlemler",
-      actionsText:"Fırçalama zamanlayıcı, hatırlatmalar ve mini oyun.",
-      brushTitle:"🪥 Zamanlayıcı (2 dakika)",
-      brushHint:"Başlat’a bas. 2 dakika sonra ödül ⭐",
-      start:"Başlat", stop:"Durdur",
-      remindersTitle:"🔔 Fırçalama hatırlatmaları",
-      remindersText:"Uygulama açıkken çalışır. Sabah/akşam saatini ayarla.",
-      morningLbl:"Sabah saati", eveningLbl:"Akşam saati",
-      schedule:"Hatırlatmaları planla", test:"Test (4s/8s)",
-      remindersNote:"Gerçek iPhone push ek kurulum ister. Demo için yeterli.",
-      gameTitle:"🫧 Mini oyun: Plaque Pop!",
-      gameText:"Mikrop baloncuklarına tıkla ve temizle.",
-      gameStart:"Oyunu başlat",
+      meTitle:"👤 Bilgilerim",
+      meText:"Kişisel bilgiler ve Snoet iletişim bilgileri.",
+      nameLbl:"Çocuk adı",
+      birthLbl:"Doğum tarihi",
+      parentLbl:"Ebeveyn adı",
+      emailLbl:"E-posta",
+      phoneLbl:"Telefon numarası",
+      save:"Kaydet",
+      contactTitle:"☎️ Snoet iletişim bilgileri",
+      contactPractice:"Snoet Çocuk Diş Merkezi",
+      contactPhone:"Telefon",
+      contactMail:"E-posta",
 
       sideTitle:"✨ Hızlı işlemler",
-      sideText:"En çok kullandıkların hemen burada.",
+      sideText:"Sık kullandıkların hemen elinin altında.",
       quick1:"🔔 Bildirimler",
-      quick1s:"Fırçalama & randevu hatırlatmaları",
-      quick2:"📅 Takvim",
+      quick1s:"Fırçalama ve randevu hatırlatmaları",
+      quick2:"📅 Takvim senkron",
       quick2s:".ics indir (Apple/Google)",
-      quick3:"🪥 Fırçalama",
-      quick3s:"2 dk zamanlayıcı",
-      sideNote:"İpucu: iPhone → Safari → Paylaş → “Ana Ekrana Ekle”.",
+      quick3:"🪥 Fırçalama zamanlayıcı",
+      quick3s:"2 dakikalık zamanlayıcı",
       on:"Aç",
       open:"Aç",
-      tabHome:"Ana", tabAgenda:"Ajanda", tabDossier:"Dosya", tabActions:"İşlemler",
+
+      brushTitle:"🪥 Fırçalama zamanlayıcı (2 dakika)",
+      brushHint:"Başlat’a bas. 2 dakika sonra ödül ⭐",
+      start:"Başlat",
+      stop:"Durdur",
+      remindersTitle:"🔔 Fırçalama hatırlatmaları",
+      remindersText:"Uygulama açıkken çalışır. Sabah ve akşam saatlerini ayarla.",
+      morningLbl:"Sabah saati",
+      eveningLbl:"Akşam saati",
+      schedule:"Hatırlatmaları planla",
+      test:"Test (4s/8s)",
+
+      tabHome:"Ana",
+      tabAgenda:"Ajanda",
+      tabDossier:"Dosya",
+      tabMe:"Bilgilerim",
 
       toastSaved:"Kaydedildi ✅",
       toastNeedDate:"Tarih + saat girin.",
       toastNotifsOn:"Bildirimler açıldı ✅",
       toastNotifsDenied:"Bildirimler reddedildi.",
       apptNext:"Sıradaki randevu",
-      apptNone:"Henüz randevu yok",
+      apptNone:"Henüz randevu girilmedi",
       apptHint:"Geri sayım için randevu ekle.",
-      delete:"Sil",
       notifAppt:"📅 Hatırlatma: diş randevusu!",
       notifBrushAM:"🪥 Fırçalama zamanı (sabah)!",
-      notifBrushPM:"🪥 Fırçalama zamanı (akşam)!",
-      petSad:"Snoet-pet üzgün… fırçalama zamanı 🪥",
-      petHyper:"Snoet-pet çok mutlu! Harika ⭐",
-      petOk:"Snoet-pet iyi hissediyor 🙂"
+      notifBrushPM:"🪥 Fırçalama zamanı (akşam)!"
     },
 
     ar: {
@@ -956,103 +980,117 @@
       homeTitle:"🏠 الرئيسية",
       homeText:"موعدك القادم + حالة سنوت-بت.",
       petTitle:"🐣 سنوت-بت",
-      petStatusOk:"سنوت-بت بخير 🙂",
+      petOk:"سنوت-بت بخير 🙂",
+      petSad:"سنوت-بت حزين… وقت التنظيف 🪥",
+      petHyper:"سنوت-بت سعيد جداً! أحسنت ⭐",
       barBrush:"🪥 تنظيف",
       barDrink:"🥤 مشروبات",
       barFood:"🍎 طعام",
       btnAte:"أكلت",
       btnDrank:"شربت",
       btnBrushed:"نظفت أسناني",
-      petTip:"نصيحة: كثير من الحلو/الحمضي؟ سنوت-بت يحزن أسرع 😬",
       openAgenda:"فتح التقويم",
-      addDemo:"إضافة موعد تجريبي",
-      noteHome:"إشعارات: تنظيف (صباح/مساء) + تذكير الموعد.",
 
       agendaTitle:"📅 التقويم",
-      agendaText:"أضف المواعيد واعرضها وصدّرها للتقويم.",
-      lblDate:"التاريخ", lblTime:"الوقت", lblType:"النوع", lblDoctor:"الطبيب", lblNotes:"ملاحظة",
-      typeCheck:"فحص", typeTreat:"علاج", typeHyg:"نظافة",
-      notesPh:"مثلاً: الطفل متوتر، رجاءً اشرح بهدوء.",
-      saveAppt:"حفظ الموعد", exportIcs:"تحميل .ics", testApptNotif:"تجربة إشعار الموعد",
-      noteAgenda:"تحميل .ics → افتحه في iPhone (تقويم Apple) أو استورده في Google Calendar.",
+      agendaText:"هنا تظهر المواعيد التي تم تحديدها مسبقاً.",
+      exportIcs:"تحميل .ics",
+      testApptNotif:"تجربة إشعار الموعد",
+      delete:"حذف",
 
       dossierTitle:"📁 الملف",
-      dossierText:"وثائق + سجل طعام/شراب.",
-      doc1:"صورة أشعة (تجريبي)", doc1s:"آخر تحديث: قبل أسبوعين",
-      doc2:"خطة علاج (تجريبي)", doc2s:"فحص + نصائح تنظيف",
+      dossierText:"وثائق + سجل الطعام والشراب.",
+      doc1:"صورة أشعة (تجريبي)",
+      doc1s:"آخر تحديث: قبل أسبوعين",
+      doc2:"خطة علاج (تجريبي)",
+      doc2s:"فحص + نصائح تنظيف",
       logTitle:"📒 الطعام والشراب (سجل)",
-      logText:"سجّل ما تأكل/تشرب. مفيد للحلو/الحمضي.",
-      logWhenLbl:"متى؟", logTypeLbl:"النوع", logFood:"🍎 طعام", logDrink:"🥤 شراب",
-      logWhatLbl:"ماذا؟", logWhatPh:"مثلاً: كولا، ماء، تفاح، حلوى…",
-      logSweetLbl:"حلو؟", logAcidLbl:"حمضي؟",
-      yes:"نعم", no:"لا", add:"إضافة", clear:"مسح",
-      noteDossier:"في النسخة الحقيقية يتم الربط الآمن مع نظام العيادة (الخصوصية).",
+      logText:"سجّل ما تأكل وتشرب.",
+      logWhenLbl:"متى؟",
+      logTypeLbl:"النوع",
+      logFood:"🍎 طعام",
+      logDrink:"🥤 شراب",
+      logWhatLbl:"ماذا؟",
+      logWhatPh:"مثلاً: كولا، ماء، تفاح، حلوى…",
+      logSweetLbl:"حلو؟",
+      logAcidLbl:"حمضي؟",
+      no:"لا",
+      yes:"نعم",
+      add:"إضافة",
+      clear:"مسح",
 
-      actionsTitle:"🎉 أنشطة",
-      actionsText:"مؤقّت تنظيف، تذكيرات، ولعبة صغيرة.",
-      brushTitle:"🪥 مؤقّت (دقيقتان)",
-      brushHint:"اضغط ابدأ. بعد دقيقتين تحصل على مكافأة ⭐",
-      start:"ابدأ", stop:"إيقاف",
-      remindersTitle:"🔔 تذكيرات التنظيف",
-      remindersText:"تعمل أثناء فتح التطبيق. حدّد وقت الصباح والمساء.",
-      morningLbl:"وقت الصباح", eveningLbl:"وقت المساء",
-      schedule:"جدولة التذكيرات", test:"اختبار (4ث/8ث)",
-      remindersNote:"Push الحقيقي على iPhone يحتاج إعداد إضافي. للعرض هذا كافٍ.",
-      gameTitle:"🫧 لعبة: Plaque Pop!",
-      gameText:"انقر على الفقاعات لتنظيفها.",
-      gameStart:"ابدأ اللعبة",
+      meTitle:"👤 بياناتي",
+      meText:"ملخص البيانات الشخصية ومعلومات التواصل مع سنوت.",
+      nameLbl:"اسم الطفل",
+      birthLbl:"تاريخ الميلاد",
+      parentLbl:"اسم ولي الأمر",
+      emailLbl:"البريد الإلكتروني",
+      phoneLbl:"رقم الهاتف",
+      save:"حفظ",
+      contactTitle:"☎️ بيانات التواصل مع سنوت",
+      contactPractice:"مركز سنوت لطب أسنان الأطفال",
+      contactPhone:"الهاتف",
+      contactMail:"البريد",
 
       sideTitle:"✨ إجراءات سريعة",
-      sideText:"الأكثر استخداماً مباشرة.",
+      sideText:"كل ما تستخدمه كثيراً في متناول يدك.",
       quick1:"🔔 إشعارات",
       quick1s:"تذكيرات التنظيف والمواعيد",
       quick2:"📅 مزامنة التقويم",
-      quick2s:"تحميل .ics (Apple/Google)",
-      quick3:"🪥 تنظيف",
-      quick3s:"مؤقّت دقيقتين",
-      sideNote:"نصيحة: iPhone → Safari → مشاركة → “إضافة إلى الشاشة الرئيسية”.",
+      quick2s:"تحميل .ics لـ Apple/Google",
+      quick3:"🪥 مؤقت تنظيف",
+      quick3s:"مؤقت دقيقتين",
       on:"تشغيل",
       open:"فتح",
-      tabHome:"الرئيسية", tabAgenda:"التقويم", tabDossier:"الملف", tabActions:"أنشطة",
+
+      brushTitle:"🪥 مؤقّت تنظيف (دقيقتان)",
+      brushHint:"اضغط ابدأ. بعد دقيقتين تحصل على مكافأة ⭐",
+      start:"ابدأ",
+      stop:"إيقاف",
+      remindersTitle:"🔔 تذكيرات التنظيف",
+      remindersText:"تعمل أثناء فتح التطبيق. حدّد وقت الصباح والمساء.",
+      morningLbl:"وقت الصباح",
+      eveningLbl:"وقت المساء",
+      schedule:"جدولة التذكيرات",
+      test:"اختبار (4ث/8ث)",
+
+      tabHome:"الرئيسية",
+      tabAgenda:"التقويم",
+      tabDossier:"الملف",
+      tabMe:"بياناتي",
 
       toastSaved:"تم الحفظ ✅",
       toastNeedDate:"أدخل التاريخ والوقت.",
       toastNotifsOn:"تم تفعيل الإشعارات ✅",
       toastNotifsDenied:"تم رفض الإشعارات.",
       apptNext:"الموعد القادم",
-      apptNone:"لا يوجد موعد بعد",
+      apptNone:"لم يتم إدخال موعد بعد",
       apptHint:"أضف موعداً لرؤية العدّ التنازلي.",
-      delete:"حذف",
       notifAppt:"📅 تذكير: موعد طبيب الأسنان!",
       notifBrushAM:"🪥 وقت تنظيف الأسنان (صباحاً)!",
-      notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!",
-      petSad:"سنوت-بت حزين… وقت التنظيف 🪥",
-      petHyper:"سنوت-بت سعيد جداً! أحسنت ⭐",
-      petOk:"سنوت-بت بخير 🙂"
+      notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!"
     }
   };
 
   let lang = localStorage.getItem("snoet_lang") || "nl";
 
   function t(key){
-    return (STR[lang] && STR[lang][key]) ? STR[lang][key] : (STR.nl[key] || key);
+    return (STR[lang] && STR[lang][key]) ? STR[lang][key] : key;
   }
 
   function applyLang(){
-    // RTL for Arabic
     document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
     document.documentElement.lang = lang;
 
     document.querySelectorAll("[data-i18n]").forEach(el=>{
       el.textContent = t(el.getAttribute("data-i18n"));
     });
+
     document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
       el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
     });
 
-    // mark active pill
-    document.querySelectorAll(".pill[data-lang]").forEach(b=>{
-      b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    document.querySelectorAll(".pill[data-lang]").forEach(btn=>{
+      btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
     });
 
     renderAppts();
@@ -1061,56 +1099,56 @@
     renderTama();
   }
 
-  // ---------------- UI NAV ----------------
   function showPage(key){
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById("page-"+key).classList.add("active");
+    document.getElementById("page-" + key).classList.add("active");
 
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.querySelector(`.tab[data-page="${key}"]`).classList.add("active");
   }
-  document.querySelectorAll(".tab").forEach(t=>{
-    t.addEventListener("click", ()=> showPage(t.getAttribute("data-page")));
+
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.addEventListener("click", ()=> showPage(tab.getAttribute("data-page")));
   });
 
-  // ---------------- Toast ----------------
   function toast(msg){
     const el = document.createElement("div");
     el.textContent = msg;
-    el.style.position="fixed";
-    el.style.left="50%";
-    el.style.bottom="92px";
-    el.style.transform="translateX(-50%)";
-    el.style.background="rgba(0,0,0,.65)";
-    el.style.border="1px solid rgba(255,255,255,.14)";
-    el.style.padding="10px 12px";
-    el.style.borderRadius="14px";
-    el.style.backdropFilter="blur(10px)";
-    el.style.fontWeight="900";
-    el.style.zIndex="9999";
+    el.style.position = "fixed";
+    el.style.left = "50%";
+    el.style.bottom = "92px";
+    el.style.transform = "translateX(-50%)";
+    el.style.background = "rgba(0,0,0,.65)";
+    el.style.border = "1px solid rgba(255,255,255,.14)";
+    el.style.padding = "10px 12px";
+    el.style.borderRadius = "14px";
+    el.style.backdropFilter = "blur(10px)";
+    el.style.fontWeight = "900";
+    el.style.zIndex = "9999";
     document.body.appendChild(el);
     setTimeout(()=> el.remove(), 1400);
   }
 
-  // ---------------- Sparkles ----------------
   function spawnStars(x,y,count=10){
     const chars = ["✨","⭐","💫","🌟"];
     for(let i=0;i<count;i++){
       const s = document.createElement("div");
-      s.className="star";
+      s.className = "star";
       s.textContent = chars[Math.floor(Math.random()*chars.length)];
       s.style.left = (x + (Math.random()*20-10)) + "px";
       s.style.top = (y + (Math.random()*20-10)) + "px";
-      s.style.setProperty("--dx", (Math.random()*220-110)+"px");
-      s.style.setProperty("--dy", (Math.random()*-220-60)+"px");
+      s.style.setProperty("--dx", (Math.random()*220-110) + "px");
+      s.style.setProperty("--dy", (Math.random()*-220-60) + "px");
       s.style.fontSize = (14 + Math.random()*18) + "px";
       document.body.appendChild(s);
       setTimeout(()=> s.remove(), 950);
     }
   }
-  document.getElementById("btnSparkle").addEventListener("click",(e)=> spawnStars(e.clientX, e.clientY, 14));
 
-  // ---------------- Notifications (demo) ----------------
+  document.getElementById("btnSparkle").addEventListener("click", e=>{
+    spawnStars(e.clientX, e.clientY, 14);
+  });
+
   async function enableNotifications(){
     if(!("Notification" in window)){
       toast("Not supported");
@@ -1124,6 +1162,7 @@
     toast(t("toastNotifsDenied"));
     return false;
   }
+
   function notify(title, body){
     try{
       if(Notification.permission === "granted"){
@@ -1131,49 +1170,82 @@
       } else {
         toast(title + " — " + body);
       }
-    }catch{
+    } catch {
       toast(title + " — " + body);
     }
   }
 
-  // ---------------- Appointments ----------------
-  function loadAppts(){ return JSON.parse(localStorage.getItem("snoet_appts") || "[]"); }
-  function saveAppts(appts){ localStorage.setItem("snoet_appts", JSON.stringify(appts)); }
+  function loadAppts(){
+    const stored = JSON.parse(localStorage.getItem("snoet_appts") || "null");
+    if(stored && stored.length) return stored;
+
+    const sample = [
+      {
+        dt: new Date(Date.now() + 5 * 24 * 3600 * 1000).toISOString(),
+        type: "Controle",
+        doctor: "Dr. Snoet",
+        notes: "Rustig uitleggen + sticker na afloop 😊"
+      },
+      {
+        dt: new Date(Date.now() + 18 * 24 * 3600 * 1000).toISOString(),
+        type: "Mondhygiëne",
+        doctor: "Mondhygiënist Snoet",
+        notes: "Korte poetsinstructie"
+      }
+    ];
+    localStorage.setItem("snoet_appts", JSON.stringify(sample));
+    return sample;
+  }
+
+  function saveAppts(appts){
+    localStorage.setItem("snoet_appts", JSON.stringify(appts));
+  }
 
   function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    return String(s || "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[m]));
   }
+
   function formatDT(dtISO){
     const d = new Date(dtISO);
-    if(isNaN(d)) return dtISO;
-    return d.toLocaleString(undefined, { weekday:"short", year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    return d.toLocaleString(undefined, {
+      weekday:"short",
+      year:"numeric",
+      month:"short",
+      day:"numeric",
+      hour:"2-digit",
+      minute:"2-digit"
+    });
   }
+
   function timeUntil(dtISO){
-    try{
-      const tms = new Date(dtISO).getTime();
-      const now = Date.now();
-      const diff = tms - now;
-      if(diff <= 0) return "nu";
-      const h = Math.floor(diff/3600000);
-      const d = Math.floor(h/24);
-      if(d>=1) return `${d}d`;
-      const m = Math.floor((diff%3600000)/60000);
-      return `${h}u ${m}m`;
-    }catch{ return ""; }
+    const tms = new Date(dtISO).getTime();
+    const diff = tms - Date.now();
+    if(diff <= 0) return "nu";
+    const h = Math.floor(diff / 3600000);
+    const d = Math.floor(h / 24);
+    if(d >= 1) return `${d}d`;
+    const m = Math.floor((diff % 3600000) / 60000);
+    return `${h}u ${m}m`;
   }
 
   function renderAppts(){
-    const appts = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
+    const appts = loadAppts().sort((a,b)=> a.dt.localeCompare(b.dt));
     const list = document.getElementById("apptList");
     list.innerHTML = "";
 
     appts.forEach((a,idx)=>{
       const div = document.createElement("div");
-      div.className="item";
+      div.className = "item";
       div.innerHTML = `
         <div>
           <strong>${escapeHtml(a.type)} — ${formatDT(a.dt)}</strong>
-          <small>${escapeHtml(a.doctor || "Snoet")} • ${escapeHtml(a.notes || "")}</small>
+          <small>${escapeHtml(a.doctor)} • ${escapeHtml(a.notes)}</small>
         </div>
         <button class="btn danger" style="padding:8px 10px;" data-del="${idx}">${t("delete")}</button>
       `;
@@ -1182,25 +1254,23 @@
 
     list.querySelectorAll("[data-del]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const i = Number(btn.getAttribute("data-del"));
-        const ap = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
-        ap.splice(i,1);
-        saveAppts(ap);
+        const appts = loadAppts().sort((a,b)=> a.dt.localeCompare(b.dt));
+        appts.splice(Number(btn.getAttribute("data-del")), 1);
+        saveAppts(appts);
         renderAppts();
         renderNextAppt();
-        toast("🗑️");
       });
     });
   }
 
   function renderNextAppt(){
-    const box = document.getElementById("nextApptBox");
-    const appts = loadAppts().sort((a,b)=> (a.dt||"").localeCompare(b.dt||""));
+    const appts = loadAppts().sort((a,b)=> a.dt.localeCompare(b.dt));
     const next = appts[0];
+    const box = document.getElementById("nextApptBox");
+    box.innerHTML = "";
 
-    box.innerHTML="";
     const div = document.createElement("div");
-    div.className="item";
+    div.className = "item";
 
     if(!next){
       div.innerHTML = `
@@ -1215,7 +1285,7 @@
       div.innerHTML = `
         <div>
           <strong>${t("apptNext")}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
-          <small>${escapeHtml(next.doctor || "Snoet")} • ${escapeHtml(next.notes || "")}</small>
+          <small>${escapeHtml(next.doctor)} • ${escapeHtml(next.notes)}</small>
         </div>
         <span class="chip">⏰ ${timeUntil(next.dt)}</span>
       `;
@@ -1223,42 +1293,6 @@
     box.appendChild(div);
   }
 
-  document.getElementById("btnGoAgenda").addEventListener("click", ()=> showPage("agenda"));
-  document.getElementById("btnGoActions").addEventListener("click", ()=> showPage("acties"));
-
-  document.getElementById("btnAddDemo").addEventListener("click", ()=>{
-    const appts = loadAppts();
-    const dt = new Date(Date.now() + 6*24*3600000);
-    dt.setHours(10, 0, 0, 0);
-    appts.push({ dt: dt.toISOString(), type:(lang==="en"?"Check-up":"Controle"), doctor:"Dr. Snoet", notes:"Rustig uitleggen + sticker 😊" });
-    saveAppts(appts);
-    renderAppts();
-    renderNextAppt();
-    toast("✅");
-  });
-
-  document.getElementById("btnSaveAppt").addEventListener("click", ()=>{
-    const date = document.getElementById("apptDate").value;
-    const time = document.getElementById("apptTime").value;
-    if(!date || !time){
-      toast(t("toastNeedDate"));
-      return;
-    }
-    const dtISO = new Date(date + "T" + time + ":00").toISOString();
-    const appts = loadAppts();
-    appts.push({
-      dt: dtISO,
-      type: document.getElementById("apptType").value,
-      doctor: document.getElementById("apptDoctor").value,
-      notes: document.getElementById("apptNotes").value
-    });
-    saveAppts(appts);
-    renderAppts();
-    renderNextAppt();
-    toast(t("toastSaved"));
-  });
-
-  // ---------------- ICS export ----------------
   function toICSDate(d){
     const pad = n => String(n).padStart(2,"0");
     return d.getUTCFullYear()
@@ -1269,9 +1303,11 @@
       + pad(d.getUTCMinutes())
       + "00Z";
   }
+
   function icsSafe(s){
-    return String(s||"").replace(/\\n/g," ").replace(/[,\;]/g," ").replace(/\r?\n/g," ");
+    return String(s || "").replace(/\\n/g, " ").replace(/[,\;]/g, " ").replace(/\r?\n/g, " ");
   }
+
   function makeICS(appts){
     const lines = [
       "BEGIN:VCALENDAR",
@@ -1280,23 +1316,25 @@
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH"
     ];
+
     appts.forEach((a,i)=>{
-      const dtStart = toICSDate(new Date(a.dt));
-      const dtEnd = toICSDate(new Date(new Date(a.dt).getTime() + 30*60000));
-      const uid = `snoet-${Date.now()}-${i}@demo`;
+      const start = new Date(a.dt);
+      const end = new Date(start.getTime() + 30 * 60000);
       lines.push("BEGIN:VEVENT");
-      lines.push("UID:"+uid);
-      lines.push("DTSTAMP:"+toICSDate(new Date()));
-      lines.push("DTSTART:"+dtStart);
-      lines.push("DTEND:"+dtEnd);
-      lines.push("SUMMARY:"+icsSafe(`Dentist: ${a.type || "Appointment"}`));
-      lines.push("DESCRIPTION:"+icsSafe(a.notes || ""));
-      lines.push("LOCATION:"+icsSafe("Kindermondzorgcentrum Snoet"));
+      lines.push("UID:snoet-" + Date.now() + "-" + i + "@demo");
+      lines.push("DTSTAMP:" + toICSDate(new Date()));
+      lines.push("DTSTART:" + toICSDate(start));
+      lines.push("DTEND:" + toICSDate(end));
+      lines.push("SUMMARY:" + icsSafe(a.type));
+      lines.push("DESCRIPTION:" + icsSafe(a.notes));
+      lines.push("LOCATION:" + icsSafe("Kindermondzorgcentrum Snoet"));
       lines.push("END:VEVENT");
     });
+
     lines.push("END:VCALENDAR");
     return lines.join("\r\n");
   }
+
   function download(filename, text){
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], {type:"text/calendar;charset=utf-8"}));
@@ -1305,82 +1343,95 @@
     a.click();
     a.remove();
   }
+
   function exportICS(){
-    const appts = loadAppts();
-    if(appts.length === 0){ toast("—"); return; }
-    download("snoet-afspraken.ics", makeICS(appts));
-    toast(".ics ✅");
+    download("snoet-afspraken.ics", makeICS(loadAppts()));
   }
+
+  document.getElementById("btnGoAgenda").addEventListener("click", ()=> showPage("agenda"));
   document.getElementById("btnExportICS").addEventListener("click", exportICS);
   document.getElementById("btnExportICS2").addEventListener("click", exportICS);
 
   document.getElementById("btnTestApptNotif").addEventListener("click", async ()=>{
-    await enableNotifications();
-    setTimeout(()=> notify("Snoet", t("notifAppt")), 5000);
-    toast("🔔 (5s)");
+    const ok = await enableNotifications();
+    if(ok){
+      setTimeout(()=> notify("Snoet", t("notifAppt")), 5000);
+      toast("🔔 (5s)");
+    }
   });
 
-  // ---------------- Brush Timer ----------------
   let timer = null;
   let total = 120;
   let left = 120;
+
   function renderTimer(){
-    const m = Math.floor(left/60);
-    const s = left%60;
+    const m = Math.floor(left / 60);
+    const s = left % 60;
     document.getElementById("timerTxt").textContent = `${m}:${String(s).padStart(2,"0")}`;
-    const pct = ((total-left)/total)*100;
-    document.getElementById("ring").style.setProperty("--p", pct.toFixed(1)+"%");
+    const pct = ((total - left) / total) * 100;
+    document.getElementById("ring").style.setProperty("--p", pct.toFixed(1) + "%");
   }
+
   function startTimer(){
     if(timer) return;
     timer = setInterval(()=>{
       left--;
       renderTimer();
-      if(left<=0){
+      if(left <= 0){
         stopTimer();
-        left = total; renderTimer();
-        spawnStars(window.innerWidth/2, window.innerHeight/2, 18);
+        left = total;
+        renderTimer();
+        spawnStars(window.innerWidth / 2, window.innerHeight / 2, 18);
         notify("⭐ Snoet", "2 minuten gepoetst! Goed gedaan!");
-        // Tamagochi boost
         tama.brush += 28;
         renderTama();
       }
-    },1000);
+    }, 1000);
   }
-  function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
+
+  function stopTimer(){
+    if(timer){
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
   document.getElementById("btnStartTimer").addEventListener("click", startTimer);
   document.getElementById("btnStopTimer").addEventListener("click", stopTimer);
+  document.getElementById("btnOpenBrush").addEventListener("click", ()=>{
+    window.scrollTo({ top: document.body.scrollHeight / 2, behavior: "smooth" });
+  });
 
-  // ---------------- Brush reminders ----------------
   const LS_BRUSH = "snoet_brushtimes";
   function getBrushTimes(){
-    try{ return JSON.parse(localStorage.getItem(LS_BRUSH)) || {morning:"07:30", evening:"20:00"}; }
-    catch{ return {morning:"07:30", evening:"20:00"}; }
+    return JSON.parse(localStorage.getItem(LS_BRUSH) || '{"morning":"07:30","evening":"20:00"}');
   }
-  function setBrushTimes(o){ localStorage.setItem(LS_BRUSH, JSON.stringify(o)); }
+  function setBrushTimes(obj){
+    localStorage.setItem(LS_BRUSH, JSON.stringify(obj));
+  }
+
+  let brushTimers = [];
+  function clearBrushTimers(){
+    brushTimers.forEach(id => clearTimeout(id));
+    brushTimers = [];
+  }
 
   function msUntil(timeStr){
     const [hh, mm] = timeStr.split(":").map(Number);
     const now = new Date();
     const t = new Date();
     t.setHours(hh, mm, 0, 0);
-    if(t.getTime() <= now.getTime()) t.setDate(t.getDate()+1);
+    if(t.getTime() <= now.getTime()) t.setDate(t.getDate() + 1);
     return t.getTime() - now.getTime();
-  }
-
-  let brushTimers = [];
-  function clearBrushTimers(){
-    brushTimers.forEach(id=> clearTimeout(id));
-    brushTimers = [];
   }
 
   function scheduleBrush(morning, evening){
     clearBrushTimers();
-    setBrushTimes({morning, evening});
+    setBrushTimes({ morning, evening });
 
     const id1 = setTimeout(()=>{
       notify("Snoet", t("notifBrushAM"));
-      scheduleBrush(morning, evening); // reschedule next days
+      scheduleBrush(morning, evening);
     }, msUntil(morning));
 
     const id2 = setTimeout(()=>{
@@ -1393,85 +1444,44 @@
 
   document.getElementById("btnScheduleBrush").addEventListener("click", async ()=>{
     const ok = await enableNotifications();
-    if(!ok) return;
-    const morning = document.getElementById("brushMorning").value || "07:30";
-    const evening = document.getElementById("brushEvening").value || "20:00";
-    scheduleBrush(morning, evening);
-    toast("🗓️ ✅");
+    if(ok){
+      scheduleBrush(
+        document.getElementById("brushMorning").value || "07:30",
+        document.getElementById("brushEvening").value || "20:00"
+      );
+      toast("🗓️ ✅");
+    }
   });
 
   document.getElementById("btnTestBrush").addEventListener("click", async ()=>{
     const ok = await enableNotifications();
-    if(!ok) return;
-    setTimeout(()=> notify("Snoet", t("notifBrushAM")), 4000);
-    setTimeout(()=> notify("Snoet", t("notifBrushPM")), 8000);
-    toast("🧪");
+    if(ok){
+      setTimeout(()=> notify("Snoet", t("notifBrushAM")), 4000);
+      setTimeout(()=> notify("Snoet", t("notifBrushPM")), 8000);
+      toast("🧪");
+    }
   });
 
-  // ---------------- Mini game ----------------
-  let score = 0;
-  let gameInterval = null;
-
-  function startGame(){
-    const area = document.getElementById("gameArea");
-    area.innerHTML = "";
-    score = 0;
-    document.getElementById("scoreTxt").textContent = score;
-
-    if(gameInterval) clearInterval(gameInterval);
-
-    const spawn = ()=>{
-      const p = document.createElement("div");
-      p.className="plaque";
-      p.textContent = "🦠";
-      const x = Math.random()*(area.clientWidth-50);
-      const y = Math.random()*(area.clientHeight-50);
-      p.style.left = x+"px";
-      p.style.top = y+"px";
-      p.addEventListener("click",(e)=>{
-        score++;
-        document.getElementById("scoreTxt").textContent = score;
-        spawnStars(e.clientX, e.clientY, 10);
-        p.remove();
-        // Tamagochi small fun boost
-        if(score % 4 === 0){ tama.food += 2; renderTama(); }
-      });
-      area.appendChild(p);
-      setTimeout(()=>{ if(p.isConnected) p.remove(); }, 3500);
-    };
-
-    for(let i=0;i<6;i++) spawn();
-    gameInterval = setInterval(spawn, 650);
-    setTimeout(()=>{ if(gameInterval) clearInterval(gameInterval); gameInterval=null; }, 15000);
+  function loadLog(){
+    return JSON.parse(localStorage.getItem("snoet_foodlog") || "[]");
   }
-  document.getElementById("btnStartGame").addEventListener("click", startGame);
-
-  // ---------------- Food/drink log ----------------
-  const LS_LOG = "snoet_foodlog";
-  function loadLog(){ return JSON.parse(localStorage.getItem(LS_LOG) || "[]"); }
-  function saveLog(arr){ localStorage.setItem(LS_LOG, JSON.stringify(arr)); }
+  function saveLog(log){
+    localStorage.setItem("snoet_foodlog", JSON.stringify(log));
+  }
 
   function renderLog(){
     const list = document.getElementById("logList");
-    if(!list) return;
-    const log = loadLog();
     list.innerHTML = "";
+    const log = loadLog();
 
     if(log.length === 0){
-      list.innerHTML = `
-        <div class="item">
-          <div>
-            <strong>—</strong>
-            <small class="muted">Log is leeg</small>
-          </div>
-          <span class="chip">📒</span>
-        </div>`;
+      list.innerHTML = `<div class="item"><div><strong>—</strong><small class="muted">Log is leeg</small></div><span class="chip">📒</span></div>`;
       return;
     }
 
     log.slice().reverse().forEach((x, idxFromEnd)=>{
       const div = document.createElement("div");
-      div.className="item";
+      div.className = "item";
       div.innerHTML = `
         <div>
           <strong>${x.type === "drink" ? "🥤" : "🍎"} ${escapeHtml(x.what)}</strong>
@@ -1495,36 +1505,39 @@
 
   document.getElementById("btnAddLog").addEventListener("click", ()=>{
     const log = loadLog();
-    const when = document.getElementById("logWhen").value || new Date().toISOString();
-    const type = document.getElementById("logType").value;
-    const what = document.getElementById("logWhat").value || "(leeg)";
-    const sweet = document.getElementById("logSweet").value;
-    const acid = document.getElementById("logAcid").value;
-
-    log.push({ when, type, what, sweet, acid });
+    const entry = {
+      when: document.getElementById("logWhen").value || new Date().toISOString(),
+      type: document.getElementById("logType").value,
+      what: document.getElementById("logWhat").value || "(leeg)",
+      sweet: document.getElementById("logSweet").value,
+      acid: document.getElementById("logAcid").value
+    };
+    log.push(entry);
     saveLog(log);
 
-    // tamagochi effect
-    if(type === "drink") tama.drink += 14; else tama.food += 16;
-    if(sweet === "yes" || acid === "yes"){ tama.brush -= 10; }
+    if(entry.type === "drink") tama.drink += 14;
+    else tama.food += 16;
+    if(entry.sweet === "yes" || entry.acid === "yes") tama.brush -= 10;
     renderTama();
 
     document.getElementById("logWhat").value = "";
     renderLog();
-    toast("➕");
   });
 
   document.getElementById("btnClearLog").addEventListener("click", ()=>{
-    localStorage.removeItem(LS_LOG);
+    localStorage.removeItem("snoet_foodlog");
     renderLog();
-    toast("🧹");
   });
 
-  // ---------------- Tamagochi logic ----------------
-  const LS_TAMA = "snoet_tama";
-  let tama = JSON.parse(localStorage.getItem(LS_TAMA) || "null") || { brush:50, drink:50, food:50 };
+  let tama = JSON.parse(localStorage.getItem("snoet_tama") || "null") || {
+    brush: 50,
+    drink: 50,
+    food: 50
+  };
 
-  function clamp(n){ return Math.max(0, Math.min(100, n)); }
+  function clamp(n){
+    return Math.max(0, Math.min(100, n));
+  }
 
   function calcMood(){
     const avg = (tama.brush + tama.drink + tama.food) / 3;
@@ -1534,87 +1547,107 @@
   }
 
   function renderTama(){
-    const b1 = document.getElementById("barBrush");
-    if(!b1) return;
-
     tama.brush = clamp(tama.brush);
     tama.drink = clamp(tama.drink);
-    tama.food  = clamp(tama.food);
+    tama.food = clamp(tama.food);
 
     document.getElementById("barBrush").style.width = tama.brush + "%";
     document.getElementById("barDrink").style.width = tama.drink + "%";
-    document.getElementById("barFood").style.width  = tama.food + "%";
+    document.getElementById("barFood").style.width = tama.food + "%";
+
     document.getElementById("valBrush").textContent = tama.brush + "%";
     document.getElementById("valDrink").textContent = tama.drink + "%";
-    document.getElementById("valFood").textContent  = tama.food + "%";
+    document.getElementById("valFood").textContent = tama.food + "%";
 
     const mood = calcMood();
     const pet = document.getElementById("tamaPet");
-    const st = document.getElementById("tamaStatus");
+    const status = document.getElementById("tamaStatus");
 
     if(mood === "sad"){
       pet.textContent = "😬";
-      st.textContent = t("petSad");
+      status.textContent = t("petSad");
     } else if(mood === "hyper"){
       pet.textContent = "🤩";
-      st.textContent = t("petHyper");
+      status.textContent = t("petHyper");
     } else {
       pet.textContent = "🦷";
-      st.textContent = t("petOk");
+      status.textContent = t("petOk");
     }
 
-    localStorage.setItem(LS_TAMA, JSON.stringify(tama));
+    localStorage.setItem("snoet_tama", JSON.stringify(tama));
   }
 
-  // decay each load (light)
   function decay(){
     tama.brush -= 8;
     tama.drink -= 3;
-    tama.food  -= 3;
+    tama.food -= 3;
   }
 
   document.getElementById("btnFed").addEventListener("click", ()=>{
-    tama.food += 18; renderTama();
+    tama.food += 18;
+    renderTama();
   });
+
   document.getElementById("btnDrank").addEventListener("click", ()=>{
-    tama.drink += 14; renderTama();
+    tama.drink += 14;
+    renderTama();
   });
+
   document.getElementById("btnBrushed").addEventListener("click", ()=>{
-    tama.brush += 35; renderTama();
+    tama.brush += 35;
+    renderTama();
     notify("⭐ Snoet", "Goed gepoetst! Snoet-pet is blij 😄");
   });
-  document.getElementById("tamaPet").addEventListener("click",(e)=> spawnStars(e.clientX, e.clientY, 12));
 
-  // ---------------- Language switching ----------------
+  document.getElementById("tamaPet").addEventListener("click", e=>{
+    spawnStars(e.clientX, e.clientY, 12);
+  });
+
+  function loadProfile(){
+    return JSON.parse(localStorage.getItem("snoet_profile") || "{}");
+  }
+  function saveProfile(profile){
+    localStorage.setItem("snoet_profile", JSON.stringify(profile));
+  }
+
+  document.getElementById("btnSaveProfile").addEventListener("click", ()=>{
+    saveProfile({
+      name: document.getElementById("profileName").value,
+      birth: document.getElementById("profileBirth").value,
+      parent: document.getElementById("profileParent").value,
+      email: document.getElementById("profileEmail").value,
+      phone: document.getElementById("profilePhone").value
+    });
+    toast(t("toastSaved"));
+  });
+
   document.querySelectorAll(".pill[data-lang]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       lang = btn.getAttribute("data-lang");
       localStorage.setItem("snoet_lang", lang);
       applyLang();
-      toast("🌍");
     });
   });
 
-  // ---------------- Notifs buttons ----------------
   document.getElementById("btnEnableNotifs").addEventListener("click", enableNotifications);
   document.getElementById("btnEnableNotifs2").addEventListener("click", enableNotifications);
 
-  // ---------------- Init ----------------
   (function init(){
-    // set defaults
     const d = new Date();
-    const pad = n => String(n).padStart(2,"0");
-    document.getElementById("apptDate").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    document.getElementById("apptTime").value = "10:00";
+    const pad = n => String(n).padStart(2, "0");
+    document.getElementById("logWhen").value =
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
-    // log default now
-    const when = document.getElementById("logWhen");
-    when.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-
-    // load brush times
     const bt = getBrushTimes();
     document.getElementById("brushMorning").value = bt.morning;
     document.getElementById("brushEvening").value = bt.evening;
+
+    const p = loadProfile();
+    if(p.name) document.getElementById("profileName").value = p.name;
+    if(p.birth) document.getElementById("profileBirth").value = p.birth;
+    if(p.parent) document.getElementById("profileParent").value = p.parent;
+    if(p.email) document.getElementById("profileEmail").value = p.email;
+    if(p.phone) document.getElementById("profilePhone").value = p.phone;
 
     decay();
     renderTimer();
