@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#7c3aed" />
-  <title>Snoet SuperApp</title>
+  <title>Snoet</title>
   <style>
     :root{
       --card: rgba(18,25,40,.72);
@@ -298,52 +298,6 @@
     }
     .ring span{font-weight:900;font-size:18px}
 
-    .tamaTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .tamaPet{
-      width:78px;
-      height:78px;
-      border-radius:22px;
-      display:grid;
-      place-items:center;
-      background:linear-gradient(135deg, rgba(14,165,233,.45), rgba(167,139,250,.35), rgba(244,114,182,.25));
-      border:1px solid rgba(255,255,255,.16);
-      box-shadow:0 14px 40px rgba(0,0,0,.35);
-      font-size:36px;
-      user-select:none;
-      cursor:pointer;
-    }
-    .bars{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .barRow{
-      display:grid;
-      grid-template-columns:96px 1fr 60px;
-      gap:10px;
-      align-items:center;
-    }
-    .bar{
-      height:14px;
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.12);
-      overflow:hidden;
-    }
-    .fill{
-      height:100%;
-      width:50%;
-      border-radius:999px;
-      background:linear-gradient(90deg, rgba(34,197,94,.95), rgba(250,204,21,.55));
-    }
-
     .footerNote{
       margin-top:10px;
       font-size:12px;
@@ -351,15 +305,14 @@
     }
   </style>
 </head>
-
 <body>
   <div class="app">
     <div class="topbar">
       <div class="brand">
         <div class="logo">🦷</div>
         <div>
-          <h1 data-i18n="appName">Snoet SuperApp</h1>
-          <p data-i18n="tagline">Samen rustig naar de tandarts ✨</p>
+          <h1 data-i18n="appName">Snoet</h1>
+          <p data-i18n="tagline">Kindermondzorgcentrum Snoet</p>
         </div>
       </div>
 
@@ -376,9 +329,9 @@
       <div class="title">
         <div>
           <div class="badge" data-i18n="welcomeBadge">Welkom!</div>
-          <h2 style="margin:8px 0 6px;" data-i18n="heroTitle">Alles op één plek: afspraken, poetsen & fun</h2>
+          <h2 style="margin:8px 0 6px;" data-i18n="heroTitle">Afspraken, herinneringen en gegevens op één plek</h2>
           <div class="muted" data-i18n="heroText">
-            Voor kinderen én ouders: herinneringen, agenda, dossier en een Snoet-pet tamagochi.
+            Een duidelijk overzicht voor kinderen en ouders.
           </div>
         </div>
         <div class="row">
@@ -393,41 +346,7 @@
 
         <section class="page active" id="page-home">
           <h2 data-i18n="homeTitle">🏠 Home</h2>
-          <div class="muted" data-i18n="homeText">Je volgende afspraak + Snoet-pet status.</div>
-
-          <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
-            <div class="tamaTop">
-              <div>
-                <h2 style="margin:0 0 6px;" data-i18n="petTitle">🐣 Snoet-pet</h2>
-                <p class="muted" id="tamaStatus" data-i18n="petOk">Snoet-pet voelt zich oké 🙂</p>
-              </div>
-              <div class="tamaPet" id="tamaPet">🦷</div>
-            </div>
-
-            <div class="bars">
-              <div class="barRow">
-                <span data-i18n="barBrush">🪥 Poetsen</span>
-                <div class="bar"><div id="barBrush" class="fill"></div></div>
-                <span id="valBrush">50%</span>
-              </div>
-              <div class="barRow">
-                <span data-i18n="barDrink">🥤 Drink</span>
-                <div class="bar"><div id="barDrink" class="fill"></div></div>
-                <span id="valDrink">50%</span>
-              </div>
-              <div class="barRow">
-                <span data-i18n="barFood">🍎 Eten</span>
-                <div class="bar"><div id="barFood" class="fill"></div></div>
-                <span id="valFood">50%</span>
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:10px;">
-              <button class="btn green" id="btnFed">🍽️ <span data-i18n="btnAte">Ik heb gegeten</span></button>
-              <button class="btn" id="btnDrank">🥤 <span data-i18n="btnDrank">Ik heb gedronken</span></button>
-              <button class="btn secondary" id="btnBrushed">🪥 <span data-i18n="btnBrushed">Ik heb gepoetst</span></button>
-            </div>
-          </section>
+          <div class="muted" data-i18n="homeText">Je volgende afspraak in één oogopslag.</div>
 
           <div class="list" id="nextApptBox" style="margin-top:12px;"></div>
 
@@ -450,7 +369,7 @@
 
         <section class="page" id="page-dossier">
           <h2 data-i18n="dossierTitle">📁 Dossier</h2>
-          <div class="muted" data-i18n="dossierText">Documenten + eten/drinken dagboek.</div>
+          <div class="muted" data-i18n="dossierText">Documenten en een overzicht van eet- en drinkmomenten.</div>
 
           <div class="list">
             <div class="item">
@@ -470,8 +389,8 @@
           </div>
 
           <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
-            <h2 data-i18n="logTitle">📒 Eten & drinken (dagboek)</h2>
-            <p class="muted" data-i18n="logText">Noteer wat je eet/drinkt.</p>
+            <h2 data-i18n="logTitle">📒 Eten & drinken</h2>
+            <p class="muted" data-i18n="logText">Noteer eet- en drinkmomenten gedurende de dag.</p>
 
             <div class="two">
               <div>
@@ -518,7 +437,7 @@
 
         <section class="page" id="page-gegevens">
           <h2 data-i18n="meTitle">👤 Mijn gegevens</h2>
-          <div class="muted" data-i18n="meText">Overzicht van persoonsgegevens en contact met Snoet.</div>
+          <div class="muted" data-i18n="meText">Overzicht van persoonlijke gegevens, contactgegevens van de praktijk en app-instellingen.</div>
 
           <div class="two">
             <div>
@@ -550,6 +469,33 @@
           </div>
 
           <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
+            <h2 data-i18n="settingsTitle">⚙️ Instellingen</h2>
+
+            <label data-i18n="passwordLbl">Wachtwoord wijzigen</label>
+            <input id="profilePassword" type="password" placeholder="Nieuw wachtwoord">
+
+            <label data-i18n="languageLbl">Taalinstellingen</label>
+            <select id="settingsLanguage">
+              <option value="nl">Nederlands</option>
+              <option value="en">English</option>
+              <option value="tr">Türkçe</option>
+              <option value="ar">العربية</option>
+            </select>
+
+            <label data-i18n="notifPrefLbl">Voorkeur meldingen</label>
+            <select id="settingsNotif">
+              <option value="all" data-i18n="notifAll">Alle meldingen</option>
+              <option value="appointments" data-i18n="notifAppointments">Alleen afspraken</option>
+              <option value="brush" data-i18n="notifBrush">Alleen poetsen</option>
+              <option value="off" data-i18n="notifOff">Uit</option>
+            </select>
+
+            <div class="row" style="margin-top:10px;">
+              <button class="btn secondary" id="btnSaveSettings">💾 <span data-i18n="saveSettings">Instellingen opslaan</span></button>
+            </div>
+          </section>
+
+          <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
             <h2 data-i18n="contactTitle">☎️ Contactgegevens Snoet</h2>
             <div class="list">
               <div class="item">
@@ -572,6 +518,13 @@
                   <small>info@snoet.nl</small>
                 </div>
                 <span class="chip">✉️</span>
+              </div>
+              <div class="item">
+                <div>
+                  <strong data-i18n="contactWeb">Website</strong>
+                  <small>snoet.nl</small>
+                </div>
+                <span class="chip">🌐</span>
               </div>
             </div>
           </section>
@@ -663,26 +616,16 @@
 <script>
   const STR = {
     nl: {
-      appName:"Snoet SuperApp",
-      tagline:"Samen rustig naar de tandarts ✨",
+      appName:"Snoet",
+      tagline:"Kindermondzorgcentrum Snoet",
       lang:"Taal",
       welcomeBadge:"Welkom!",
-      heroTitle:"Alles op één plek: afspraken, poetsen & fun",
-      heroText:"Voor kinderen én ouders: herinneringen, agenda, dossier en een Snoet-pet tamagochi.",
+      heroTitle:"Afspraken, herinneringen en gegevens op één plek",
+      heroText:"Een duidelijk overzicht voor kinderen en ouders.",
       enableNotifs:"Notificaties aan",
       sparkle:"Sterretjes!",
       homeTitle:"🏠 Home",
-      homeText:"Je volgende afspraak + Snoet-pet status.",
-      petTitle:"🐣 Snoet-pet",
-      petOk:"Snoet-pet voelt zich oké 🙂",
-      petSad:"Snoet-pet is verdrietig… tijd om te poetsen 🪥",
-      petHyper:"Snoet-pet is super blij! Goed bezig ⭐",
-      barBrush:"🪥 Poetsen",
-      barDrink:"🥤 Drink",
-      barFood:"🍎 Eten",
-      btnAte:"Ik heb gegeten",
-      btnDrank:"Ik heb gedronken",
-      btnBrushed:"Ik heb gepoetst",
+      homeText:"Je volgende afspraak in één oogopslag.",
       openAgenda:"Open agenda",
 
       agendaTitle:"📅 Agenda",
@@ -692,13 +635,13 @@
       delete:"Verwijderen",
 
       dossierTitle:"📁 Dossier",
-      dossierText:"Documenten + eten/drinken dagboek.",
+      dossierText:"Documenten en een overzicht van eet- en drinkmomenten.",
       doc1:"Röntgenfoto (demo)",
       doc1s:"Laatste update: 2 weken geleden",
       doc2:"Behandelplan (demo)",
       doc2s:"Controle + poetsadvies",
-      logTitle:"📒 Eten & drinken (dagboek)",
-      logText:"Noteer wat je eet/drinkt.",
+      logTitle:"📒 Eten & drinken",
+      logText:"Noteer eet- en drinkmomenten gedurende de dag.",
       logWhenLbl:"Wanneer?",
       logTypeLbl:"Type",
       logFood:"🍎 Eten",
@@ -713,17 +656,27 @@
       clear:"Wissen",
 
       meTitle:"👤 Mijn gegevens",
-      meText:"Overzicht van persoonsgegevens en contact met Snoet.",
+      meText:"Overzicht van persoonlijke gegevens, contactgegevens van de praktijk en app-instellingen.",
       nameLbl:"Naam kind",
       birthLbl:"Geboortedatum",
       parentLbl:"Naam ouder/verzorger",
       emailLbl:"E-mail",
       phoneLbl:"Telefoonnummer",
       save:"Opslaan",
+      settingsTitle:"⚙️ Instellingen",
+      passwordLbl:"Wachtwoord wijzigen",
+      languageLbl:"Taalinstellingen",
+      notifPrefLbl:"Voorkeur meldingen",
+      notifAll:"Alle meldingen",
+      notifAppointments:"Alleen afspraken",
+      notifBrush:"Alleen poetsen",
+      notifOff:"Uit",
+      saveSettings:"Instellingen opslaan",
       contactTitle:"☎️ Contactgegevens Snoet",
       contactPractice:"Kindermondzorgcentrum Snoet",
       contactPhone:"Telefoon",
       contactMail:"E-mail",
+      contactWeb:"Website",
 
       sideTitle:"✨ Snelle acties",
       sideText:"Alles wat je vaak gebruikt, meteen bij de hand.",
@@ -757,34 +710,23 @@
       toastNotifsOn:"Notificaties staan aan ✅",
       toastNotifsDenied:"Notificaties geweigerd.",
       apptNext:"Volgende afspraak",
-      apptNone:"Nog geen afspraak ingevoerd",
-      apptHint:"Voeg een afspraak toe om een countdown te zien.",
+      apptHint:"De afspraak staat al voor je ingepland.",
       notifAppt:"📅 Herinnering: tandartsafspraak!",
       notifBrushAM:"🪥 Tijd om te poetsen (ochtend)!",
       notifBrushPM:"🪥 Tijd om te poetsen (avond)!"
     },
 
     en: {
-      appName:"Snoet SuperApp",
-      tagline:"Calm dental visits together ✨",
+      appName:"Snoet",
+      tagline:"Snoet Pediatric Dental Center",
       lang:"Language",
       welcomeBadge:"Welcome!",
-      heroTitle:"All in one place: appointments, brushing & fun",
-      heroText:"For kids and parents: reminders, agenda, records and a Snoet-pet tamagotchi.",
+      heroTitle:"Appointments, reminders and details in one place",
+      heroText:"A clear overview for children and parents.",
       enableNotifs:"Enable notifications",
       sparkle:"Sparkles!",
       homeTitle:"🏠 Home",
-      homeText:"Your next appointment + Snoet-pet status.",
-      petTitle:"🐣 Snoet-pet",
-      petOk:"Snoet-pet feels ok 🙂",
-      petSad:"Snoet-pet is sad… time to brush 🪥",
-      petHyper:"Snoet-pet is super happy! Great job ⭐",
-      barBrush:"🪥 Brushing",
-      barDrink:"🥤 Drinks",
-      barFood:"🍎 Food",
-      btnAte:"I ate",
-      btnDrank:"I drank",
-      btnBrushed:"I brushed",
+      homeText:"Your next appointment at a glance.",
       openAgenda:"Open agenda",
 
       agendaTitle:"📅 Agenda",
@@ -794,13 +736,13 @@
       delete:"Delete",
 
       dossierTitle:"📁 Records",
-      dossierText:"Documents + food/drink log.",
+      dossierText:"Documents and an overview of eating and drinking moments.",
       doc1:"X-ray (demo)",
       doc1s:"Updated: 2 weeks ago",
       doc2:"Treatment plan (demo)",
       doc2s:"Check-up + brushing advice",
-      logTitle:"📒 Food & drinks (log)",
-      logText:"Log what you eat/drink.",
+      logTitle:"📒 Food & drinks",
+      logText:"Log food and drink moments throughout the day.",
       logWhenLbl:"When?",
       logTypeLbl:"Type",
       logFood:"🍎 Food",
@@ -815,17 +757,27 @@
       clear:"Clear",
 
       meTitle:"👤 My details",
-      meText:"Overview of personal details and Snoet contact information.",
+      meText:"Overview of personal details, practice contact details and app settings.",
       nameLbl:"Child name",
       birthLbl:"Date of birth",
       parentLbl:"Parent/caregiver name",
       emailLbl:"Email",
       phoneLbl:"Phone number",
       save:"Save",
+      settingsTitle:"⚙️ Settings",
+      passwordLbl:"Change password",
+      languageLbl:"Language settings",
+      notifPrefLbl:"Notification preference",
+      notifAll:"All notifications",
+      notifAppointments:"Appointments only",
+      notifBrush:"Brushing only",
+      notifOff:"Off",
+      saveSettings:"Save settings",
       contactTitle:"☎️ Snoet contact details",
       contactPractice:"Snoet Pediatric Dental Center",
       contactPhone:"Phone",
       contactMail:"Email",
+      contactWeb:"Website",
 
       sideTitle:"✨ Quick actions",
       sideText:"Everything you use often, right at hand.",
@@ -859,34 +811,23 @@
       toastNotifsOn:"Notifications enabled ✅",
       toastNotifsDenied:"Notifications denied.",
       apptNext:"Next appointment",
-      apptNone:"No appointment entered yet",
-      apptHint:"Add an appointment to see a countdown.",
+      apptHint:"The appointment is already scheduled for you.",
       notifAppt:"📅 Reminder: dentist appointment!",
       notifBrushAM:"🪥 Time to brush (morning)!",
       notifBrushPM:"🪥 Time to brush (evening)!"
     },
 
     tr: {
-      appName:"Snoet SuperApp",
-      tagline:"Diş hekimine birlikte sakin ✨",
+      appName:"Snoet",
+      tagline:"Snoet Çocuk Diş Merkezi",
       lang:"Dil",
       welcomeBadge:"Hoş geldiniz!",
-      heroTitle:"Her şey tek yerde: randevu, fırçalama ve eğlence",
-      heroText:"Çocuklar ve ebeveynler için: hatırlatmalar, ajanda, dosya ve Snoet-pet tamagochi.",
+      heroTitle:"Randevular, hatırlatmalar ve bilgiler tek yerde",
+      heroText:"Çocuklar ve ebeveynler için net bir görünüm.",
       enableNotifs:"Bildirimleri aç",
       sparkle:"Parıltı!",
       homeTitle:"🏠 Ana Sayfa",
-      homeText:"Sıradaki randevu + Snoet-pet durumu.",
-      petTitle:"🐣 Snoet-pet",
-      petOk:"Snoet-pet iyi hissediyor 🙂",
-      petSad:"Snoet-pet üzgün… fırçalama zamanı 🪥",
-      petHyper:"Snoet-pet çok mutlu! Harika ⭐",
-      barBrush:"🪥 Fırçalama",
-      barDrink:"🥤 İçecek",
-      barFood:"🍎 Yemek",
-      btnAte:"Yedim",
-      btnDrank:"İçtim",
-      btnBrushed:"Fırçaladım",
+      homeText:"Bir sonraki randevuya hızlı bakış.",
       openAgenda:"Ajandayı aç",
 
       agendaTitle:"📅 Ajanda",
@@ -896,13 +837,13 @@
       delete:"Sil",
 
       dossierTitle:"📁 Dosya",
-      dossierText:"Belgeler + yemek/içecek günlüğü.",
+      dossierText:"Belgeler ve yeme/içme anlarının görünümü.",
       doc1:"Röntgen (demo)",
       doc1s:"Güncelleme: 2 hafta önce",
       doc2:"Tedavi planı (demo)",
       doc2s:"Kontrol + fırçalama önerisi",
-      logTitle:"📒 Yemek & içecek (günlük)",
-      logText:"Ne yediğini/içtiğini yaz.",
+      logTitle:"📒 Yeme & içme",
+      logText:"Gün içindeki yeme ve içme anlarını yaz.",
       logWhenLbl:"Ne zaman?",
       logTypeLbl:"Tür",
       logFood:"🍎 Yemek",
@@ -917,17 +858,27 @@
       clear:"Temizle",
 
       meTitle:"👤 Bilgilerim",
-      meText:"Kişisel bilgiler ve Snoet iletişim bilgileri.",
+      meText:"Kişisel bilgiler, klinik iletişim bilgileri ve uygulama ayarlarının özeti.",
       nameLbl:"Çocuk adı",
       birthLbl:"Doğum tarihi",
       parentLbl:"Ebeveyn adı",
       emailLbl:"E-posta",
       phoneLbl:"Telefon numarası",
       save:"Kaydet",
+      settingsTitle:"⚙️ Ayarlar",
+      passwordLbl:"Şifre değiştir",
+      languageLbl:"Dil ayarları",
+      notifPrefLbl:"Bildirim tercihi",
+      notifAll:"Tüm bildirimler",
+      notifAppointments:"Sadece randevular",
+      notifBrush:"Sadece fırçalama",
+      notifOff:"Kapalı",
+      saveSettings:"Ayarları kaydet",
       contactTitle:"☎️ Snoet iletişim bilgileri",
       contactPractice:"Snoet Çocuk Diş Merkezi",
       contactPhone:"Telefon",
       contactMail:"E-posta",
+      contactWeb:"Web sitesi",
 
       sideTitle:"✨ Hızlı işlemler",
       sideText:"Sık kullandıkların hemen elinin altında.",
@@ -961,34 +912,23 @@
       toastNotifsOn:"Bildirimler açıldı ✅",
       toastNotifsDenied:"Bildirimler reddedildi.",
       apptNext:"Sıradaki randevu",
-      apptNone:"Henüz randevu girilmedi",
-      apptHint:"Geri sayım için randevu ekle.",
+      apptHint:"Randevu zaten sizin için planlandı.",
       notifAppt:"📅 Hatırlatma: diş randevusu!",
       notifBrushAM:"🪥 Fırçalama zamanı (sabah)!",
       notifBrushPM:"🪥 Fırçalama zamanı (akşam)!"
     },
 
     ar: {
-      appName:"تطبيق سنوت",
-      tagline:"زيارة هادئة لطبيب الأسنان ✨",
+      appName:"Snoet",
+      tagline:"مركز سنوت لطب أسنان الأطفال",
       lang:"اللغة",
       welcomeBadge:"أهلاً!",
-      heroTitle:"كل شيء في مكان واحد: المواعيد والتنظيف والمرح",
-      heroText:"للأطفال والأهل: تذكيرات وتقويم وملف و”سنوت-بت” تماغوتشي.",
+      heroTitle:"المواعيد والتذكيرات والبيانات في مكان واحد",
+      heroText:"عرض واضح للأطفال والأهل.",
       enableNotifs:"تفعيل الإشعارات",
       sparkle:"نجوم!",
       homeTitle:"🏠 الرئيسية",
-      homeText:"موعدك القادم + حالة سنوت-بت.",
-      petTitle:"🐣 سنوت-بت",
-      petOk:"سنوت-بت بخير 🙂",
-      petSad:"سنوت-بت حزين… وقت التنظيف 🪥",
-      petHyper:"سنوت-بت سعيد جداً! أحسنت ⭐",
-      barBrush:"🪥 تنظيف",
-      barDrink:"🥤 مشروبات",
-      barFood:"🍎 طعام",
-      btnAte:"أكلت",
-      btnDrank:"شربت",
-      btnBrushed:"نظفت أسناني",
+      homeText:"موعدك القادم بنظرة سريعة.",
       openAgenda:"فتح التقويم",
 
       agendaTitle:"📅 التقويم",
@@ -998,13 +938,13 @@
       delete:"حذف",
 
       dossierTitle:"📁 الملف",
-      dossierText:"وثائق + سجل الطعام والشراب.",
+      dossierText:"الوثائق ونظرة عامة على أوقات الأكل والشرب.",
       doc1:"صورة أشعة (تجريبي)",
       doc1s:"آخر تحديث: قبل أسبوعين",
       doc2:"خطة علاج (تجريبي)",
       doc2s:"فحص + نصائح تنظيف",
-      logTitle:"📒 الطعام والشراب (سجل)",
-      logText:"سجّل ما تأكل وتشرب.",
+      logTitle:"📒 الأكل والشرب",
+      logText:"سجّل أوقات الأكل والشرب خلال اليوم.",
       logWhenLbl:"متى؟",
       logTypeLbl:"النوع",
       logFood:"🍎 طعام",
@@ -1019,17 +959,27 @@
       clear:"مسح",
 
       meTitle:"👤 بياناتي",
-      meText:"ملخص البيانات الشخصية ومعلومات التواصل مع سنوت.",
+      meText:"ملخص البيانات الشخصية وبيانات التواصل مع العيادة وإعدادات التطبيق.",
       nameLbl:"اسم الطفل",
       birthLbl:"تاريخ الميلاد",
       parentLbl:"اسم ولي الأمر",
       emailLbl:"البريد الإلكتروني",
       phoneLbl:"رقم الهاتف",
       save:"حفظ",
+      settingsTitle:"⚙️ الإعدادات",
+      passwordLbl:"تغيير كلمة المرور",
+      languageLbl:"إعدادات اللغة",
+      notifPrefLbl:"تفضيل الإشعارات",
+      notifAll:"كل الإشعارات",
+      notifAppointments:"المواعيد فقط",
+      notifBrush:"التنظيف فقط",
+      notifOff:"إيقاف",
+      saveSettings:"حفظ الإعدادات",
       contactTitle:"☎️ بيانات التواصل مع سنوت",
       contactPractice:"مركز سنوت لطب أسنان الأطفال",
       contactPhone:"الهاتف",
       contactMail:"البريد",
+      contactWeb:"الموقع",
 
       sideTitle:"✨ إجراءات سريعة",
       sideText:"كل ما تستخدمه كثيراً في متناول يدك.",
@@ -1037,12 +987,12 @@
       quick1s:"تذكيرات التنظيف والمواعيد",
       quick2:"📅 مزامنة التقويم",
       quick2s:"تحميل .ics لـ Apple/Google",
-      quick3:"🪥 مؤقت تنظيف",
+      quick3:"🪥 مؤقت التنظيف",
       quick3s:"مؤقت دقيقتين",
       on:"تشغيل",
       open:"فتح",
 
-      brushTitle:"🪥 مؤقّت تنظيف (دقيقتان)",
+      brushTitle:"🪥 مؤقت التنظيف (دقيقتان)",
       brushHint:"اضغط ابدأ. بعد دقيقتين تحصل على مكافأة ⭐",
       start:"ابدأ",
       stop:"إيقاف",
@@ -1063,8 +1013,7 @@
       toastNotifsOn:"تم تفعيل الإشعارات ✅",
       toastNotifsDenied:"تم رفض الإشعارات.",
       apptNext:"الموعد القادم",
-      apptNone:"لم يتم إدخال موعد بعد",
-      apptHint:"أضف موعداً لرؤية العدّ التنازلي.",
+      apptHint:"الموعد محدد لك بالفعل.",
       notifAppt:"📅 تذكير: موعد طبيب الأسنان!",
       notifBrushAM:"🪥 وقت تنظيف الأسنان (صباحاً)!",
       notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!"
@@ -1096,7 +1045,6 @@
     renderAppts();
     renderNextAppt();
     renderLog();
-    renderTama();
   }
 
   function showPage(key){
@@ -1181,13 +1129,13 @@
 
     const sample = [
       {
-        dt: new Date(Date.now() + 5 * 24 * 3600 * 1000).toISOString(),
+        dt: "2026-03-17T10:00:00",
         type: "Controle",
         doctor: "Dr. Snoet",
         notes: "Rustig uitleggen + sticker na afloop 😊"
       },
       {
-        dt: new Date(Date.now() + 18 * 24 * 3600 * 1000).toISOString(),
+        dt: "2026-04-09T14:30:00",
         type: "Mondhygiëne",
         doctor: "Mondhygiënist Snoet",
         notes: "Korte poetsinstructie"
@@ -1271,25 +1219,14 @@
 
     const div = document.createElement("div");
     div.className = "item";
-
-    if(!next){
-      div.innerHTML = `
-        <div>
-          <strong>${t("apptNext")}</strong>
-          <small>${t("apptNone")}</small>
-          <div class="muted" style="margin-top:6px;">${t("apptHint")}</div>
-        </div>
-        <span class="chip">🫶</span>
-      `;
-    } else {
-      div.innerHTML = `
-        <div>
-          <strong>${t("apptNext")}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
-          <small>${escapeHtml(next.doctor)} • ${escapeHtml(next.notes)}</small>
-        </div>
-        <span class="chip">⏰ ${timeUntil(next.dt)}</span>
-      `;
-    }
+    div.innerHTML = `
+      <div>
+        <strong>${t("apptNext")}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
+        <small>${escapeHtml(next.doctor)} • ${escapeHtml(next.notes)}</small>
+        <div class="muted" style="margin-top:6px;">${t("apptHint")}</div>
+      </div>
+      <span class="chip">⏰ ${timeUntil(next.dt)}</span>
+    `;
     box.appendChild(div);
   }
 
@@ -1312,7 +1249,7 @@
     const lines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//Snoet SuperApp Demo//NL",
+      "PRODID:-//Snoet Demo//NL",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH"
     ];
@@ -1383,8 +1320,6 @@
         renderTimer();
         spawnStars(window.innerWidth / 2, window.innerHeight / 2, 18);
         notify("⭐ Snoet", "2 minuten gepoetst! Goed gedaan!");
-        tama.brush += 28;
-        renderTama();
       }
     }, 1000);
   }
@@ -1505,21 +1440,14 @@
 
   document.getElementById("btnAddLog").addEventListener("click", ()=>{
     const log = loadLog();
-    const entry = {
+    log.push({
       when: document.getElementById("logWhen").value || new Date().toISOString(),
       type: document.getElementById("logType").value,
       what: document.getElementById("logWhat").value || "(leeg)",
       sweet: document.getElementById("logSweet").value,
       acid: document.getElementById("logAcid").value
-    };
-    log.push(entry);
+    });
     saveLog(log);
-
-    if(entry.type === "drink") tama.drink += 14;
-    else tama.food += 16;
-    if(entry.sweet === "yes" || entry.acid === "yes") tama.brush -= 10;
-    renderTama();
-
     document.getElementById("logWhat").value = "";
     renderLog();
   });
@@ -1527,80 +1455,6 @@
   document.getElementById("btnClearLog").addEventListener("click", ()=>{
     localStorage.removeItem("snoet_foodlog");
     renderLog();
-  });
-
-  let tama = JSON.parse(localStorage.getItem("snoet_tama") || "null") || {
-    brush: 50,
-    drink: 50,
-    food: 50
-  };
-
-  function clamp(n){
-    return Math.max(0, Math.min(100, n));
-  }
-
-  function calcMood(){
-    const avg = (tama.brush + tama.drink + tama.food) / 3;
-    if(tama.brush < 25) return "sad";
-    if(avg > 75) return "hyper";
-    return "ok";
-  }
-
-  function renderTama(){
-    tama.brush = clamp(tama.brush);
-    tama.drink = clamp(tama.drink);
-    tama.food = clamp(tama.food);
-
-    document.getElementById("barBrush").style.width = tama.brush + "%";
-    document.getElementById("barDrink").style.width = tama.drink + "%";
-    document.getElementById("barFood").style.width = tama.food + "%";
-
-    document.getElementById("valBrush").textContent = tama.brush + "%";
-    document.getElementById("valDrink").textContent = tama.drink + "%";
-    document.getElementById("valFood").textContent = tama.food + "%";
-
-    const mood = calcMood();
-    const pet = document.getElementById("tamaPet");
-    const status = document.getElementById("tamaStatus");
-
-    if(mood === "sad"){
-      pet.textContent = "😬";
-      status.textContent = t("petSad");
-    } else if(mood === "hyper"){
-      pet.textContent = "🤩";
-      status.textContent = t("petHyper");
-    } else {
-      pet.textContent = "🦷";
-      status.textContent = t("petOk");
-    }
-
-    localStorage.setItem("snoet_tama", JSON.stringify(tama));
-  }
-
-  function decay(){
-    tama.brush -= 8;
-    tama.drink -= 3;
-    tama.food -= 3;
-  }
-
-  document.getElementById("btnFed").addEventListener("click", ()=>{
-    tama.food += 18;
-    renderTama();
-  });
-
-  document.getElementById("btnDrank").addEventListener("click", ()=>{
-    tama.drink += 14;
-    renderTama();
-  });
-
-  document.getElementById("btnBrushed").addEventListener("click", ()=>{
-    tama.brush += 35;
-    renderTama();
-    notify("⭐ Snoet", "Goed gepoetst! Snoet-pet is blij 😄");
-  });
-
-  document.getElementById("tamaPet").addEventListener("click", e=>{
-    spawnStars(e.clientX, e.clientY, 12);
   });
 
   function loadProfile(){
@@ -1618,6 +1472,15 @@
       email: document.getElementById("profileEmail").value,
       phone: document.getElementById("profilePhone").value
     });
+    toast(t("toastSaved"));
+  });
+
+  document.getElementById("btnSaveSettings").addEventListener("click", ()=>{
+    localStorage.setItem("snoet_settings", JSON.stringify({
+      password: document.getElementById("profilePassword").value,
+      language: document.getElementById("settingsLanguage").value,
+      notif: document.getElementById("settingsNotif").value
+    }));
     toast(t("toastSaved"));
   });
 
@@ -1649,12 +1512,15 @@
     if(p.email) document.getElementById("profileEmail").value = p.email;
     if(p.phone) document.getElementById("profilePhone").value = p.phone;
 
-    decay();
+    const s = JSON.parse(localStorage.getItem("snoet_settings") || "{}");
+    if(s.language) document.getElementById("settingsLanguage").value = s.language;
+    else document.getElementById("settingsLanguage").value = lang;
+    if(s.notif) document.getElementById("settingsNotif").value = s.notif;
+
     renderTimer();
     renderAppts();
     renderNextAppt();
     renderLog();
-    renderTama();
     applyLang();
   })();
 </script>
