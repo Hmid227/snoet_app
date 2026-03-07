@@ -265,19 +265,6 @@
     .tab .ico{font-size:18px;line-height:1}
     .tab .lbl{font-size:11px;font-weight:900}
 
-    .star{
-      position:fixed;
-      z-index:9999;
-      pointer-events:none;
-      font-size:18px;
-      animation:pop 900ms ease-out forwards;
-      filter:drop-shadow(0 10px 12px rgba(0,0,0,.35));
-    }
-    @keyframes pop{
-      0%{transform:translate(0,0) scale(.7);opacity:1}
-      100%{transform:translate(var(--dx), var(--dy)) scale(1.4);opacity:0}
-    }
-
     .timerBox{
       display:flex;
       align-items:center;
@@ -297,12 +284,6 @@
       box-shadow:inset 0 0 0 8px rgba(0,0,0,.18);
     }
     .ring span{font-weight:900;font-size:18px}
-
-    .footerNote{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-    }
   </style>
 </head>
 <body>
@@ -336,7 +317,6 @@
         </div>
         <div class="row">
           <button class="btn green" id="btnEnableNotifs">🔔 <span data-i18n="enableNotifs">Notificaties aan</span></button>
-          <button class="btn secondary" id="btnSparkle">✨ <span data-i18n="sparkle">Sterretjes!</span></button>
         </div>
       </div>
     </div>
@@ -346,7 +326,7 @@
 
         <section class="page active" id="page-home">
           <h2 data-i18n="homeTitle">🏠 Home</h2>
-          <div class="muted" data-i18n="homeText">Je volgende afspraak in één oogopslag.</div>
+          <div class="muted" data-i18n="homeText">Kies een voorbeelddatum voor de volgende afspraak.</div>
 
           <div class="list" id="nextApptBox" style="margin-top:12px;"></div>
 
@@ -437,7 +417,7 @@
 
         <section class="page" id="page-gegevens">
           <h2 data-i18n="meTitle">👤 Mijn gegevens</h2>
-          <div class="muted" data-i18n="meText">Overzicht van persoonlijke gegevens, contactgegevens van de praktijk en app-instellingen.</div>
+          <div class="muted" data-i18n="meText">Overzicht van persoonlijke gegevens en app-instellingen.</div>
 
           <div class="two">
             <div>
@@ -494,6 +474,11 @@
               <button class="btn secondary" id="btnSaveSettings">💾 <span data-i18n="saveSettings">Instellingen opslaan</span></button>
             </div>
           </section>
+        </section>
+
+        <section class="page" id="page-snoet-info">
+          <h2 data-i18n="snoetInfoTitle">🏥 Over Snoet</h2>
+          <div class="muted" data-i18n="snoetInfoText">Contactgegevens en informatie over de praktijk.</div>
 
           <section class="card" style="margin-top:12px; background: rgba(0,0,0,.18); border-color: rgba(255,255,255,.10);">
             <h2 data-i18n="contactTitle">☎️ Contactgegevens Snoet</h2>
@@ -508,7 +493,7 @@
               <div class="item">
                 <div>
                   <strong data-i18n="contactPhone">Telefoon</strong>
-                  <small>020-3343 699</small>
+                  <small>020-0000000</small>
                 </div>
                 <span class="chip">📞</span>
               </div>
@@ -570,7 +555,7 @@
             </div>
             <div style="flex:1; min-width:220px;">
               <div class="muted" data-i18n="brushHint">
-                Druk op start. Na 2 minuten krijg je een beloning ⭐
+                Druk op start om 2 minuten te poetsen.
               </div>
               <div class="row" style="margin-top:10px;">
                 <button class="btn green" id="btnStartTimer">▶️ <span data-i18n="start">Start</span></button>
@@ -611,6 +596,7 @@
     <div class="tab" data-page="agenda"><div class="ico">📅</div><div class="lbl" data-i18n="tabAgenda">Agenda</div></div>
     <div class="tab" data-page="dossier"><div class="ico">📁</div><div class="lbl" data-i18n="tabDossier">Dossier</div></div>
     <div class="tab" data-page="gegevens"><div class="ico">👤</div><div class="lbl" data-i18n="tabMe">Mijn gegevens</div></div>
+    <div class="tab" data-page="snoet-info"><div class="ico">🏥</div><div class="lbl" data-i18n="tabSnoet">Snoet</div></div>
   </div>
 
 <script>
@@ -623,17 +609,22 @@
       heroTitle:"Afspraken, herinneringen en gegevens op één plek",
       heroText:"Een duidelijk overzicht voor kinderen en ouders.",
       enableNotifs:"Notificaties aan",
-      sparkle:"Sterretjes!",
       homeTitle:"🏠 Home",
-      homeText:"Je volgende afspraak in één oogopslag.",
+      homeText:"Kies een voorbeelddatum voor de volgende afspraak.",
       openAgenda:"Open agenda",
-
       agendaTitle:"📅 Agenda",
       agendaText:"Hier staan de afspraken die al ingepland zijn.",
       exportIcs:"Download .ics",
       testApptNotif:"Test afspraak-notificatie",
       delete:"Verwijderen",
-
+      chooseExample:"Voorbeeldafspraak",
+      chooseExampleText:"Kies hieronder een voorbeeldmoment dat past. De afspraak wordt niet automatisch vastgezet.",
+      planExample:"Voorbeeldafspraak kiezen",
+      noApptYet:"Nog geen afspraak gekozen",
+      noApptHint:"Kies eerst een voorbeeldafspraak of bekijk de agenda.",
+      apptSelected:"Gekozen afspraak",
+      apptHint:"Dit is een voorbeeldmoment dat je kunt gebruiken om in te plannen.",
+      exampleBadge:"Voorbeeld",
       dossierTitle:"📁 Dossier",
       dossierText:"Documenten en een overzicht van eet- en drinkmomenten.",
       doc1:"Röntgenfoto (demo)",
@@ -654,9 +645,8 @@
       yes:"Ja",
       add:"Toevoegen",
       clear:"Wissen",
-
       meTitle:"👤 Mijn gegevens",
-      meText:"Overzicht van persoonlijke gegevens, contactgegevens van de praktijk en app-instellingen.",
+      meText:"Overzicht van persoonlijke gegevens en app-instellingen.",
       nameLbl:"Naam kind",
       birthLbl:"Geboortedatum",
       parentLbl:"Naam ouder/verzorger",
@@ -672,12 +662,13 @@
       notifBrush:"Alleen poetsen",
       notifOff:"Uit",
       saveSettings:"Instellingen opslaan",
+      snoetInfoTitle:"🏥 Over Snoet",
+      snoetInfoText:"Contactgegevens en informatie over de praktijk.",
       contactTitle:"☎️ Contactgegevens Snoet",
       contactPractice:"Kindermondzorgcentrum Snoet",
       contactPhone:"Telefoon",
       contactMail:"E-mail",
       contactWeb:"Website",
-
       sideTitle:"✨ Snelle acties",
       sideText:"Alles wat je vaak gebruikt, meteen bij de hand.",
       quick1:"🔔 Notificaties",
@@ -688,9 +679,8 @@
       quick3s:"Timer van 2 minuten",
       on:"Aan",
       open:"Open",
-
       brushTitle:"🪥 Poetstimer (2 minuten)",
-      brushHint:"Druk op start. Na 2 minuten krijg je een beloning ⭐",
+      brushHint:"Druk op start om 2 minuten te poetsen.",
       start:"Start",
       stop:"Stop",
       remindersTitle:"🔔 Tandenpoets herinneringen",
@@ -699,23 +689,20 @@
       eveningLbl:"Avond tijd",
       schedule:"Reminders plannen",
       test:"Test (4s/8s)",
-
       tabHome:"Home",
       tabAgenda:"Agenda",
       tabDossier:"Dossier",
       tabMe:"Mijn gegevens",
-
+      tabSnoet:"Snoet",
       toastSaved:"Opgeslagen ✅",
-      toastNeedDate:"Vul datum + tijd in.",
       toastNotifsOn:"Notificaties staan aan ✅",
       toastNotifsDenied:"Notificaties geweigerd.",
-      apptNext:"Volgende afspraak",
-      apptHint:"De afspraak staat al voor je ingepland.",
+      toastExampleChosen:"Voorbeeldafspraak gekozen ✅",
       notifAppt:"📅 Herinnering: tandartsafspraak!",
       notifBrushAM:"🪥 Tijd om te poetsen (ochtend)!",
-      notifBrushPM:"🪥 Tijd om te poetsen (avond)!"
+      notifBrushPM:"🪥 Tijd om te poetsen (avond)!",
+      logEmpty:"Log is leeg"
     },
-
     en: {
       appName:"Snoet",
       tagline:"Snoet Pediatric Dental Center",
@@ -724,17 +711,22 @@
       heroTitle:"Appointments, reminders and details in one place",
       heroText:"A clear overview for children and parents.",
       enableNotifs:"Enable notifications",
-      sparkle:"Sparkles!",
       homeTitle:"🏠 Home",
-      homeText:"Your next appointment at a glance.",
+      homeText:"Choose a sample time for the next appointment.",
       openAgenda:"Open agenda",
-
       agendaTitle:"📅 Agenda",
       agendaText:"Here you see the appointments that are already scheduled.",
       exportIcs:"Download .ics",
       testApptNotif:"Test appointment notification",
       delete:"Delete",
-
+      chooseExample:"Sample appointment",
+      chooseExampleText:"Choose a sample moment below. The appointment is not automatically fixed.",
+      planExample:"Choose sample appointment",
+      noApptYet:"No appointment chosen yet",
+      noApptHint:"Choose a sample appointment first or open the agenda.",
+      apptSelected:"Selected appointment",
+      apptHint:"This is a sample time you can use for planning.",
+      exampleBadge:"Sample",
       dossierTitle:"📁 Records",
       dossierText:"Documents and an overview of eating and drinking moments.",
       doc1:"X-ray (demo)",
@@ -755,9 +747,8 @@
       yes:"Yes",
       add:"Add",
       clear:"Clear",
-
       meTitle:"👤 My details",
-      meText:"Overview of personal details, practice contact details and app settings.",
+      meText:"Overview of personal details and app settings.",
       nameLbl:"Child name",
       birthLbl:"Date of birth",
       parentLbl:"Parent/caregiver name",
@@ -773,12 +764,13 @@
       notifBrush:"Brushing only",
       notifOff:"Off",
       saveSettings:"Save settings",
+      snoetInfoTitle:"🏥 About Snoet",
+      snoetInfoText:"Practice information and contact details.",
       contactTitle:"☎️ Snoet contact details",
       contactPractice:"Snoet Pediatric Dental Center",
       contactPhone:"Phone",
       contactMail:"Email",
       contactWeb:"Website",
-
       sideTitle:"✨ Quick actions",
       sideText:"Everything you use often, right at hand.",
       quick1:"🔔 Notifications",
@@ -789,9 +781,8 @@
       quick3s:"2 minute timer",
       on:"On",
       open:"Open",
-
       brushTitle:"🪥 Brush timer (2 minutes)",
-      brushHint:"Press start. After 2 minutes you get a reward ⭐",
+      brushHint:"Press start to brush for 2 minutes.",
       start:"Start",
       stop:"Stop",
       remindersTitle:"🔔 Brushing reminders",
@@ -800,23 +791,20 @@
       eveningLbl:"Evening time",
       schedule:"Schedule reminders",
       test:"Test (4s/8s)",
-
       tabHome:"Home",
       tabAgenda:"Agenda",
       tabDossier:"Records",
       tabMe:"My details",
-
+      tabSnoet:"Snoet",
       toastSaved:"Saved ✅",
-      toastNeedDate:"Fill in date + time.",
       toastNotifsOn:"Notifications enabled ✅",
       toastNotifsDenied:"Notifications denied.",
-      apptNext:"Next appointment",
-      apptHint:"The appointment is already scheduled for you.",
+      toastExampleChosen:"Sample appointment selected ✅",
       notifAppt:"📅 Reminder: dentist appointment!",
       notifBrushAM:"🪥 Time to brush (morning)!",
-      notifBrushPM:"🪥 Time to brush (evening)!"
+      notifBrushPM:"🪥 Time to brush (evening)!",
+      logEmpty:"Log is empty"
     },
-
     tr: {
       appName:"Snoet",
       tagline:"Snoet Çocuk Diş Merkezi",
@@ -825,17 +813,22 @@
       heroTitle:"Randevular, hatırlatmalar ve bilgiler tek yerde",
       heroText:"Çocuklar ve ebeveynler için net bir görünüm.",
       enableNotifs:"Bildirimleri aç",
-      sparkle:"Parıltı!",
       homeTitle:"🏠 Ana Sayfa",
-      homeText:"Bir sonraki randevuya hızlı bakış.",
+      homeText:"Sonraki randevu için örnek bir zaman seç.",
       openAgenda:"Ajandayı aç",
-
       agendaTitle:"📅 Ajanda",
       agendaText:"Burada zaten planlanmış randevuları görürsün.",
       exportIcs:".ics indir",
       testApptNotif:"Randevu bildirimi test et",
       delete:"Sil",
-
+      chooseExample:"Örnek randevu",
+      chooseExampleText:"Aşağıdan uygun bir örnek zaman seç. Randevu otomatik olarak sabitlenmez.",
+      planExample:"Örnek randevu seç",
+      noApptYet:"Henüz randevu seçilmedi",
+      noApptHint:"Önce örnek bir randevu seç ya da ajandayı aç.",
+      apptSelected:"Seçilen randevu",
+      apptHint:"Bu, planlama için kullanabileceğiniz örnek bir zamandır.",
+      exampleBadge:"Örnek",
       dossierTitle:"📁 Dosya",
       dossierText:"Belgeler ve yeme/içme anlarının görünümü.",
       doc1:"Röntgen (demo)",
@@ -856,9 +849,8 @@
       yes:"Evet",
       add:"Ekle",
       clear:"Temizle",
-
       meTitle:"👤 Bilgilerim",
-      meText:"Kişisel bilgiler, klinik iletişim bilgileri ve uygulama ayarlarının özeti.",
+      meText:"Kişisel bilgiler ve uygulama ayarlarının özeti.",
       nameLbl:"Çocuk adı",
       birthLbl:"Doğum tarihi",
       parentLbl:"Ebeveyn adı",
@@ -874,12 +866,13 @@
       notifBrush:"Sadece fırçalama",
       notifOff:"Kapalı",
       saveSettings:"Ayarları kaydet",
+      snoetInfoTitle:"🏥 Snoet hakkında",
+      snoetInfoText:"Klinik bilgileri ve iletişim detayları.",
       contactTitle:"☎️ Snoet iletişim bilgileri",
       contactPractice:"Snoet Çocuk Diş Merkezi",
       contactPhone:"Telefon",
       contactMail:"E-posta",
       contactWeb:"Web sitesi",
-
       sideTitle:"✨ Hızlı işlemler",
       sideText:"Sık kullandıkların hemen elinin altında.",
       quick1:"🔔 Bildirimler",
@@ -890,9 +883,8 @@
       quick3s:"2 dakikalık zamanlayıcı",
       on:"Aç",
       open:"Aç",
-
       brushTitle:"🪥 Fırçalama zamanlayıcı (2 dakika)",
-      brushHint:"Başlat’a bas. 2 dakika sonra ödül ⭐",
+      brushHint:"2 dakika fırçalamak için başlat'a bas.",
       start:"Başlat",
       stop:"Durdur",
       remindersTitle:"🔔 Fırçalama hatırlatmaları",
@@ -901,23 +893,20 @@
       eveningLbl:"Akşam saati",
       schedule:"Hatırlatmaları planla",
       test:"Test (4s/8s)",
-
       tabHome:"Ana",
       tabAgenda:"Ajanda",
       tabDossier:"Dosya",
       tabMe:"Bilgilerim",
-
+      tabSnoet:"Snoet",
       toastSaved:"Kaydedildi ✅",
-      toastNeedDate:"Tarih + saat girin.",
       toastNotifsOn:"Bildirimler açıldı ✅",
       toastNotifsDenied:"Bildirimler reddedildi.",
-      apptNext:"Sıradaki randevu",
-      apptHint:"Randevu zaten sizin için planlandı.",
+      toastExampleChosen:"Örnek randevu seçildi ✅",
       notifAppt:"📅 Hatırlatma: diş randevusu!",
       notifBrushAM:"🪥 Fırçalama zamanı (sabah)!",
-      notifBrushPM:"🪥 Fırçalama zamanı (akşam)!"
+      notifBrushPM:"🪥 Fırçalama zamanı (akşam)!",
+      logEmpty:"Kayıt boş"
     },
-
     ar: {
       appName:"Snoet",
       tagline:"مركز سنوت لطب أسنان الأطفال",
@@ -926,17 +915,22 @@
       heroTitle:"المواعيد والتذكيرات والبيانات في مكان واحد",
       heroText:"عرض واضح للأطفال والأهل.",
       enableNotifs:"تفعيل الإشعارات",
-      sparkle:"نجوم!",
       homeTitle:"🏠 الرئيسية",
-      homeText:"موعدك القادم بنظرة سريعة.",
+      homeText:"اختر موعداً مثالياً للزيارة القادمة.",
       openAgenda:"فتح التقويم",
-
       agendaTitle:"📅 التقويم",
       agendaText:"هنا تظهر المواعيد التي تم تحديدها مسبقاً.",
       exportIcs:"تحميل .ics",
       testApptNotif:"تجربة إشعار الموعد",
       delete:"حذف",
-
+      chooseExample:"موعد تجريبي",
+      chooseExampleText:"اختر وقتاً مناسباً من الأمثلة بالأسفل. لن يتم تثبيت الموعد تلقائياً.",
+      planExample:"اختيار موعد تجريبي",
+      noApptYet:"لم يتم اختيار موعد بعد",
+      noApptHint:"اختر موعداً تجريبياً أولاً أو افتح التقويم.",
+      apptSelected:"الموعد المختار",
+      apptHint:"هذا وقت تجريبي يمكن استخدامه عند الحجز.",
+      exampleBadge:"تجريبي",
       dossierTitle:"📁 الملف",
       dossierText:"الوثائق ونظرة عامة على أوقات الأكل والشرب.",
       doc1:"صورة أشعة (تجريبي)",
@@ -957,9 +951,8 @@
       yes:"نعم",
       add:"إضافة",
       clear:"مسح",
-
       meTitle:"👤 بياناتي",
-      meText:"ملخص البيانات الشخصية وبيانات التواصل مع العيادة وإعدادات التطبيق.",
+      meText:"ملخص البيانات الشخصية وإعدادات التطبيق.",
       nameLbl:"اسم الطفل",
       birthLbl:"تاريخ الميلاد",
       parentLbl:"اسم ولي الأمر",
@@ -975,12 +968,13 @@
       notifBrush:"التنظيف فقط",
       notifOff:"إيقاف",
       saveSettings:"حفظ الإعدادات",
+      snoetInfoTitle:"🏥 عن سنوت",
+      snoetInfoText:"معلومات العيادة وبيانات التواصل.",
       contactTitle:"☎️ بيانات التواصل مع سنوت",
       contactPractice:"مركز سنوت لطب أسنان الأطفال",
       contactPhone:"الهاتف",
       contactMail:"البريد",
       contactWeb:"الموقع",
-
       sideTitle:"✨ إجراءات سريعة",
       sideText:"كل ما تستخدمه كثيراً في متناول يدك.",
       quick1:"🔔 إشعارات",
@@ -991,9 +985,8 @@
       quick3s:"مؤقت دقيقتين",
       on:"تشغيل",
       open:"فتح",
-
       brushTitle:"🪥 مؤقت التنظيف (دقيقتان)",
-      brushHint:"اضغط ابدأ. بعد دقيقتين تحصل على مكافأة ⭐",
+      brushHint:"اضغط ابدأ لتنظيف الأسنان لمدة دقيقتين.",
       start:"ابدأ",
       stop:"إيقاف",
       remindersTitle:"🔔 تذكيرات التنظيف",
@@ -1002,25 +995,24 @@
       eveningLbl:"وقت المساء",
       schedule:"جدولة التذكيرات",
       test:"اختبار (4ث/8ث)",
-
       tabHome:"الرئيسية",
       tabAgenda:"التقويم",
       tabDossier:"الملف",
       tabMe:"بياناتي",
-
+      tabSnoet:"سنوت",
       toastSaved:"تم الحفظ ✅",
-      toastNeedDate:"أدخل التاريخ والوقت.",
       toastNotifsOn:"تم تفعيل الإشعارات ✅",
       toastNotifsDenied:"تم رفض الإشعارات.",
-      apptNext:"الموعد القادم",
-      apptHint:"الموعد محدد لك بالفعل.",
+      toastExampleChosen:"تم اختيار موعد تجريبي ✅",
       notifAppt:"📅 تذكير: موعد طبيب الأسنان!",
       notifBrushAM:"🪥 وقت تنظيف الأسنان (صباحاً)!",
-      notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!"
+      notifBrushPM:"🪥 وقت تنظيف الأسنان (مساءً)!",
+      logEmpty:"السجل فارغ"
     }
   };
 
   let lang = localStorage.getItem("snoet_lang") || "nl";
+  const LS_EXAMPLE_APPT = "snoet_example_appt";
 
   function t(key){
     return (STR[lang] && STR[lang][key]) ? STR[lang][key] : key;
@@ -1077,26 +1069,6 @@
     setTimeout(()=> el.remove(), 1400);
   }
 
-  function spawnStars(x,y,count=10){
-    const chars = ["✨","⭐","💫","🌟"];
-    for(let i=0;i<count;i++){
-      const s = document.createElement("div");
-      s.className = "star";
-      s.textContent = chars[Math.floor(Math.random()*chars.length)];
-      s.style.left = (x + (Math.random()*20-10)) + "px";
-      s.style.top = (y + (Math.random()*20-10)) + "px";
-      s.style.setProperty("--dx", (Math.random()*220-110) + "px");
-      s.style.setProperty("--dy", (Math.random()*-220-60) + "px");
-      s.style.fontSize = (14 + Math.random()*18) + "px";
-      document.body.appendChild(s);
-      setTimeout(()=> s.remove(), 950);
-    }
-  }
-
-  document.getElementById("btnSparkle").addEventListener("click", e=>{
-    spawnStars(e.clientX, e.clientY, 14);
-  });
-
   async function enableNotifications(){
     if(!("Notification" in window)){
       toast("Not supported");
@@ -1132,7 +1104,7 @@
         dt: "2026-03-17T10:00:00",
         type: "Controle",
         doctor: "Dr. Snoet",
-        notes: "Rustig uitleggen + sticker na afloop 😊"
+        notes: "Rustig uitleggen"
       },
       {
         dt: "2026-04-09T14:30:00",
@@ -1147,6 +1119,14 @@
 
   function saveAppts(appts){
     localStorage.setItem("snoet_appts", JSON.stringify(appts));
+  }
+
+  function getExampleAppt(){
+    return JSON.parse(localStorage.getItem(LS_EXAMPLE_APPT) || "null");
+  }
+
+  function setExampleAppt(appt){
+    localStorage.setItem(LS_EXAMPLE_APPT, JSON.stringify(appt));
   }
 
   function escapeHtml(s){
@@ -1187,7 +1167,18 @@
     const list = document.getElementById("apptList");
     list.innerHTML = "";
 
-    appts.forEach((a,idx)=>{
+    const intro = document.createElement("div");
+    intro.className = "item";
+    intro.innerHTML = `
+      <div>
+        <strong>${t("chooseExample")}</strong>
+        <small>${t("chooseExampleText")}</small>
+      </div>
+      <span class="chip">${t("exampleBadge")}</span>
+    `;
+    list.appendChild(intro);
+
+    appts.forEach((a)=>{
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
@@ -1195,33 +1186,44 @@
           <strong>${escapeHtml(a.type)} — ${formatDT(a.dt)}</strong>
           <small>${escapeHtml(a.doctor)} • ${escapeHtml(a.notes)}</small>
         </div>
-        <button class="btn danger" style="padding:8px 10px;" data-del="${idx}">${t("delete")}</button>
+        <button class="btn green" style="padding:8px 10px;" data-pick="${encodeURIComponent(JSON.stringify(a))}">${t("planExample")}</button>
       `;
       list.appendChild(div);
     });
 
-    list.querySelectorAll("[data-del]").forEach(btn=>{
+    list.querySelectorAll("[data-pick]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const appts = loadAppts().sort((a,b)=> a.dt.localeCompare(b.dt));
-        appts.splice(Number(btn.getAttribute("data-del")), 1);
-        saveAppts(appts);
-        renderAppts();
+        const appt = JSON.parse(decodeURIComponent(btn.getAttribute("data-pick")));
+        setExampleAppt(appt);
         renderNextAppt();
+        toast(t("toastExampleChosen"));
       });
     });
   }
 
   function renderNextAppt(){
-    const appts = loadAppts().sort((a,b)=> a.dt.localeCompare(b.dt));
-    const next = appts[0];
+    const next = getExampleAppt();
     const box = document.getElementById("nextApptBox");
     box.innerHTML = "";
 
     const div = document.createElement("div");
     div.className = "item";
+
+    if(!next){
+      div.innerHTML = `
+        <div>
+          <strong>${t("noApptYet")}</strong>
+          <small>${t("noApptHint")}</small>
+        </div>
+        <span class="chip">${t("exampleBadge")}</span>
+      `;
+      box.appendChild(div);
+      return;
+    }
+
     div.innerHTML = `
       <div>
-        <strong>${t("apptNext")}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
+        <strong>${t("apptSelected")}: ${escapeHtml(next.type)} — ${formatDT(next.dt)}</strong>
         <small>${escapeHtml(next.doctor)} • ${escapeHtml(next.notes)}</small>
         <div class="muted" style="margin-top:6px;">${t("apptHint")}</div>
       </div>
@@ -1318,8 +1320,7 @@
         stopTimer();
         left = total;
         renderTimer();
-        spawnStars(window.innerWidth / 2, window.innerHeight / 2, 18);
-        notify("⭐ Snoet", "2 minuten gepoetst! Goed gedaan!");
+        notify("Snoet", "2 minuten gepoetst! Goed gedaan!");
       }
     }, 1000);
   }
@@ -1410,7 +1411,7 @@
     const log = loadLog();
 
     if(log.length === 0){
-      list.innerHTML = `<div class="item"><div><strong>—</strong><small class="muted">Log is leeg</small></div><span class="chip">📒</span></div>`;
+      list.innerHTML = `<div class="item"><div><strong>—</strong><small class="muted">${t("logEmpty")}</small></div><span class="chip">📒</span></div>`;
       return;
     }
 
